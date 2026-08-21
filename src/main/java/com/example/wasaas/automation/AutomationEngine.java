@@ -28,6 +28,7 @@ public class AutomationEngine {
     private final UnmatchedMessageRepository unmatchedMessageRepository;
     private final RuleMatcher ruleMatcher;
     private final AutoReplyRateLimiter rateLimiter;
+    private final com.example.wasaas.automation.faq.FaqMatchService faqMatchService;
     private final MessagingService messagingService;
     private final ApplicationEventPublisher eventPublisher;
     private final ObjectMapper objectMapper;
@@ -36,6 +37,7 @@ public class AutomationEngine {
                             UnmatchedMessageRepository unmatchedMessageRepository,
                             RuleMatcher ruleMatcher,
                             AutoReplyRateLimiter rateLimiter,
+                            com.example.wasaas.automation.faq.FaqMatchService faqMatchService,
                             MessagingService messagingService,
                             ApplicationEventPublisher eventPublisher,
                             ObjectMapper objectMapper) {
@@ -43,6 +45,7 @@ public class AutomationEngine {
         this.unmatchedMessageRepository = unmatchedMessageRepository;
         this.ruleMatcher = ruleMatcher;
         this.rateLimiter = rateLimiter;
+        this.faqMatchService = faqMatchService;
         this.messagingService = messagingService;
         this.eventPublisher = eventPublisher;
         this.objectMapper = objectMapper;
@@ -81,8 +84,31 @@ public class AutomationEngine {
             }
 
             if (!matched) {
-                log.info("No automation rule matched for message [{}] from [{}] under tenant [{}]",
-                        event.wamid(), event.fromE164(), tenantId);
+                // Fallback 1: FAQ Match via PostgreSQL FTS + pg_trgm (F14)
+                com.example.wasaas.automation.faq.FaqMatchResult faqResult = faqMatchService.findMatch(tenantId, event.text());
+
+                if (faqResult.isConfident()) {
+                    log.info("FAQ [{}] matched query [{}] with confidence score [{}] for contact [{}]",
+                            faqResult.question(), event.text(), faqResult.confidenceScore(), event.fromE164());
+
+                    if (rateLimiter.tryAcquire(tenantId, event.fromE164())) {
+                        String idempotencyKey = "faq:" + event.wamid() + ":" + faqResult.id();
+                        messagingService.sendText(
+                                event.whatsappAccountId(),
+                                event.fromE164(),
+                                faqResult.answer(),
+                                idempotencyKey
+                        );
+                    } else {
+                        log.warn("FAQ auto-reply suppressed for contact [{}] due to rate limit under tenant [{}]",
+                                event.fromE164(), tenantId);
+                    }
+                    return;
+                }
+
+                // Fallback 2: Unmatched / Escalation (ADR-007 dataset)
+                log.info("No rule or confident FAQ match for message [{}] from [{}] (bestScore={}), escalating",
+                        event.wamid(), event.fromE164(), faqResult.confidenceScore());
 
                 UnmatchedMessage unmatched = new UnmatchedMessage(
                         tenantId,
