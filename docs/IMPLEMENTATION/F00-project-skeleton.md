@@ -1,6 +1,6 @@
 # F00 — Project Skeleton
 
-**Status:** Partial — implementation complete; Docker-backed verification pending local tool installation
+**Status:** Complete — verified with native PostgreSQL; Docker/Java 21 parity pending
 **Completed:** 2026-08-21
 **Commit:** Pending local checkpoint
 **Spec:** `../WhatsApp-SaaS-Product/14-CLAUDE-CODE/PROMPTS/PHASE-A-FOUNDATION.md#f00`
@@ -45,7 +45,7 @@ None. The temporary local database role is documented above and becomes `wasaas_
 |---|---|
 | `GlobalExceptionHandlerTest` | A `NotFoundException` becomes a clean 404 `ApiError`. |
 
-The Postgres startup, Flyway migration, and health endpoint must still be verified after Java 21 and Docker Desktop are installed. Temurin's package installer needs an interactive macOS administrator-password prompt, so it cannot be completed from this agent session.
+Native PostgreSQL 17 verification passed: Flyway V1 is recorded as successful and `GET /actuator/health` returned HTTP 200. Docker Compose and Java 21 parity still require installation; Temurin's package installer needs an interactive macOS administrator-password prompt, so it cannot be completed from this agent session.
 
 ## Gotchas — read before touching this code
 

@@ -2,4 +2,4 @@
 
 | # | Feature | Status | Date | Doc |
 |---|---|---|---|---|
-| F00 | Project skeleton | Partial — local runtime verification pending | 2026-08-21 | [F00](F00-project-skeleton.md) |
+| F00 | Project skeleton | Complete — verified with native PostgreSQL; Docker/Java 21 parity pending | 2026-08-21 | [F00](F00-project-skeleton.md) |

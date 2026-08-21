@@ -8,20 +8,21 @@
 ---
 
 ```text
-Current Phase:        PHASE 2 — Local development setup
+Current Phase:        PHASE A — Foundation
 
-Current Goal:         Complete Docker-backed F00 runtime verification using Java 21.
+Current Goal:         Install Docker Desktop before F01's required Testcontainers tests.
 
-Last Completed:       F00 source skeleton and unit build (`./mvnw clean verify`) pass.
+Last Completed:       F00 project skeleton: native PostgreSQL 17, Flyway V1, and the health
+                      endpoint verified; `./mvnw clean verify` passes.
 
-Currently Working On: F00 — local Docker/PostgreSQL runtime verification
+Currently Working On: Runtime prerequisites for F01
 
-Next Task:            Finish Java 21 and Docker Desktop installation, start PostgreSQL,
-                      then verify Flyway V1 and `/actuator/health`.
+Next Task:            Install Docker Desktop (and Java 21 when administrator access is available),
+                      then begin F01 with Testcontainers.
 
-Blocked By:           Java 21 installation requires an interactive macOS administrator-password
-                      prompt. Docker Desktop has not yet been installed. Java 26 can compile F00
-                      but does not satisfy the project requirement.
+Blocked By:           Docker Desktop is required to run F01's mandated Testcontainers tests.
+                      Java 21 also requires an interactive macOS administrator-password prompt;
+                      Java 26 currently compiles F00 but is not the project target runtime.
 
 Important Decisions:  - Tech Provider model, customer pays Meta directly (ADR-003, ADR-005)
                       - Modular monolith, single VM (ADR-001)
@@ -42,6 +43,7 @@ Append a line each session. Newest at top.
 
 | Date | Phase | What I did | Next |
 |---|---|---|---|
+| 2026-08-21 | F00 | Verified native PostgreSQL 17, Flyway V1, and HTTP 200 health endpoint | Install Docker, then F01 Testcontainers |
 | 2026-08-21 | F00 | Retried Temurin 21 installation; macOS requires interactive sudo authentication | Install Java 21 and Docker Desktop, then verify F00 runtime |
 | 2026-08-21 | F00 | Added Spring Boot skeleton, local Postgres compose config, Flyway baseline, error/logging contracts; unit build passes on Java 26 | Install Java 21 + Docker, verify full runtime |
 | 2026-08-21 | Setup | Created local repository, copied docs, added cross-agent guidance | Install Java 21 and Docker, then F00 |
