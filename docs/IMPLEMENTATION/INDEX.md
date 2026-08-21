@@ -8,3 +8,4 @@
 | F03 | Authentication and server-side sessions | Complete — verified with Spring Session JDBC, rate limiting, and test suite | 2026-08-21 | [F03](F03-authentication-sessions.md) |
 | F04 | Password reset | Complete — verified with SHA-256 hashed tokens, 30-min expiry, and test suite | 2026-08-21 | [F04](F04-password-reset.md) |
 | F05 | WhatsApp account model and token encryption | Complete — verified with AES-256-GCM envelope encryption, fail-fast key check, and RLS | 2026-08-21 | [F05](F05-whatsapp-account-model-token-encryption.md) |
+| F06 | Embedded Signup callback and Meta Graph Client | Complete — verified with code exchange, webhook subscription, error 200 handling, and test suite | 2026-08-21 | [F06](F06-embedded-signup-callback.md) |

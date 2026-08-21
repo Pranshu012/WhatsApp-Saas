@@ -10,15 +10,15 @@
 ```text
 Current Phase:        PHASE B — WhatsApp Core (F05–F11)
 
-Current Goal:         Implement F06 Embedded Signup callback & Meta Graph API Client.
+Current Goal:         Implement F07 Inbound Webhook Handler & HMAC Signature Verification.
 
-Last Completed:       F05 - WhatsApp Account Model and AES-256-GCM Token Encryption
-                      (V7 migration with RLS, TokenCipher with 12-byte random IVs,
-                      fail-fast 32-byte key check, zero Jackson leakage, and 34/34 tests passing).
+Last Completed:       F06 - Embedded Signup Callback and Meta Graph API Client
+                      (Code exchange, asset verification, webhook subscription, Error Code 200
+                      Advanced Access handling, POST /api/whatsapp/connect, and 38/38 tests passing).
 
-Currently Working On: F06 — Embedded Signup Callback & Meta Graph API Client
+Currently Working On: F07 — Inbound Webhooks & HMAC Verification
 
-Next Task:            Read F06 specification in PHASE-B-WHATSAPP.md and implement MetaGraphClient.
+Next Task:            Read F07 specification in PHASE-B-WHATSAPP.md and implement raw body HMAC verification.
 
 Blocked By:           Docker Desktop remains required for Testcontainers parity. Java 21 also
                       requires an interactive macOS administrator-password prompt; Java 26 is
@@ -43,6 +43,7 @@ Append a line each session. Newest at top.
 
 | Date | Phase | What I did | Next |
 |---|---|---|---|
+| 2026-08-21 | F06 | Implemented Embedded Signup callback, MetaGraphClient, webhook subscription, Error Code 200 handling, and connect endpoint | F07 Inbound Webhooks & HMAC |
 | 2026-08-21 | F05 | Implemented WhatsApp Accounts model with AES-256-GCM TokenCipher envelope encryption, fail-fast key check, and RLS | F06 Embedded Signup & Meta Graph Client |
 | 2026-08-21 | F04 | Implemented Password Reset with SHA-256 hashed tokens, 30-min expiry, anti-enumeration, global session revocation, and EmailSender | F05 WhatsApp Accounts & TokenCipher |
 | 2026-08-21 | F03 | Implemented Spring Session JDBC, JSON login, logout, me, csrf endpoints, rate limiting, and session-principal TenantContext | F04 Password Reset |

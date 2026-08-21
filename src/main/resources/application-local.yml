@@ -12,3 +12,8 @@ server:
 app:
   crypto:
     token-key: MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIzNDU2Nzg5MDE=
+  meta:
+    app-id: test-meta-app-id-12345
+    app-secret: test-meta-app-secret-67890
+    graph-base-url: https://graph.facebook.com
+    graph-version: v21.0
