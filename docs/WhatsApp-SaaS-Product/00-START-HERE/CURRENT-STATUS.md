@@ -10,15 +10,15 @@
 ```text
 Current Phase:        PHASE B — WhatsApp Core (F05–F11)
 
-Current Goal:         Implement F07 Inbound Webhook Handler & HMAC Signature Verification.
+Current Goal:         Implement F08 Message Ledger.
 
-Last Completed:       F06 - Embedded Signup Callback and Meta Graph API Client
-                      (Code exchange, asset verification, webhook subscription, Error Code 200
-                      Advanced Access handling, POST /api/whatsapp/connect, and 38/38 tests passing).
+Last Completed:       F07 - Jobs table and worker
+                      (Durable job queue via V8__jobs.sql, SKIP LOCKED claim logic,
+                       JobWorker poller, and concurrent transactional execution).
 
-Currently Working On: F07 — Inbound Webhooks & HMAC Verification
+Currently Working On: F08 — Message Ledger
 
-Next Task:            Read F07 specification in PHASE-B-WHATSAPP.md and implement raw body HMAC verification.
+Next Task:            Read F08 specification in PHASE-B-WHATSAPP.md and implement billing/append-only ledger.
 
 Blocked By:           Docker Desktop remains required for Testcontainers parity. Java 21 also
                       requires an interactive macOS administrator-password prompt; Java 26 is
@@ -43,7 +43,8 @@ Append a line each session. Newest at top.
 
 | Date | Phase | What I did | Next |
 |---|---|---|---|
-| 2026-08-21 | F06 | Implemented Embedded Signup callback, MetaGraphClient, webhook subscription, Error Code 200 handling, and connect endpoint | F07 Inbound Webhooks & HMAC |
+| 2026-08-21 | F07 | Implemented durable job queue with FOR UPDATE SKIP LOCKED, exponential backoff, locking recovery | F08 Message Ledger |
+| 2026-08-21 | F06 | Implemented Embedded Signup callback, MetaGraphClient, webhook subscription, Error Code 200 handling, and connect endpoint | F07 Jobs Table & Worker |
 | 2026-08-21 | F05 | Implemented WhatsApp Accounts model with AES-256-GCM TokenCipher envelope encryption, fail-fast key check, and RLS | F06 Embedded Signup & Meta Graph Client |
 | 2026-08-21 | F04 | Implemented Password Reset with SHA-256 hashed tokens, 30-min expiry, anti-enumeration, global session revocation, and EmailSender | F05 WhatsApp Accounts & TokenCipher |
 | 2026-08-21 | F03 | Implemented Spring Session JDBC, JSON login, logout, me, csrf endpoints, rate limiting, and session-principal TenantContext | F04 Password Reset |
