@@ -32,7 +32,9 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest
+@SpringBootTest(properties = {
+    "app.jobs.poll-interval-ms=1000000"
+})
 @ActiveProfiles({"local", "worker"})
 public class FaqMatchingTest {
 

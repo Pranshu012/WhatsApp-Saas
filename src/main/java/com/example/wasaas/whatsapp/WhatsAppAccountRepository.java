@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface WhatsAppAccountRepository extends JpaRepository<WhatsAppAccount, UUID> {
+    Optional<WhatsAppAccount> findByTenantId(UUID tenantId);
     Optional<WhatsAppAccount> findByPhoneNumberId(String phoneNumberId);
     Optional<WhatsAppAccount> findByWabaId(String wabaId);
     List<WhatsAppAccount> findAllByStatus(WhatsAppAccountStatus status);

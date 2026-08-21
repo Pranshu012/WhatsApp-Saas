@@ -27,7 +27,9 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@SpringBootTest
+@SpringBootTest(properties = {
+    "app.jobs.poll-interval-ms=1000000"
+})
 @ActiveProfiles({"local", "worker"})
 public class AutomationEngineTest {
 

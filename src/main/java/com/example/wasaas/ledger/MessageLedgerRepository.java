@@ -17,6 +17,8 @@ public interface MessageLedgerRepository extends JpaRepository<MessageLedger, UU
 
     Optional<MessageLedger> findByIdempotencyKey(String idempotencyKey);
 
+    List<MessageLedger> findAllByTenantIdAndRecipientPhoneHashOrderByCreatedAtAsc(UUID tenantId, String recipientPhoneHash);
+
     @Query("""
         SELECT l.billingCategory as category, COUNT(l) as total
         FROM MessageLedger l

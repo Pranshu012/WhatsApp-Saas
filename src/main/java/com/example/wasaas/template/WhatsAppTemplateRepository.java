@@ -16,5 +16,7 @@ public interface WhatsAppTemplateRepository extends JpaRepository<WhatsAppTempla
 
     Optional<WhatsAppTemplate> findByMetaTemplateId(String metaTemplateId);
 
+    Optional<WhatsAppTemplate> findByTenantIdAndId(UUID tenantId, UUID id);
+
     List<WhatsAppTemplate> findAllByTenantId(UUID tenantId);
 }
