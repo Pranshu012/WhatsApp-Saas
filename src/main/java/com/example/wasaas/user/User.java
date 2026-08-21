@@ -31,4 +31,7 @@ public class User {
     public String getEmail() { return email; }
     public String getPasswordHash() { return passwordHash; }
     public String getFullName() { return fullName; }
+    public UserStatus getStatus() { return status; }
+    public void disable() { this.status = UserStatus.DISABLED; }
+    public void activate() { this.status = UserStatus.ACTIVE; }
 }

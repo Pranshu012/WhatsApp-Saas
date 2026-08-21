@@ -29,4 +29,5 @@ public class Tenant {
     public UUID getId() { return id; }
     public String getBusinessName() { return businessName; }
     public String getSlug() { return slug; }
+    public TenantStatus getStatus() { return status; }
 }

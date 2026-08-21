@@ -4,3 +4,8 @@ spring:
     url: ${DB_URL:jdbc:postgresql://localhost:5432/wasaas}
     username: ${DB_USER:wasaas}
     password: ${DB_PASSWORD:localdev}
+server:
+  servlet:
+    session:
+      cookie:
+        secure: false

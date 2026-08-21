@@ -24,13 +24,13 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                         .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler())
-                        .ignoringRequestMatchers("/api/auth/register", "/api/auth/login", "/api/auth/logout", "/api/auth/csrf", "/actuator/**")
+                        // Only public pre-authentication / read-only endpoints are exempt from CSRF
+                        .ignoringRequestMatchers("/api/auth/register", "/api/auth/login", "/api/auth/csrf", "/actuator/**")
                 )
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(
                                 "/api/auth/register",
                                 "/api/auth/login",
-                                "/api/auth/logout",
                                 "/api/auth/csrf",
                                 "/actuator/**"
                         ).permitAll()
