@@ -1,0 +1,50 @@
+{
+    email support@wasaas.app
+}
+
+api.wasaas.app {
+    encode zstd gzip
+
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "DENY"
+        Referrer-Policy "strict-origin-when-cross-origin"
+        Permissions-Policy "camera=(), microphone=(), geolocation=()"
+        -Server
+    }
+
+    # WhatsApp Inbound Webhooks: pass through raw body without compression/buffering for HMAC validation
+    handle /api/webhooks/* {
+        reverse_proxy 127.0.0.1:8080 {
+            transport http {
+                read_timeout 30s
+                write_timeout 30s
+            }
+        }
+    }
+
+    # Actuator & General Web API reverse proxy
+    handle {
+        reverse_proxy 127.0.0.1:8080 {
+            transport http {
+                read_timeout 60s
+                write_timeout 60s
+            }
+            health_uri /actuator/health/readiness
+            health_interval 10s
+        }
+    }
+
+    request_body {
+        max_size 10MB
+    }
+
+    log {
+        output file /var/log/caddy/api.log {
+            roll_size 50MB
+            roll_keep 5
+        }
+        format json
+    }
+}

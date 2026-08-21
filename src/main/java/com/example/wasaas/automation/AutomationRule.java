@@ -106,4 +106,17 @@ public class AutomationRule extends BaseTenantEntity {
     public void setPriority(int priority) { this.priority = priority; }
     public void setMatchValue(String matchValue) { this.matchValue = matchValue; }
     public void setActionPayload(String actionPayload) { this.actionPayload = actionPayload; }
+
+    public void updateDetails(String name, boolean enabled, MatchType matchType,
+                              String matchValue, boolean caseSensitive, int priority,
+                              ActionType actionType, String actionPayload) {
+        this.name = name;
+        this.enabled = enabled;
+        this.matchType = matchType;
+        this.matchValue = matchValue;
+        this.caseSensitive = caseSensitive;
+        this.priority = priority;
+        this.actionType = actionType;
+        this.actionPayload = actionPayload;
+    }
 }

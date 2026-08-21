@@ -18,10 +18,14 @@ public class WhatsAppConnectService {
 
     private final MetaGraphClient metaGraphClient;
     private final WhatsAppAccountService accountService;
+    private final com.example.wasaas.job.JobService jobService;
 
-    public WhatsAppConnectService(MetaGraphClient metaGraphClient, WhatsAppAccountService accountService) {
+    public WhatsAppConnectService(MetaGraphClient metaGraphClient,
+                                  WhatsAppAccountService accountService,
+                                  com.example.wasaas.job.JobService jobService) {
         this.metaGraphClient = metaGraphClient;
         this.accountService = accountService;
+        this.jobService = jobService;
     }
 
     @Transactional
@@ -50,6 +54,10 @@ public class WhatsAppConnectService {
         );
 
         WhatsAppAccount account = accountService.saveOrUpdateAccount(saveCommand);
+
+        // 5. Automatically trigger template synchronization for newly connected account
+        String syncPayload = String.format("{\"whatsappAccountId\": \"%s\", \"wabaId\": \"%s\"}", account.getId(), account.getWabaId());
+        jobService.enqueue(tenantId, "SYNC_TEMPLATES", syncPayload, "initial-sync:tpl:" + account.getId());
 
         log.info("Successfully connected WhatsApp account for tenant [{}], WABA [{}], Phone Number ID [{}]",
                 tenantId, request.wabaId(), request.phoneNumberId());

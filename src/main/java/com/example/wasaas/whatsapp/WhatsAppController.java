@@ -42,6 +42,15 @@ public class WhatsAppController {
         return WhatsAppAccountResponse.from(account);
     }
 
+    @PostMapping("/account/refresh")
+    public WhatsAppAccountResponse refreshPrimaryAccount() {
+        java.util.UUID tenantId = com.example.wasaas.tenant.context.TenantContext.require();
+        WhatsAppAccount account = accountRepository.findByTenantId(tenantId)
+                .orElseThrow(() -> new com.example.wasaas.common.exception.DomainException(org.springframework.http.HttpStatus.NOT_FOUND, "WhatsApp account not connected for tenant"));
+        WhatsAppAccount refreshed = accountService.refreshAccount(account.getId());
+        return WhatsAppAccountResponse.from(refreshed);
+    }
+
     @GetMapping("/accounts")
     public List<WhatsAppAccountResponse> listAccounts() {
         return accountRepository.findAll().stream()

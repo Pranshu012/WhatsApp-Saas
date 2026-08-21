@@ -59,7 +59,7 @@ public class TemplateController {
         WhatsAppAccount account = accountRepository.findByTenantId(tenantId)
                 .orElseThrow(() -> new DomainException(HttpStatus.NOT_FOUND, "WhatsApp account not connected for tenant"));
 
-        String payload = String.format("{\"wabaId\": \"%s\"}", account.getWabaId());
+        String payload = String.format("{\"whatsappAccountId\": \"%s\", \"wabaId\": \"%s\"}", account.getId(), account.getWabaId());
         jobService.enqueue(tenantId, "SYNC_TEMPLATES", payload, "sync:tpl:" + tenantId + ":" + System.currentTimeMillis());
         return ResponseEntity.accepted().build();
     }

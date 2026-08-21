@@ -174,11 +174,20 @@ public class PhaseBEndToEndManualVerificationTest {
                 .andExpect(header(HttpHeaders.AUTHORIZATION, "Bearer " + GRAPH_ACCESS_TOKEN))
                 .andRespond(withSuccess("{\"success\":true}", MediaType.APPLICATION_JSON));
 
+        // Mock 5: Initial template sync
+        mockGraphServer.expect(requestTo(metaProperties.getApiBaseUrl() + "/" + WABA_ID + "/message_templates?limit=100"))
+                .andExpect(method(HttpMethod.GET))
+                .andExpect(header(HttpHeaders.AUTHORIZATION, "Bearer " + GRAPH_ACCESS_TOKEN))
+                .andRespond(withSuccess("{\"data\":[]}", MediaType.APPLICATION_JSON));
+
         connectService.connect(new com.example.wasaas.whatsapp.ConnectWhatsAppRequest(
                 "TEST_EMBEDDED_CODE_123",
                 WABA_ID,
                 PHONE_NUMBER_ID
         ));
+
+        // Process initial sync job
+        jobWorker.poll();
 
         mockGraphServer.verify();
 
@@ -292,8 +301,10 @@ public class PhaseBEndToEndManualVerificationTest {
 
         // Verify send job in queue
         List<Job> sendJobs = jobRepository.findAll();
-        assertThat(sendJobs).hasSize(2); // 1st was webhook event, 2nd is send job
-        Job sendJob = sendJobs.stream().filter(j -> "SEND_WHATSAPP_MESSAGE".equals(j.getJobType())).findFirst().orElseThrow();
+        Job sendJob = sendJobs.stream()
+                .filter(j -> "SEND_WHATSAPP_MESSAGE".equals(j.getJobType()) && j.getIdempotencyKey() != null && j.getIdempotencyKey().contains("reply-key-4589"))
+                .findFirst()
+                .orElseThrow();
         assertThat(sendJob.getStatus()).isEqualTo(JobStatus.PENDING);
 
         // Worker Processes Send Job

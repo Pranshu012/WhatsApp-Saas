@@ -92,6 +92,8 @@ public class AuthService {
 
         // Successful authentication
         loginAttemptService.clearAttempts(email, ip);
+        user.recordLogin();
+        userRepository.save(user);
 
         TenantPrincipal principal = new TenantPrincipal(
                 user.getId(),

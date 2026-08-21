@@ -42,6 +42,31 @@ public class FaqController {
         return ResponseEntity.status(HttpStatus.CREATED).body(faq);
     }
 
+    @org.springframework.web.bind.annotation.PutMapping("/{id}")
+    public ResponseEntity<Faq> updateFaq(@PathVariable UUID id, @Valid @RequestBody CreateFaqDto dto) {
+        UUID tenantId = TenantContext.require();
+        Faq faq = faqRepository.findById(id)
+                .filter(f -> f.getTenantId().equals(tenantId))
+                .orElseThrow(() -> new DomainException(HttpStatus.NOT_FOUND, "FAQ not found: " + id));
+
+        faq.setQuestion(dto.question().trim());
+        faq.setAnswer(dto.answer().trim());
+        Faq saved = faqRepository.save(faq);
+        return ResponseEntity.ok(saved);
+    }
+
+    @org.springframework.web.bind.annotation.PatchMapping("/{id}/toggle")
+    public ResponseEntity<Faq> toggleFaq(@PathVariable UUID id) {
+        UUID tenantId = TenantContext.require();
+        Faq faq = faqRepository.findById(id)
+                .filter(f -> f.getTenantId().equals(tenantId))
+                .orElseThrow(() -> new DomainException(HttpStatus.NOT_FOUND, "FAQ not found: " + id));
+
+        faq.setEnabled(!faq.isEnabled());
+        Faq saved = faqRepository.save(faq);
+        return ResponseEntity.ok(saved);
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteFaq(@PathVariable UUID id) {
         UUID tenantId = TenantContext.require();

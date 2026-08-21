@@ -16,16 +16,20 @@ import {
   Zap,
   Plus,
   Trash2,
+  Edit2,
   TestTube2,
   CheckCircle2,
   XCircle,
   Loader2,
   X,
+  ToggleLeft,
+  ToggleRight,
 } from 'lucide-react';
 
 export const AutomationRulesScreen: React.FC = () => {
   const queryClient = useQueryClient();
   const [showModal, setShowModal] = useState(false);
+  const [editingRuleId, setEditingRuleId] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
@@ -55,25 +59,46 @@ export const AutomationRulesScreen: React.FC = () => {
     queryFn: () => apiClient<AutomationRuleResponse[]>('/api/automation-rules'),
   });
 
-  // 2. Create rule mutation
-  const createRuleMutation = useMutation({
-    mutationFn: (req: CreateAutomationRuleRequest) =>
-      apiClient<AutomationRuleResponse>('/api/automation-rules', {
+  // 2. Save rule mutation (Create or Update)
+  const saveRuleMutation = useMutation({
+    mutationFn: (req: CreateAutomationRuleRequest) => {
+      if (editingRuleId) {
+        return apiClient<AutomationRuleResponse>(`/api/automation-rules/${editingRuleId}`, {
+          method: 'PUT',
+          body: JSON.stringify(req),
+        });
+      }
+      return apiClient<AutomationRuleResponse>('/api/automation-rules', {
         method: 'POST',
         body: JSON.stringify(req),
-      }),
-    onSuccess: (newRule) => {
+      });
+    },
+    onSuccess: (savedRule) => {
       queryClient.invalidateQueries({ queryKey: ['automation-rules'] });
       setShowModal(false);
+      const isEdit = !!editingRuleId;
       resetForm();
-      setSuccessMsg(`Rule "${newRule.name}" created successfully.`);
+      setSuccessMsg(isEdit ? `Rule "${savedRule.name}" updated successfully.` : `Rule "${savedRule.name}" created successfully.`);
     },
     onError: (err: any) => {
       setErrorMsg(err.message || 'Failed to save rule.');
     },
   });
 
-  // 3. Delete rule mutation
+  // 3. Toggle rule active state
+  const toggleRuleMutation = useMutation({
+    mutationFn: (id: string) =>
+      apiClient<AutomationRuleResponse>(`/api/automation-rules/${id}/toggle`, { method: 'PATCH' }),
+    onSuccess: (updated) => {
+      queryClient.invalidateQueries({ queryKey: ['automation-rules'] });
+      setSuccessMsg(`Rule "${updated.name}" is now ${updated.enabled ? 'active' : 'disabled'}.`);
+    },
+    onError: (err: any) => {
+      setErrorMsg(err.message || 'Failed to update rule status.');
+    },
+  });
+
+  // 4. Delete rule mutation
   const deleteRuleMutation = useMutation({
     mutationFn: (id: string) =>
       apiClient(`/api/automation-rules/${id}`, { method: 'DELETE' }),
@@ -86,7 +111,20 @@ export const AutomationRulesScreen: React.FC = () => {
     },
   });
 
+  const openEditModal = (rule: AutomationRuleResponse) => {
+    setEditingRuleId(rule.id);
+    setName(rule.name);
+    setMatchType(rule.matchType);
+    setMatchValue(rule.matchValue);
+    setCaseSensitive(rule.caseSensitive);
+    setShowRegexOption(rule.matchType === 'REGEX');
+    setActionType(rule.actionType);
+    setActionPayload(rule.actionPayload);
+    setShowModal(true);
+  };
+
   const resetForm = () => {
+    setEditingRuleId(null);
     setName('');
     setMatchType('CONTAINS');
     setMatchValue('');
@@ -123,7 +161,7 @@ export const AutomationRulesScreen: React.FC = () => {
     e.preventDefault();
     if (!name.trim() || !matchValue.trim()) return;
 
-    createRuleMutation.mutate({
+    saveRuleMutation.mutate({
       name: name.trim(),
       matchType,
       matchValue: matchValue.trim(),
@@ -144,44 +182,23 @@ export const AutomationRulesScreen: React.FC = () => {
       case 'STARTS_WITH':
         return `When the message starts with "${rule.matchValue}"`;
       case 'REGEX':
-        return `When the message matches pattern /${rule.matchValue}/`;
+        return `When the message matches regex /${rule.matchValue}/`;
+      default:
+        return `Matches "${rule.matchValue}"`;
     }
   };
-
-  if (isLoading) {
-    return (
-      <div className="space-y-6">
-        <div className="pb-5 border-b border-gray-200">
-          <Skeleton className="h-8 w-64 mb-2" />
-          <Skeleton className="h-4 w-96" />
-        </div>
-        <div className="space-y-4">
-          <Skeleton className="h-20 rounded-xl" />
-          <Skeleton className="h-20 rounded-xl" />
-          <Skeleton className="h-20 rounded-xl" />
-        </div>
-      </div>
-    );
-  }
-
-  if (isError) {
-    return (
-      <ErrorState
-        title="Unable to load automation rules"
-        message={(error as any)?.message || 'A network error occurred while fetching your rules.'}
-        onRetry={() => refetch()}
-      />
-    );
-  }
 
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-5 border-b border-gray-200">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Keyword Automation Rules</h1>
-          <p className="text-sm text-gray-500">
-            Set up instant automated replies for customer questions 24/7.
+          <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+            <Zap className="w-6 h-6 text-brand-600" />
+            Keyword Automation Rules
+          </h1>
+          <p className="text-sm text-gray-500 mt-1">
+            Instant automated replies triggered when inbound WhatsApp messages match specific keywords.
           </p>
         </div>
         <button
@@ -190,35 +207,39 @@ export const AutomationRulesScreen: React.FC = () => {
             resetForm();
             setShowModal(true);
           }}
-          className="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-brand-600 hover:bg-brand-700 rounded-lg min-h-[44px] shadow-sm transition-colors self-start sm:self-auto"
+          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-brand-600 text-white font-medium rounded-xl hover:bg-brand-700 min-h-[44px] transition-colors shadow-sm self-start sm:self-auto"
         >
           <Plus className="w-4 h-4" />
-          Add Automation Rule
+          Create Rule
         </button>
       </div>
 
-      {/* Messages */}
+      {/* Notifications */}
       {successMsg && (
-        <AlertBanner
-          type="success"
-          message={successMsg}
-          onClose={() => setSuccessMsg(null)}
-        />
+        <AlertBanner type="success" message={successMsg} onClose={() => setSuccessMsg(null)} />
       )}
       {errorMsg && (
-        <AlertBanner
-          type="error"
-          message={errorMsg}
-          onClose={() => setErrorMsg(null)}
-        />
+        <AlertBanner type="error" message={errorMsg} onClose={() => setErrorMsg(null)} />
       )}
 
-      {/* Rule List */}
-      {!rules || rules.length === 0 ? (
+      {/* Rules List */}
+      {isLoading ? (
+        <div className="space-y-3">
+          <Skeleton className="h-20 w-full rounded-xl" />
+          <Skeleton className="h-20 w-full rounded-xl" />
+          <Skeleton className="h-20 w-full rounded-xl" />
+        </div>
+      ) : isError ? (
+        <ErrorState
+          title="Could not load automation rules"
+          message={(error as any)?.message || 'Something went wrong.'}
+          onRetry={refetch}
+        />
+      ) : !rules || rules.length === 0 ? (
         <EmptyState
           icon={Zap}
-          title="No auto-replies configured yet"
-          description="Auto-replies answer common questions instantly, even at 2 AM. Most businesses start with their price list, business hours, or catalog."
+          title="No auto-reply rules configured"
+          description="Create keyword-based triggers to automatically respond to frequently asked inquiries 24/7."
           actionLabel="Create Your First Auto-Reply"
           onAction={() => {
             resetForm();
@@ -230,7 +251,9 @@ export const AutomationRulesScreen: React.FC = () => {
           {rules.map((rule, idx) => (
             <div
               key={rule.id}
-              className="bg-white p-4 sm:p-5 rounded-xl border border-gray-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+              className={`bg-white p-4 sm:p-5 rounded-xl border transition-all ${
+                rule.enabled ? 'border-gray-200 shadow-sm' : 'border-gray-200/60 bg-gray-50/50 opacity-75'
+              } flex flex-col sm:flex-row sm:items-center justify-between gap-4`}
             >
               <div className="flex items-start gap-3">
                 <span className="w-7 h-7 rounded-lg bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-700 shrink-0 mt-0.5">
@@ -242,6 +265,11 @@ export const AutomationRulesScreen: React.FC = () => {
                     <span className="px-2 py-0.5 rounded text-[11px] font-medium bg-brand-50 text-brand-700 border border-brand-200">
                       {rule.matchType}
                     </span>
+                    {!rule.enabled && (
+                      <span className="px-2 py-0.5 rounded text-[11px] font-medium bg-gray-100 text-gray-500">
+                        Disabled
+                      </span>
+                    )}
                   </div>
                   <p className="text-xs sm:text-sm text-gray-600 mt-1">
                     {formatMatchSummary(rule)}
@@ -254,10 +282,36 @@ export const AutomationRulesScreen: React.FC = () => {
 
               {/* Actions */}
               <div className="flex items-center gap-2 self-end sm:self-center">
+                {/* Active Toggle Button */}
+                <button
+                  type="button"
+                  onClick={() => toggleRuleMutation.mutate(rule.id)}
+                  disabled={toggleRuleMutation.isPending}
+                  className={`p-2 rounded-lg min-h-[44px] min-w-[44px] flex items-center justify-center transition-colors ${
+                    rule.enabled
+                      ? 'text-emerald-600 hover:bg-emerald-50'
+                      : 'text-gray-400 hover:bg-gray-100'
+                  }`}
+                  title={rule.enabled ? 'Disable rule' : 'Enable rule'}
+                >
+                  {rule.enabled ? <ToggleRight className="w-6 h-6" /> : <ToggleLeft className="w-6 h-6" />}
+                </button>
+
+                {/* Edit Button */}
+                <button
+                  type="button"
+                  onClick={() => openEditModal(rule)}
+                  className="p-2 text-gray-500 hover:text-brand-600 hover:bg-brand-50 rounded-lg min-h-[44px] min-w-[44px] flex items-center justify-center transition-colors"
+                  title="Edit rule"
+                >
+                  <Edit2 className="w-4 h-4" />
+                </button>
+
+                {/* Delete Button */}
                 <button
                   type="button"
                   onClick={() => deleteRuleMutation.mutate(rule.id)}
-                  className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg min-h-[44px] min-w-[44px] flex items-center justify-center"
+                  className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg min-h-[44px] min-w-[44px] flex items-center justify-center transition-colors"
                   title="Delete rule"
                 >
                   <Trash2 className="w-4 h-4" />
@@ -268,12 +322,14 @@ export const AutomationRulesScreen: React.FC = () => {
         </div>
       )}
 
-      {/* Create Rule Modal */}
+      {/* Create / Edit Rule Modal */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-sm overflow-y-auto">
           <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-xl border border-gray-100 space-y-5 my-8">
             <div className="flex items-center justify-between pb-3 border-b border-gray-100">
-              <h2 className="text-lg font-bold text-gray-900">New Automation Rule</h2>
+              <h2 className="text-lg font-bold text-gray-900">
+                {editingRuleId ? 'Edit Automation Rule' : 'New Automation Rule'}
+              </h2>
               <button
                 type="button"
                 onClick={() => setShowModal(false)}
@@ -418,11 +474,11 @@ export const AutomationRulesScreen: React.FC = () => {
                 </button>
                 <button
                   type="submit"
-                  disabled={createRuleMutation.isPending}
+                  disabled={saveRuleMutation.isPending}
                   className="px-5 py-2 text-xs font-semibold text-white bg-brand-600 hover:bg-brand-700 rounded-lg min-h-[44px] shadow-sm flex items-center gap-2"
                 >
-                  {createRuleMutation.isPending && <Loader2 className="w-4 h-4 animate-spin" />}
-                  Save Rule
+                  {saveRuleMutation.isPending && <Loader2 className="w-4 h-4 animate-spin" />}
+                  {editingRuleId ? 'Update Rule' : 'Save Rule'}
                 </button>
               </div>
             </form>

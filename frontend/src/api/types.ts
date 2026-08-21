@@ -234,3 +234,21 @@ export interface CreateScheduleRequest {
   scheduledFor: string;
   timezone?: string;
 }
+
+export interface BusinessSettingsDto {
+  id: string;
+  businessName: string;
+  slug: string;
+  timezone: string;
+  gstin?: string;
+  legalName?: string;
+  billingAddress?: string;
+}
+
+export interface UpdateBusinessSettingsRequest {
+  businessName: string;
+  timezone?: string;
+  gstin?: string;
+  legalName?: string;
+  billingAddress?: string;
+}

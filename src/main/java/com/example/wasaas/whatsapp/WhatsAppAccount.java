@@ -46,6 +46,9 @@ public class WhatsAppAccount extends BaseTenantEntity {
     @Column(name = "token_encrypted_at", nullable = false)
     private Instant tokenEncryptedAt;
 
+    @Column(name = "payment_method_attached", nullable = false)
+    private boolean paymentMethodAttached = false;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private WhatsAppAccountStatus status;
@@ -136,6 +139,9 @@ public class WhatsAppAccount extends BaseTenantEntity {
     public void disconnect() {
         this.status = WhatsAppAccountStatus.DISCONNECTED;
     }
+
+    public boolean isPaymentMethodAttached() { return paymentMethodAttached; }
+    public void setPaymentMethodAttached(boolean paymentMethodAttached) { this.paymentMethodAttached = paymentMethodAttached; }
 
     public void setStatus(WhatsAppAccountStatus status) {
         this.status = status;

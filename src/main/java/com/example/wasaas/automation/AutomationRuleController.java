@@ -9,8 +9,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,13 +28,16 @@ public class AutomationRuleController {
     private final AutomationRuleRepository ruleRepository;
     private final AutomationRuleService ruleService;
     private final RuleMatcher ruleMatcher;
+    private final RegexValidator regexValidator;
 
     public AutomationRuleController(AutomationRuleRepository ruleRepository,
                                     AutomationRuleService ruleService,
-                                    RuleMatcher ruleMatcher) {
+                                    RuleMatcher ruleMatcher,
+                                    RegexValidator regexValidator) {
         this.ruleRepository = ruleRepository;
         this.ruleService = ruleService;
         this.ruleMatcher = ruleMatcher;
+        this.regexValidator = regexValidator;
     }
 
     @GetMapping
@@ -54,6 +59,42 @@ public class AutomationRuleController {
                 dto.actionPayload()
         ));
         return ResponseEntity.status(HttpStatus.CREATED).body(rule);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<AutomationRule> updateRule(@PathVariable UUID id, @Valid @RequestBody CreateRuleDto dto) {
+        UUID tenantId = TenantContext.require();
+        AutomationRule rule = ruleRepository.findByTenantIdAndId(tenantId, id)
+                .orElseThrow(() -> new DomainException(HttpStatus.NOT_FOUND, "Automation rule not found: " + id));
+
+        if (dto.matchType() == MatchType.REGEX) {
+            regexValidator.validateAndCompile(dto.matchValue(), dto.caseSensitive() != null && dto.caseSensitive());
+        }
+
+        rule.updateDetails(
+                dto.name(),
+                dto.enabled() != null ? dto.enabled() : true,
+                dto.matchType(),
+                dto.matchValue(),
+                dto.caseSensitive() != null ? dto.caseSensitive() : false,
+                dto.priority() != null ? dto.priority() : 100,
+                dto.actionType(),
+                dto.actionPayload()
+        );
+
+        AutomationRule saved = ruleRepository.save(rule);
+        return ResponseEntity.ok(saved);
+    }
+
+    @org.springframework.web.bind.annotation.PatchMapping("/{id}/toggle")
+    public ResponseEntity<AutomationRule> toggleRule(@PathVariable UUID id) {
+        UUID tenantId = TenantContext.require();
+        AutomationRule rule = ruleRepository.findByTenantIdAndId(tenantId, id)
+                .orElseThrow(() -> new DomainException(HttpStatus.NOT_FOUND, "Automation rule not found: " + id));
+
+        rule.setEnabled(!rule.isEnabled());
+        AutomationRule saved = ruleRepository.save(rule);
+        return ResponseEntity.ok(saved);
     }
 
     @DeleteMapping("/{id}")

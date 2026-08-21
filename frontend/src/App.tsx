@@ -8,7 +8,6 @@ import { LoginScreen } from './features/auth/LoginScreen';
 import { RegisterScreen } from './features/auth/RegisterScreen';
 import { ForgotPasswordScreen } from './features/auth/ForgotPasswordScreen';
 import { ResetPasswordScreen } from './features/auth/ResetPasswordScreen';
-import { FeaturePlaceholder } from './features/placeholders/FeaturePlaceholder';
 import { WhatsAppConnectionScreen } from './features/whatsapp/WhatsAppConnectionScreen';
 import { AutomationRulesScreen } from './features/automation/AutomationRulesScreen';
 import { FaqScreen } from './features/faq/FaqScreen';
@@ -17,7 +16,7 @@ import { UnmatchedMessagesScreen } from './features/unmatched/UnmatchedMessagesS
 import { DashboardScreen } from './features/dashboard/DashboardScreen';
 import { InboxScreen } from './features/inbox/InboxScreen';
 import { ScheduledMessagesScreen } from './features/scheduled/ScheduledMessagesScreen';
-import { Settings } from 'lucide-react';
+import { SettingsScreen } from './features/settings/SettingsScreen';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -76,19 +75,7 @@ export const App: React.FC = () => {
               <Route path="/unmatched" element={<UnmatchedMessagesScreen />} />
 
               {/* Settings */}
-              <Route
-                path="/settings"
-                element={
-                  <FeaturePlaceholder
-                    title="Settings"
-                    subtitle="Manage business details, GSTIN, and default timezones."
-                    icon={Settings}
-                    incrementBadge="F19"
-                    emptyTitle="Business Profile"
-                    emptyDescription="Configure your official business name, GST number, billing address, and default working hours."
-                  />
-                }
-              />
+              <Route path="/settings" element={<SettingsScreen />} />
             </Route>
 
             {/* Fallback */}

@@ -21,6 +21,7 @@ public class User {
     @Enumerated(EnumType.STRING) @Column(nullable = false) private UserStatus status;
     @Column(name = "created_at", nullable = false) private Instant createdAt;
     @Column(name = "updated_at", nullable = false) private Instant updatedAt;
+    @Column(name = "last_login_at") private Instant lastLoginAt;
 
     protected User() { }
     private User(String email, String passwordHash, String fullName) { this.id = UUID.randomUUID(); this.email = email; this.passwordHash = passwordHash; this.fullName = fullName; this.status = UserStatus.ACTIVE; }
@@ -32,6 +33,8 @@ public class User {
     public String getPasswordHash() { return passwordHash; }
     public String getFullName() { return fullName; }
     public UserStatus getStatus() { return status; }
+    public Instant getLastLoginAt() { return lastLoginAt; }
+    public void recordLogin() { this.lastLoginAt = Instant.now(); }
     public void disable() { this.status = UserStatus.DISABLED; }
     public void activate() { this.status = UserStatus.ACTIVE; }
     public void updatePassword(String newPasswordHash) {

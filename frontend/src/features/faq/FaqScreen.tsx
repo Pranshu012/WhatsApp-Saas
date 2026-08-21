@@ -10,17 +10,21 @@ import {
   HelpCircle,
   Plus,
   Trash2,
+  Edit2,
   TestTube2,
   CheckCircle2,
   AlertTriangle,
   Loader2,
   X,
   Search,
+  ToggleLeft,
+  ToggleRight,
 } from 'lucide-react';
 
 export const FaqScreen: React.FC = () => {
   const queryClient = useQueryClient();
   const [showModal, setShowModal] = useState(false);
+  const [editingFaqId, setEditingFaqId] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
@@ -46,25 +50,46 @@ export const FaqScreen: React.FC = () => {
     queryFn: () => apiClient<FaqResponse[]>('/api/faqs'),
   });
 
-  // 2. Create FAQ mutation
-  const createFaqMutation = useMutation({
-    mutationFn: (req: CreateFaqRequest) =>
-      apiClient<FaqResponse>('/api/faqs', {
+  // 2. Save FAQ mutation (Create or Update)
+  const saveFaqMutation = useMutation({
+    mutationFn: (req: CreateFaqRequest) => {
+      if (editingFaqId) {
+        return apiClient<FaqResponse>(`/api/faqs/${editingFaqId}`, {
+          method: 'PUT',
+          body: JSON.stringify(req),
+        });
+      }
+      return apiClient<FaqResponse>('/api/faqs', {
         method: 'POST',
         body: JSON.stringify(req),
-      }),
+      });
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['faqs'] });
       setShowModal(false);
+      const isEdit = !!editingFaqId;
       resetForm();
-      setSuccessMsg('FAQ question added successfully.');
+      setSuccessMsg(isEdit ? 'FAQ updated successfully.' : 'FAQ question added successfully.');
     },
     onError: (err: any) => {
-      setErrorMsg(err.message || 'Failed to add FAQ.');
+      setErrorMsg(err.message || 'Failed to save FAQ.');
     },
   });
 
-  // 3. Delete FAQ mutation
+  // 3. Toggle FAQ active state
+  const toggleFaqMutation = useMutation({
+    mutationFn: (id: string) =>
+      apiClient<FaqResponse>(`/api/faqs/${id}/toggle`, { method: 'PATCH' }),
+    onSuccess: (updated) => {
+      queryClient.invalidateQueries({ queryKey: ['faqs'] });
+      setSuccessMsg(`FAQ is now ${updated.active ? 'active' : 'disabled'}.`);
+    },
+    onError: (err: any) => {
+      setErrorMsg(err.message || 'Failed to update FAQ status.');
+    },
+  });
+
+  // 4. Delete FAQ mutation
   const deleteFaqMutation = useMutation({
     mutationFn: (id: string) => apiClient(`/api/faqs/${id}`, { method: 'DELETE' }),
     onSuccess: () => {
@@ -76,7 +101,16 @@ export const FaqScreen: React.FC = () => {
     },
   });
 
+  const openEditModal = (faq: FaqResponse) => {
+    setEditingFaqId(faq.id);
+    setQuestion(faq.question);
+    setAnswer(faq.answer);
+    setCategory(faq.category || '');
+    setShowModal(true);
+  };
+
   const resetForm = () => {
+    setEditingFaqId(null);
     setQuestion('');
     setAnswer('');
     setCategory('');
@@ -91,7 +125,7 @@ export const FaqScreen: React.FC = () => {
     try {
       const res = await apiClient<TestFaqResponse>('/api/faqs/test', {
         method: 'POST',
-        body: JSON.stringify({ query: testQuery.trim() }),
+        body: JSON.stringify({ question: testQuery.trim() }),
       });
       setTestResult(res);
     } catch (err: any) {
@@ -105,7 +139,7 @@ export const FaqScreen: React.FC = () => {
     e.preventDefault();
     if (!question.trim() || !answer.trim()) return;
 
-    createFaqMutation.mutate({
+    saveFaqMutation.mutate({
       question: question.trim(),
       answer: answer.trim(),
       category: category.trim() || undefined,
@@ -113,40 +147,17 @@ export const FaqScreen: React.FC = () => {
     });
   };
 
-  if (isLoading) {
-    return (
-      <div className="space-y-6">
-        <div className="pb-5 border-b border-gray-200">
-          <Skeleton className="h-8 w-64 mb-2" />
-          <Skeleton className="h-4 w-96" />
-        </div>
-        <Skeleton className="h-36 rounded-2xl mb-6" />
-        <div className="space-y-4">
-          <Skeleton className="h-24 rounded-xl" />
-          <Skeleton className="h-24 rounded-xl" />
-        </div>
-      </div>
-    );
-  }
-
-  if (isError) {
-    return (
-      <ErrorState
-        title="Unable to load FAQs"
-        message={(error as any)?.message || 'A network error occurred while fetching your FAQ knowledge base.'}
-        onRetry={() => refetch()}
-      />
-    );
-  }
-
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-5 border-b border-gray-200">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">FAQ Knowledge Base</h1>
-          <p className="text-sm text-gray-500">
-            PostgreSQL Full-Text & Trigram typo matching answers customer questions automatically.
+          <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+            <HelpCircle className="w-6 h-6 text-brand-600" />
+            FAQ Knowledge Base
+          </h1>
+          <p className="text-sm text-gray-500 mt-1">
+            PostgreSQL Full-Text & Trigram semantic auto-matching for customer inquiries with typo tolerance.
           </p>
         </div>
         <button
@@ -155,56 +166,48 @@ export const FaqScreen: React.FC = () => {
             resetForm();
             setShowModal(true);
           }}
-          className="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-brand-600 hover:bg-brand-700 rounded-lg min-h-[44px] shadow-sm transition-colors self-start sm:self-auto"
+          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-brand-600 text-white font-medium rounded-xl hover:bg-brand-700 min-h-[44px] transition-colors shadow-sm self-start sm:self-auto"
         >
           <Plus className="w-4 h-4" />
-          Add FAQ Question
+          Add Question
         </button>
       </div>
 
-      {/* Messages */}
+      {/* Notifications */}
       {successMsg && (
-        <AlertBanner
-          type="success"
-          message={successMsg}
-          onClose={() => setSuccessMsg(null)}
-        />
+        <AlertBanner type="success" message={successMsg} onClose={() => setSuccessMsg(null)} />
       )}
       {errorMsg && (
-        <AlertBanner
-          type="error"
-          message={errorMsg}
-          onClose={() => setErrorMsg(null)}
-        />
+        <AlertBanner type="error" message={errorMsg} onClose={() => setErrorMsg(null)} />
       )}
 
-      {/* INTERACTIVE LIVE FAQ TESTER CARD */}
-      <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl p-5 sm:p-6 text-white shadow-sm space-y-4">
-        <div className="flex items-center gap-2 text-xs font-bold text-brand-400 uppercase tracking-wider">
-          <TestTube2 className="w-4 h-4" />
-          Interactive Typo & Match Tester
+      {/* Live FAQ Typo Tester */}
+      <div className="bg-slate-900 text-white p-5 sm:p-6 rounded-2xl shadow-lg border border-slate-800 space-y-4">
+        <div className="flex items-center gap-2">
+          <TestTube2 className="w-5 h-5 text-brand-400" />
+          <h2 className="font-bold text-base text-white">Live Semantic FAQ Matcher & Typo Tester</h2>
         </div>
-        <p className="text-xs text-slate-300">
-          Try typing a customer query with typos (e.g. <em>"wat r ur timings"</em> or <em>"refund policy please"</em>) to test our database search ranking.
+        <p className="text-xs sm:text-sm text-slate-300">
+          Type queries with typos or colloquial phrasing to test PostgreSQL <code className="bg-slate-800 px-1.5 py-0.5 rounded text-brand-300">pg_trgm</code> and full-text search matching in real time.
         </p>
 
-        <form onSubmit={handleTestFaq} className="flex flex-col sm:flex-row gap-2">
+        <form onSubmit={handleTestFaq} className="flex flex-col sm:flex-row gap-3">
           <div className="relative flex-1">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3.5" />
+            <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
             <input
               type="text"
               value={testQuery}
               onChange={(e) => setTestQuery(e.target.value)}
-              placeholder="e.g. what is your store timing?"
-              className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-white/10 border border-white/20 text-white placeholder-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 min-h-[44px]"
+              placeholder="e.g. wat r ur timings, do u giv refunds"
+              className="w-full pl-10 pr-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-400 min-h-[44px] focus:outline-none focus:ring-2 focus:ring-brand-400"
             />
           </div>
           <button
             type="submit"
             disabled={isTesting || !testQuery.trim()}
-            className="px-5 py-2.5 rounded-xl bg-brand-500 hover:bg-brand-600 text-white font-semibold text-sm min-h-[44px] flex items-center justify-center gap-2 transition-colors disabled:opacity-50 shrink-0"
+            className="px-5 py-2.5 bg-brand-600 hover:bg-brand-500 text-white font-semibold rounded-xl min-h-[44px] flex items-center justify-center gap-2 transition-colors disabled:opacity-50 shrink-0"
           >
-            {isTesting ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Test Question'}
+            {isTesting ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Test Query'}
           </button>
         </form>
 
@@ -250,7 +253,19 @@ export const FaqScreen: React.FC = () => {
       </div>
 
       {/* FAQ List */}
-      {!faqs || faqs.length === 0 ? (
+      {isLoading ? (
+        <div className="space-y-3">
+          <Skeleton className="h-20 w-full rounded-xl" />
+          <Skeleton className="h-20 w-full rounded-xl" />
+          <Skeleton className="h-20 w-full rounded-xl" />
+        </div>
+      ) : isError ? (
+        <ErrorState
+          title="Could not load FAQs"
+          message={(error as any)?.message || 'Something went wrong.'}
+          onRetry={refetch}
+        />
+      ) : !faqs || faqs.length === 0 ? (
         <EmptyState
           icon={HelpCircle}
           title="No FAQ questions added yet"
@@ -266,7 +281,9 @@ export const FaqScreen: React.FC = () => {
           {faqs.map((faq) => (
             <div
               key={faq.id}
-              className="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm flex flex-col sm:flex-row sm:items-start justify-between gap-4"
+              className={`bg-white p-5 rounded-2xl border transition-all ${
+                faq.active ? 'border-gray-200 shadow-sm' : 'border-gray-200/60 bg-gray-50/50 opacity-75'
+              } flex flex-col sm:flex-row sm:items-start justify-between gap-4`}
             >
               <div className="space-y-2 flex-1">
                 <div className="flex items-center gap-2">
@@ -276,17 +293,48 @@ export const FaqScreen: React.FC = () => {
                       {faq.category}
                     </span>
                   )}
+                  {!faq.active && (
+                    <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-gray-100 text-gray-500">
+                      Inactive
+                    </span>
+                  )}
                 </div>
                 <p className="text-xs sm:text-sm text-gray-600 leading-relaxed bg-slate-50 p-3 rounded-xl border border-slate-100">
                   {faq.answer}
                 </p>
               </div>
 
-              <div className="flex items-center self-end sm:self-start">
+              <div className="flex items-center gap-1 self-end sm:self-start">
+                {/* Active Toggle Button */}
+                <button
+                  type="button"
+                  onClick={() => toggleFaqMutation.mutate(faq.id)}
+                  disabled={toggleFaqMutation.isPending}
+                  className={`p-2 rounded-lg min-h-[44px] min-w-[44px] flex items-center justify-center transition-colors ${
+                    faq.active
+                      ? 'text-emerald-600 hover:bg-emerald-50'
+                      : 'text-gray-400 hover:bg-gray-100'
+                  }`}
+                  title={faq.active ? 'Disable FAQ' : 'Enable FAQ'}
+                >
+                  {faq.active ? <ToggleRight className="w-6 h-6" /> : <ToggleLeft className="w-6 h-6" />}
+                </button>
+
+                {/* Edit Button */}
+                <button
+                  type="button"
+                  onClick={() => openEditModal(faq)}
+                  className="p-2 text-gray-500 hover:text-brand-600 hover:bg-brand-50 rounded-lg min-h-[44px] min-w-[44px] flex items-center justify-center transition-colors"
+                  title="Edit FAQ"
+                >
+                  <Edit2 className="w-4 h-4" />
+                </button>
+
+                {/* Delete Button */}
                 <button
                   type="button"
                   onClick={() => deleteFaqMutation.mutate(faq.id)}
-                  className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg min-h-[44px] min-w-[44px] flex items-center justify-center"
+                  className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg min-h-[44px] min-w-[44px] flex items-center justify-center transition-colors"
                   title="Delete FAQ"
                 >
                   <Trash2 className="w-4 h-4" />
@@ -297,12 +345,14 @@ export const FaqScreen: React.FC = () => {
         </div>
       )}
 
-      {/* Create FAQ Modal */}
+      {/* Create / Edit FAQ Modal */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-sm overflow-y-auto">
           <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-xl border border-gray-100 space-y-5 my-8">
             <div className="flex items-center justify-between pb-3 border-b border-gray-100">
-              <h2 className="text-lg font-bold text-gray-900">Add FAQ Question</h2>
+              <h2 className="text-lg font-bold text-gray-900">
+                {editingFaqId ? 'Edit FAQ Question' : 'Add FAQ Question'}
+              </h2>
               <button
                 type="button"
                 onClick={() => setShowModal(false)}
@@ -364,11 +414,11 @@ export const FaqScreen: React.FC = () => {
                 </button>
                 <button
                   type="submit"
-                  disabled={createFaqMutation.isPending}
+                  disabled={saveFaqMutation.isPending}
                   className="px-5 py-2 text-xs font-semibold text-white bg-brand-600 hover:bg-brand-700 rounded-lg min-h-[44px] shadow-sm flex items-center gap-2"
                 >
-                  {createFaqMutation.isPending && <Loader2 className="w-4 h-4 animate-spin" />}
-                  Save FAQ
+                  {saveFaqMutation.isPending && <Loader2 className="w-4 h-4 animate-spin" />}
+                  {editingFaqId ? 'Update FAQ' : 'Save FAQ'}
                 </button>
               </div>
             </form>
