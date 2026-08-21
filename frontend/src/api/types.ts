@@ -61,3 +61,106 @@ export interface WhatsAppAccountResponse {
   status: string;
   connectedAt?: string;
 }
+
+export type MatchType = 'EXACT' | 'CONTAINS' | 'STARTS_WITH' | 'REGEX';
+export type ActionType = 'REPLY_TEXT' | 'HANDOVER' | 'SEND_TEMPLATE' | 'SEND_BUTTONS';
+
+export interface AutomationRuleResponse {
+  id: string;
+  name: string;
+  matchType: MatchType;
+  matchValue: string;
+  caseSensitive: boolean;
+  actionType: ActionType;
+  actionPayload: string;
+  priority: number;
+  enabled: boolean;
+  createdAt: string;
+}
+
+export interface CreateAutomationRuleRequest {
+  name: string;
+  matchType: MatchType;
+  matchValue: string;
+  caseSensitive?: boolean;
+  actionType: ActionType;
+  actionPayload: string;
+  priority?: number;
+  enabled?: boolean;
+}
+
+export interface TestRuleRequest {
+  ruleId?: string;
+  matchType?: MatchType;
+  matchValue?: string;
+  caseSensitive?: boolean;
+  message: string;
+}
+
+export interface TestRuleResponse {
+  matched: boolean;
+  matchedRuleId?: string;
+  matchedRuleName?: string;
+  actionType?: ActionType;
+  actionPayload?: string;
+}
+
+export interface FaqResponse {
+  id: string;
+  question: string;
+  answer: string;
+  category?: string;
+  active: boolean;
+  createdAt: string;
+}
+
+export interface CreateFaqRequest {
+  question: string;
+  answer: string;
+  category?: string;
+  active?: boolean;
+}
+
+export interface TestFaqRequest {
+  query: string;
+}
+
+export interface TestFaqResponse {
+  matched: boolean;
+  faqId?: string;
+  question?: string;
+  answer?: string;
+  score?: number;
+  confident?: boolean;
+}
+
+export interface WhatsAppTemplateResponse {
+  id: string;
+  metaTemplateId: string;
+  name: string;
+  language: string;
+  category: 'MARKETING' | 'UTILITY' | 'AUTHENTICATION';
+  metaCategory: 'MARKETING' | 'UTILITY' | 'AUTHENTICATION';
+  status: 'APPROVED' | 'PENDING' | 'REJECTED' | 'PAUSED' | 'DISABLED';
+  bodyText: string;
+  categoryConflict: boolean;
+  rejectionReason?: string;
+  syncedAt?: string;
+}
+
+export interface CreateTemplateRequest {
+  name: string;
+  category: 'MARKETING' | 'UTILITY' | 'AUTHENTICATION';
+  language: string;
+  bodyText: string;
+}
+
+export interface UnmatchedMessageResponse {
+  id: string;
+  whatsappAccountId: string;
+  contactId: string;
+  senderPhone: string;
+  messageText: string;
+  wamid: string;
+  receivedAt: string;
+}

@@ -21,3 +21,4 @@
 | F16 | Scheduled messages | Complete — verified with UTC timestamp storage, timezone preservation, SKIP LOCKED due claiming, idempotency keys, and honest cancellation | 2026-08-21 | [F16](F16-scheduled-messages.md) |
 | F17 | React setup, auth, and app shell | Complete — verified with React 18, Vite, TypeScript, CSRF token handling, session bootstrap, 360px responsiveness, and zero bundle secrets | 2026-08-22 | [F17](F17-react-auth-app-shell.md) |
 | F18 | WhatsApp connection screen | Complete — verified with Meta Embedded Signup popup, 6 connection states, abandonment recovery, health metrics, and payment warning | 2026-08-22 | [F18](F18-whatsapp-onboarding.md) |
+| F19 | Automation configuration screens | Complete — verified with rules editor, live FAQ typo tester, templates catalog with sync/cost warning, and unmatched inbox | 2026-08-22 | [F19](F19-automation-configuration.md) |

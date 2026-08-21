@@ -10,14 +10,14 @@ import { ForgotPasswordScreen } from './features/auth/ForgotPasswordScreen';
 import { ResetPasswordScreen } from './features/auth/ResetPasswordScreen';
 import { FeaturePlaceholder } from './features/placeholders/FeaturePlaceholder';
 import { WhatsAppConnectionScreen } from './features/whatsapp/WhatsAppConnectionScreen';
+import { AutomationRulesScreen } from './features/automation/AutomationRulesScreen';
+import { FaqScreen } from './features/faq/FaqScreen';
+import { TemplatesScreen } from './features/templates/TemplatesScreen';
+import { UnmatchedMessagesScreen } from './features/unmatched/UnmatchedMessagesScreen';
 import {
   LayoutDashboard,
   MessageCircle,
-  Zap,
-  HelpCircle,
-  FileText,
   Calendar,
-  Inbox,
   Settings,
 } from 'lucide-react';
 
@@ -89,52 +89,13 @@ export const App: React.FC = () => {
               />
 
               {/* Keyword Automation Rules */}
-              <Route
-                path="/automation"
-                element={
-                  <FeaturePlaceholder
-                    title="Keyword Automation Rules"
-                    subtitle="Configure instant automated replies based on customer messages."
-                    icon={Zap}
-                    incrementBadge="F19"
-                    emptyTitle="No automation rules configured"
-                    emptyDescription="Add rules like EXACT matching for 'PRICING' or 'MENU' to send instant automated replies 24/7."
-                    actionLabel="Add First Rule"
-                  />
-                }
-              />
+              <Route path="/automation" element={<AutomationRulesScreen />} />
 
               {/* FAQ Matching Bot */}
-              <Route
-                path="/faq"
-                element={
-                  <FeaturePlaceholder
-                    title="FAQ Knowledge Base"
-                    subtitle="Automated answers with PostgreSQL Full-Text & Trigram typo matching."
-                    icon={HelpCircle}
-                    incrementBadge="F19"
-                    emptyTitle="No FAQ questions added"
-                    emptyDescription="Add common customer questions like refund policy or store hours. The engine automatically matches typos and variations."
-                    actionLabel="Add New FAQ"
-                  />
-                }
-              />
+              <Route path="/faq" element={<FaqScreen />} />
 
               {/* Templates */}
-              <Route
-                path="/templates"
-                element={
-                  <FeaturePlaceholder
-                    title="WhatsApp Templates"
-                    subtitle="Submit and synchronize approved Meta message templates for outbound messaging."
-                    icon={FileText}
-                    incrementBadge="F19"
-                    emptyTitle="No templates synced"
-                    emptyDescription="Create or sync pre-approved message templates required for messaging customers outside the 24-hour window."
-                    actionLabel="Sync Meta Templates"
-                  />
-                }
-              />
+              <Route path="/templates" element={<TemplatesScreen />} />
 
               {/* Scheduled Messages */}
               <Route
@@ -153,19 +114,7 @@ export const App: React.FC = () => {
               />
 
               {/* Unmatched Messages */}
-              <Route
-                path="/unmatched"
-                element={
-                  <FeaturePlaceholder
-                    title="Unmatched Inquiries"
-                    subtitle="Customer messages that did not trigger any rule or confident FAQ."
-                    icon={Inbox}
-                    incrementBadge="F19"
-                    emptyTitle="All messages successfully resolved"
-                    emptyDescription="Unanswered customer inquiries will be logged here so you can easily turn them into new FAQs with one click."
-                  />
-                }
-              />
+              <Route path="/unmatched" element={<UnmatchedMessagesScreen />} />
 
               {/* Settings */}
               <Route
