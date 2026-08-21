@@ -177,8 +177,23 @@ public class ProcessWebhookEventHandler implements JobHandler {
                     : Instant.now();
 
             String text = null;
-            if (msg.has("type") && "text".equals(msg.get("type").asText()) && msg.has("text")) {
-                text = msg.get("text").has("body") ? msg.get("text").get("body").asText() : null;
+            if (msg.has("type")) {
+                String type = msg.get("type").asText();
+                if ("text".equals(type) && msg.has("text")) {
+                    text = msg.get("text").has("body") ? msg.get("text").get("body").asText() : null;
+                } else if ("interactive".equals(type) && msg.has("interactive")) {
+                    JsonNode interactiveNode = msg.get("interactive");
+                    if (interactiveNode.has("button_reply")) {
+                        JsonNode btn = interactiveNode.get("button_reply");
+                        text = btn.has("title") ? btn.get("title").asText() : (btn.has("id") ? btn.get("id").asText() : null);
+                    } else if (interactiveNode.has("list_reply")) {
+                        JsonNode listReply = interactiveNode.get("list_reply");
+                        text = listReply.has("title") ? listReply.get("title").asText() : (listReply.has("id") ? listReply.get("id").asText() : null);
+                    }
+                } else if ("button".equals(type) && msg.has("button")) {
+                    JsonNode btn = msg.get("button");
+                    text = btn.has("text") ? btn.get("text").asText() : (btn.has("payload") ? btn.get("payload").asText() : null);
+                }
             }
 
             // 1. Upsert Contact (stores full E.164 phone number)

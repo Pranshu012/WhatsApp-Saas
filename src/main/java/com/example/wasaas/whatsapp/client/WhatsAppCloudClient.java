@@ -105,6 +105,99 @@ public class WhatsAppCloudClient {
         return extractSendResult(response);
     }
 
+    public SendResult sendInteractiveButtons(String phoneNumberId, String decryptedToken, String toE164,
+                                            String bodyText, List<ReplyButton> buttons) {
+        String uri = metaProperties.getApiBaseUrl() + "/" + phoneNumberId + "/messages";
+
+        List<Map<String, Object>> buttonList = new java.util.ArrayList<>();
+        if (buttons != null) {
+            for (ReplyButton btn : buttons) {
+                buttonList.add(Map.of(
+                        "type", "reply",
+                        "reply", Map.of("id", btn.id(), "title", btn.title())
+                ));
+            }
+        }
+
+        Map<String, Object> interactiveMap = Map.of(
+                "type", "button",
+                "body", Map.of("text", bodyText != null ? bodyText : ""),
+                "action", Map.of("buttons", buttonList)
+        );
+
+        Map<String, Object> payload = Map.of(
+                "messaging_product", "whatsapp",
+                "recipient_type", "individual",
+                "to", toE164,
+                "type", "interactive",
+                "interactive", interactiveMap
+        );
+
+        MetaSendMessageResponse response = restClient.post()
+                .uri(uri)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + decryptedToken)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(payload)
+                .retrieve()
+                .body(MetaSendMessageResponse.class);
+
+        return extractSendResult(response);
+    }
+
+    public SendResult sendInteractiveList(String phoneNumberId, String decryptedToken, String toE164,
+                                          String bodyText, String buttonText, List<ListSection> sections) {
+        String uri = metaProperties.getApiBaseUrl() + "/" + phoneNumberId + "/messages";
+
+        List<Map<String, Object>> sectionList = new java.util.ArrayList<>();
+        if (sections != null) {
+            for (ListSection sec : sections) {
+                List<Map<String, Object>> rowList = new java.util.ArrayList<>();
+                if (sec.rows() != null) {
+                    for (ListRow row : sec.rows()) {
+                        Map<String, Object> rowMap = new HashMap<>();
+                        rowMap.put("id", row.id());
+                        rowMap.put("title", row.title());
+                        if (row.description() != null && !row.description().isBlank()) {
+                            rowMap.put("description", row.description());
+                        }
+                        rowList.add(rowMap);
+                    }
+                }
+                sectionList.add(Map.of(
+                        "title", sec.title() != null ? sec.title() : "",
+                        "rows", rowList
+                ));
+            }
+        }
+
+        Map<String, Object> interactiveMap = Map.of(
+                "type", "list",
+                "body", Map.of("text", bodyText != null ? bodyText : ""),
+                "action", Map.of(
+                        "button", buttonText != null ? buttonText : "Select",
+                        "sections", sectionList
+                )
+        );
+
+        Map<String, Object> payload = Map.of(
+                "messaging_product", "whatsapp",
+                "recipient_type", "individual",
+                "to", toE164,
+                "type", "interactive",
+                "interactive", interactiveMap
+        );
+
+        MetaSendMessageResponse response = restClient.post()
+                .uri(uri)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + decryptedToken)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(payload)
+                .retrieve()
+                .body(MetaSendMessageResponse.class);
+
+        return extractSendResult(response);
+    }
+
     private SendResult extractSendResult(MetaSendMessageResponse response) {
         if (response == null || response.messages() == null || response.messages().isEmpty()) {
             throw new DomainException(HttpStatus.BAD_GATEWAY, "Meta Cloud API returned empty messages array in send response");

@@ -17,3 +17,4 @@
 | F12 | Meta template management & category sync | Complete — verified with Meta authoritative category sync, conflict alerts, and pre-send safety guards | 2026-08-21 | [F12](F12-template-management.md) |
 | F13 | Keyword automation rules | Complete — verified with priority ordering, ReDoS sandboxing, per-contact loop limiter, and unmatched logging | 2026-08-21 | [F13](F13-keyword-automation-rules.md) |
 | F14 | FAQ matching | Complete — verified with PostgreSQL FTS + pg_trgm combined ranking, typo tolerance, and confidence threshold | 2026-08-21 | [F14](F14-faq-matching.md) |
+| F15 | Interactive replies and consolidation | Complete — verified with buttons, list menus, inbound reply attribution, ReplyBuilder, and cost warnings | 2026-08-21 | [F15](F15-interactive-replies-consolidation.md) |
