@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Build Log — WhatsApp SaaS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#EDEFEA; --panel:#F7F8F5; --ink:#16241F; --ink-soft:#4A5A53;
+  --rule:#C9D0C6; --done:#0F6E5C; --now:#23479B; --off:#96A09A; --warn:#8A5A00;
+  --sp:8px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--paper); color:var(--ink);
+  font-family:"IBM Plex Sans",system-ui,sans-serif; font-size:15px; line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:960px;margin:0 auto;padding:0 20px 80px}
+
+/* header */
+header{border-bottom:1.5px solid var(--ink);padding:26px 0 16px;margin-bottom:22px}
+.hrow{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap}
+h1{font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:26px;letter-spacing:-.02em;margin:0}
+.sub{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-soft);margin-top:5px}
+.track-tog{display:flex;border:1.5px solid var(--ink);border-radius:2px;overflow:hidden}
+.track-tog button{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+  padding:7px 13px;border:0;background:transparent;color:var(--ink);cursor:pointer}
+.track-tog button[aria-pressed=true]{background:var(--ink);color:var(--paper)}
+
+/* meter */
+.meter{margin-top:18px}
+.meter-top{display:flex;justify-content:space-between;font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:6px}
+.bar{height:5px;background:var(--rule);position:relative;overflow:hidden}
+.bar i{position:absolute;inset:0 auto 0 0;background:var(--done);transition:width .35s cubic-bezier(.4,0,.2,1)}
+
+/* next-up: the signature panel */
+.next{border:1.5px solid var(--ink);background:var(--panel);padding:20px;margin:22px 0 26px;position:relative}
+.next::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--now)}
+.next .eyebrow{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--now);font-weight:600}
+.next h2{font-family:"Space Grotesk",sans-serif;font-size:21px;margin:7px 0 3px;letter-spacing:-.01em}
+.next .code{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--ink-soft)}
+.next .note{margin-top:11px;font-size:13.5px;color:var(--warn);border-left:2px solid var(--warn);padding-left:10px}
+.reads{margin-top:15px;display:flex;flex-direction:column;gap:5px}
+.rlabel{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:2px}
+.nextact{margin-top:16px;display:flex;gap:9px;flex-wrap:wrap}
+
+/* chip = copyable @mention */
+.chip{font-family:"IBM Plex Mono",monospace;font-size:11.5px;background:var(--paper);border:1px solid var(--rule);
+  padding:5px 9px;cursor:pointer;text-align:left;color:var(--ink);border-radius:2px;transition:.14s;display:inline-block;max-width:100%;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chip:hover{border-color:var(--now);color:var(--now)}
+.chip.ok{border-color:var(--done);color:var(--done)}
+.btn{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.09em;text-transform:uppercase;
+  padding:8px 14px;border:1.5px solid var(--ink);background:var(--ink);color:var(--paper);cursor:pointer;border-radius:2px}
+.btn.ghost{background:transparent;color:var(--ink)}
+.btn:hover{opacity:.85}
+
+/* tabs */
+nav.tabs{display:flex;gap:22px;border-bottom:1px solid var(--rule);margin-bottom:20px}
+nav.tabs button{font-family:"IBM Plex Mono",monospace;font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;
+  background:0;border:0;padding:9px 0;cursor:pointer;color:var(--off);border-bottom:2px solid transparent;margin-bottom:-1px}
+nav.tabs button[aria-selected=true]{color:var(--ink);border-bottom-color:var(--ink)}
+
+/* phase + rail */
+.phase{margin-bottom:26px}
+.phase-h{display:flex;align-items:baseline;gap:11px;margin-bottom:9px}
+.phase-h h3{font-family:"IBM Plex Mono",monospace;font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;margin:0;font-weight:600}
+.phase-h span{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--off)}
+.rail{border-left:1.5px solid var(--rule);margin-left:7px}
+
+/* step row */
+.step{display:flex;gap:12px;padding:9px 0 9px 18px;position:relative;border-bottom:1px solid rgba(201,208,198,.5)}
+.step::before{content:"";position:absolute;left:-5.5px;top:17px;width:9px;height:9px;border-radius:50%;
+  background:var(--paper);border:1.5px solid var(--rule)}
+.step[data-s=done]::before{background:var(--done);border-color:var(--done)}
+.step[data-s=now]::before{background:var(--now);border-color:var(--now);box-shadow:0 0 0 3px rgba(35,71,155,.16)}
+.step[data-s=skip]{opacity:.42}
+.box{flex:0 0 auto;width:17px;height:17px;border:1.5px solid var(--ink-soft);border-radius:2px;background:var(--panel);
+  cursor:pointer;margin-top:2px;position:relative;padding:0}
+.box[aria-checked=true]{background:var(--done);border-color:var(--done)}
+.box[aria-checked=true]::after{content:"";position:absolute;left:5px;top:1.5px;width:4px;height:9px;
+  border:solid var(--panel);border-width:0 1.5px 1.5px 0;transform:rotate(42deg)}
+.sbody{flex:1;min-width:0}
+.sh{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap}
+.sid{font-family:"IBM Plex Mono",monospace;font-size:11.5px;font-weight:600;color:var(--ink-soft);flex:0 0 auto}
+.st{font-weight:500}
+.step[data-s=done] .st{text-decoration:line-through;text-decoration-color:var(--off);color:var(--ink-soft)}
+.tag{font-family:"IBM Plex Mono",monospace;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;
+  border:1px solid var(--rule);padding:1px 5px;border-radius:2px;color:var(--ink-soft)}
+.tag.skip{border-color:var(--off);color:var(--off)}
+.tag.simple{border-color:var(--warn);color:var(--warn)}
+.snote{font-size:13px;color:var(--warn);margin-top:4px}
+.sdocs{margin-top:7px;display:flex;gap:5px;flex-wrap:wrap}
+
+/* docs tab */
+.search{width:100%;font-family:"IBM Plex Mono",monospace;font-size:13px;padding:11px 13px;
+  border:1.5px solid var(--ink);background:var(--panel);color:var(--ink);border-radius:2px;margin-bottom:6px}
+.search:focus{outline:2px solid var(--now);outline-offset:1px}
+.hint{font-size:12.5px;color:var(--ink-soft);margin:0 0 18px}
+.fgroup{margin-bottom:18px}
+.fgroup h4{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.13em;text-transform:uppercase;
+  margin:0 0 7px;color:var(--ink-soft);border-bottom:1px solid var(--rule);padding-bottom:4px}
+.flist{display:flex;flex-direction:column;gap:3px}
+.frow{font-family:"IBM Plex Mono",monospace;font-size:12px;padding:5px 8px;background:var(--panel);
+  border:1px solid transparent;cursor:pointer;text-align:left;color:var(--ink);border-radius:2px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;width:100%}
+.frow:hover{border-color:var(--now);color:var(--now)}
+.frow.ok{border-color:var(--done);color:var(--done)}
+
+footer{margin-top:34px;padding-top:16px;border-top:1px solid var(--rule);
+  font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--off);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+footer button{font:inherit;background:0;border:0;color:var(--off);cursor:pointer;text-decoration:underline}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(70px);
+  background:var(--ink);color:var(--paper);font-family:"IBM Plex Mono",monospace;font-size:12px;
+  padding:10px 17px;border-radius:2px;opacity:0;transition:.24s;pointer-events:none;z-index:9;max-width:90vw}
+.toast.on{transform:translateX(-50%) translateY(0);opacity:1}
+.hide{display:none !important}
+@media (max-width:600px){h1{font-size:21px}.next h2{font-size:18px}.wrap{padding:0 14px 60px}}
+@media (prefers-reduced-motion:reduce){*{transition:none !important}}
+</style></head><body>
+<div class="wrap">
+<header>
+  <div class="hrow">
+    <div>
+      <h1>Build Log</h1>
+      <div class="sub">WhatsApp automation SaaS &middot; solo build</div>
+    </div>
+    <div class="track-tog" role="group" aria-label="Track">
+      <button id="tPilot" aria-pressed="true">Pilot</button>
+      <button id="tFull" aria-pressed="false">Full</button>
+    </div>
+  </div>
+  <div class="meter">
+    <div class="meter-top"><span id="mLabel">0 of 0 done</span><span id="mPct">0%</span></div>
+    <div class="bar"><i id="mBar" style="width:0%"></i></div>
+  </div>
+</header>
+
+<section class="next" id="nextCard" aria-live="polite"></section>
+
+<nav class="tabs" role="tablist">
+  <button id="tabBuild" role="tab" aria-selected="true">Steps</button>
+  <button id="tabDocs" role="tab" aria-selected="false">All docs (124)</button>
+</nav>
+
+<div id="paneBuild"></div>
+
+<div id="paneDocs" class="hide">
+  <input class="search" id="q" placeholder="filter 124 files — try: rls, webhook, backup, oracle" autocomplete="off">
+  <p class="hint">Click any path to copy it as an <code>@</code> mention. In Claude Code Desktop, paste it straight into the prompt box — it resolves the file and Claude reads it. No hunting through folders.</p>
+  <div id="fileList"></div>
+</div>
+
+<footer>
+  <span>Progress saved in this browser only</span>
+  <span><button id="reset">Reset progress</button></span>
+</footer>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const DATA = {"steps": [{"id": "S1", "phase": "Setup", "title": "Password manager + secrets discipline", "size": "30m", "docs": ["11-SECURITY-COMPLIANCE/SECRETS-MANAGEMENT.md"], "prompt": "", "pilot": "req", "note": ""}, {"id": "S2", "phase": "Setup", "title": "Register a domain", "size": "30m", "docs": [], "prompt": "", "pilot": "req", "note": ""}, {"id": "S3", "phase": "Setup", "title": "Meta app in DEVELOPMENT mode", "size": "1h", "docs": ["08-META-WHATSAPP/PILOT-MODE-SETUP.md"], "prompt": "", "pilot": "req", "note": "Do NOT start Business Verification or request Advanced Access."}, {"id": "S4", "phase": "Setup", "title": "Free infra accounts (Oracle, CF, B2, Sentry, Better Stack, Brevo, GitHub)", "size": "2h", "docs": ["07-INFRASTRUCTURE/INFRASTRUCTURE-OVERVIEW.md", "07-INFRASTRUCTURE/ORACLE-CLOUD-SETUP.md"], "prompt": "", "pilot": "req", "note": "Oracle home region is irreversible. Mumbai or Hyderabad."}, {"id": "S5", "phase": "Setup", "title": "Talk to 15-20 businesses", "size": "1-2wk", "docs": ["02-ACTIONS/PILOT-PLAYBOOK.md", "01-BUSINESS/CUSTOMER-VALIDATION.md"], "prompt": "", "pilot": "req", "note": "Runs in parallel with everything. Decides what you build in Phase C."}, {"id": "S6", "phase": "Setup", "title": "Install Claude Code Desktop + Git", "size": "1h", "docs": ["14-CLAUDE-CODE/CLAUDE-CODE-SETUP.md"], "prompt": "", "pilot": "req", "note": ""}, {"id": "S7", "phase": "Setup", "title": "git init, copy docs into repo, commit", "size": "30m", "docs": ["14-CLAUDE-CODE/CLAUDE-CODE-SETUP.md"], "prompt": "", "pilot": "req", "note": "git init BEFORE opening the project in Claude Code."}, {"id": "S8", "phase": "Setup", "title": "Create CLAUDE.md at repo root", "size": "30m", "docs": ["14-CLAUDE-CODE/PROJECT-CLAUDE-MD-TEMPLATE.md"], "prompt": "", "pilot": "req", "note": ""}, {"id": "S9", "phase": "Setup", "title": "Create .claude/settings.json permissions", "size": "20m", "docs": ["14-CLAUDE-CODE/CLAUDE-CODE-SETUP.md"], "prompt": "", "pilot": "req", "note": ""}, {"id": "S10", "phase": "Setup", "title": "Read the 7 core docs", "size": "2d", "docs": ["00-START-HERE/README.md", "03-ARCHITECTURE/MULTI-TENANCY.md", "14-CLAUDE-CODE/FEATURE-BREAKDOWN.md"], "prompt": "", "pilot": "req", "note": ""}, {"id": "S11", "phase": "Setup", "title": "Close decision D-01", "size": "-", "docs": ["13-DECISIONS/DECISIONS.md"], "prompt": "", "pilot": "req", "note": "BLOCKS Phase C. Needs the 15-20 conversations first."}, {"id": "F00", "phase": "A \u00b7 Foundation", "title": "Project skeleton", "size": "S", "docs": ["05-BACKEND/BACKEND-SETUP.md"], "prompt": "PHASE-A-FOUNDATION.md", "pilot": "req", "note": ""}, {"id": "F01", "phase": "A \u00b7 Foundation", "title": "Tenant + User model", "size": "M", "docs": ["04-DATABASE/DATABASE-DESIGN.md", "03-ARCHITECTURE/MULTI-TENANCY.md"], "prompt": "PHASE-A-FOUNDATION.md", "pilot": "req", "note": ""}, {"id": "F02", "phase": "A \u00b7 Foundation", "title": "Tenant context + Row-Level Security", "size": "M", "docs": ["03-ARCHITECTURE/MULTI-TENANCY.md", "04-DATABASE/MULTI-TENANT-DATABASE-RULES.md", "09-TESTING/MULTI-TENANCY-TESTING.md"], "prompt": "PHASE-A-FOUNDATION.md", "pilot": "req", "note": "Most important increment in the project. Verify by hand that disabling RLS breaks test 2."}, {"id": "F03", "phase": "A \u00b7 Foundation", "title": "Authentication + sessions", "size": "M", "docs": ["03-ARCHITECTURE/AUTHENTICATION-AND-AUTHORIZATION.md", "03-ARCHITECTURE/SECURITY.md"], "prompt": "PHASE-A-FOUNDATION.md", "pilot": "req", "note": ""}, {"id": "F04", "phase": "A \u00b7 Foundation", "title": "Password reset", "size": "S", "docs": [], "prompt": "PHASE-A-FOUNDATION.md", "pilot": "req", "note": ""}, {"id": "F05", "phase": "B \u00b7 WhatsApp", "title": "Account model + token encryption", "size": "S", "docs": ["03-ARCHITECTURE/WHATSAPP-INTEGRATION.md", "11-SECURITY-COMPLIANCE/SECRETS-MANAGEMENT.md"], "prompt": "PHASE-B-WHATSAPP.md", "pilot": "req", "note": ""}, {"id": "F06", "phase": "B \u00b7 WhatsApp", "title": "Embedded Signup callback", "size": "L", "docs": ["08-META-WHATSAPP/EMBEDDED-SIGNUP.md", "08-META-WHATSAPP/PILOT-MODE-SETUP.md"], "prompt": "PHASE-B-WHATSAPP.md", "pilot": "req", "note": "NOT blocked on Advanced Access in dev mode."}, {"id": "F07", "phase": "B \u00b7 WhatsApp", "title": "Job queue (SKIP LOCKED)", "size": "L", "docs": ["03-ARCHITECTURE/BACKGROUND-JOBS.md", "05-BACKEND/JOB-PROCESSING.md", "13-DECISIONS/ADR-002-POSTGRES-JOB-QUEUE.md"], "prompt": "PHASE-B-WHATSAPP.md", "pilot": "req", "note": "Five tests, all mandatory."}, {"id": "F08", "phase": "B \u00b7 WhatsApp", "title": "Message ledger (append-only)", "size": "M", "docs": ["03-ARCHITECTURE/MESSAGE-LEDGER.md", "05-BACKEND/BILLING-LEDGER.md", "08-META-WHATSAPP/OCTOBER-2026-BILLING-CHANGE.md"], "prompt": "PHASE-B-WHATSAPP.md", "pilot": "req", "note": "Ledger row BEFORE the API call. Always."}, {"id": "F09", "phase": "B \u00b7 WhatsApp", "title": "Outbound send", "size": "M", "docs": ["05-BACKEND/WHATSAPP-SERVICE.md"], "prompt": "PHASE-B-WHATSAPP.md", "pilot": "req", "note": ""}, {"id": "F10", "phase": "B \u00b7 WhatsApp", "title": "Webhook receiver", "size": "L", "docs": ["05-BACKEND/WEBHOOK-IMPLEMENTATION.md", "03-ARCHITECTURE/WEBHOOK-ARCHITECTURE.md", "08-META-WHATSAPP/WEBHOOKS.md"], "prompt": "PHASE-B-WHATSAPP.md", "pilot": "req", "note": "ACK under 2 seconds. Verify HMAC over raw bytes."}, {"id": "F11", "phase": "B \u00b7 WhatsApp", "title": "Inbound message processing", "size": "M", "docs": [], "prompt": "PHASE-B-WHATSAPP.md", "pilot": "req", "note": ""}, {"id": "F12", "phase": "C \u00b7 Automation", "title": "Templates", "size": "M", "docs": ["08-META-WHATSAPP/MESSAGE-TEMPLATES.md", "08-META-WHATSAPP/MESSAGE-CATEGORIES.md"], "prompt": "PHASE-C-AUTOMATION.md", "pilot": "simple", "note": "Simplified for pilot."}, {"id": "F13", "phase": "C \u00b7 Automation", "title": "Keyword automation rules", "size": "M", "docs": [], "prompt": "PHASE-C-AUTOMATION.md", "pilot": "req", "note": ""}, {"id": "F14", "phase": "C \u00b7 Automation", "title": "FAQ matching (Postgres FTS + trigram)", "size": "M", "docs": ["13-DECISIONS/ADR-007-NO-AI-DEPENDENCY-FOR-CORE-AUTOMATION.md"], "prompt": "PHASE-C-AUTOMATION.md", "pilot": "req", "note": "Below threshold, escalate. Never guess."}, {"id": "F15", "phase": "C \u00b7 Automation", "title": "Interactive replies + consolidation", "size": "S", "docs": ["08-META-WHATSAPP/MESSAGE-PRICING.md"], "prompt": "PHASE-C-AUTOMATION.md", "pilot": "skip", "note": "Deferred until after the pilot."}, {"id": "F16", "phase": "C \u00b7 Automation", "title": "Scheduled messages", "size": "M", "docs": ["05-BACKEND/SCHEDULING.md"], "prompt": "PHASE-C-AUTOMATION.md", "pilot": "skip", "note": "Deferred until after the pilot."}, {"id": "F17", "phase": "D \u00b7 Frontend", "title": "React setup, auth, app shell", "size": "M", "docs": ["06-FRONTEND/FRONTEND-SETUP.md", "06-FRONTEND/USER-FLOWS.md"], "prompt": "PHASE-D-FRONTEND.md", "pilot": "req", "note": ""}, {"id": "F18", "phase": "D \u00b7 Frontend", "title": "WhatsApp connection screen", "size": "M", "docs": ["06-FRONTEND/WHATSAPP-ONBOARDING.md"], "prompt": "PHASE-D-FRONTEND.md", "pilot": "req", "note": "The payment-method warning is the most important UI in the product."}, {"id": "F19", "phase": "D \u00b7 Frontend", "title": "Config screens", "size": "L", "docs": ["06-FRONTEND/AUTOMATION-CONFIGURATION.md"], "prompt": "PHASE-D-FRONTEND.md", "pilot": "simple", "note": "Read-only view for pilot. You configure rules on the call."}, {"id": "F20", "phase": "D \u00b7 Frontend", "title": "Inbox + dashboard", "size": "L", "docs": ["06-FRONTEND/INBOX.md", "06-FRONTEND/DASHBOARD.md"], "prompt": "PHASE-D-FRONTEND.md", "pilot": "req", "note": ""}, {"id": "F21", "phase": "E \u00b7 Production", "title": "Razorpay billing", "size": "M", "docs": ["01-BUSINESS/PRICING-AND-MONETIZATION.md"], "prompt": "PHASE-E-PRODUCTION.md", "pilot": "skip", "note": "Pilot: collect Rs 500 by UPI manually. No code."}, {"id": "F22", "phase": "E \u00b7 Production", "title": "Infrastructure as scripts", "size": "L", "docs": ["07-INFRASTRUCTURE/PRODUCTION-DEPLOYMENT.md", "07-INFRASTRUCTURE/ORACLE-CLOUD-SETUP.md", "07-INFRASTRUCTURE/POSTGRES-SETUP.md", "07-INFRASTRUCTURE/CADDY-SETUP.md"], "prompt": "PHASE-E-PRODUCTION.md", "pilot": "req", "note": ""}, {"id": "F23", "phase": "E \u00b7 Production", "title": "Backups + monitoring + tested restore", "size": "M", "docs": ["07-INFRASTRUCTURE/BACKUP-SETUP.md", "10-OPERATIONS/BACKUP-RESTORE-PROCEDURE.md", "07-INFRASTRUCTURE/MONITORING.md"], "prompt": "PHASE-E-PRODUCTION.md", "pilot": "req", "note": "Not done until you have RESTORED a backup and logged it."}, {"id": "P1", "phase": "Pilot", "title": "Pre-pilot safety checks", "size": "-", "docs": ["09-TESTING/PRE-PRODUCTION-CHECKLIST.md"], "prompt": "", "pilot": "req", "note": ""}, {"id": "P2", "phase": "Pilot", "title": "Onboard customer #1 (while still building)", "size": "-", "docs": ["02-ACTIONS/PILOT-PLAYBOOK.md", "10-OPERATIONS/CUSTOMER-ONBOARDING.md"], "prompt": "", "pilot": "req", "note": "Around week 5. You will find three things wrong."}, {"id": "P3", "phase": "Pilot", "title": "Onboard customers 2-10", "size": "2-3wk", "docs": ["02-ACTIONS/PILOT-PLAYBOOK.md"], "prompt": "", "pilot": "req", "note": ""}, {"id": "P4", "phase": "Pilot", "title": "Run it: weekly calls + weekly ops review", "size": "8-12wk", "docs": ["02-ACTIONS/PILOT-PLAYBOOK.md", "10-OPERATIONS/MONITORING-AND-ALERTS.md"], "prompt": "", "pilot": "req", "note": ""}, {"id": "P5", "phase": "Pilot", "title": "The decision: register or change", "size": "-", "docs": ["00-START-HERE/PILOT-FIRST-PLAN.md"], "prompt": "", "pilot": "req", "note": "Check the exit criteria honestly."}, {"id": "R1", "phase": "Scale", "title": "Register business + engage CA", "size": "-", "docs": ["00-START-HERE/PILOT-FIRST-PLAN.md"], "prompt": "", "pilot": "skip", "note": "Only after pilot exit criteria are met."}, {"id": "R2", "phase": "Scale", "title": "Meta Business Verification", "size": "1-3wk", "docs": ["08-META-WHATSAPP/META-BUSINESS-SETUP.md"], "prompt": "", "pilot": "skip", "note": ""}, {"id": "R3", "phase": "Scale", "title": "Meta App Review / Advanced Access", "size": "1-4wk", "docs": ["08-META-WHATSAPP/TECH-PROVIDER-SETUP.md"], "prompt": "", "pilot": "skip", "note": ""}, {"id": "R4", "phase": "Scale", "title": "Razorpay + build F21", "size": "-", "docs": ["01-BUSINESS/PRICING-AND-MONETIZATION.md"], "prompt": "PHASE-E-PRODUCTION.md", "pilot": "skip", "note": ""}, {"id": "R5", "phase": "Scale", "title": "Switch Meta app to LIVE mode", "size": "-", "docs": ["08-META-WHATSAPP/TECH-PROVIDER-SETUP.md"], "prompt": "", "pilot": "skip", "note": ""}, {"id": "R6", "phase": "Scale", "title": "Move pilot customers to Rs 1,999", "size": "-", "docs": [], "prompt": "", "pilot": "skip", "note": ""}, {"id": "R7", "phase": "Scale", "title": "Build F15, F16, full F19 + top 3 gaps", "size": "-", "docs": ["14-CLAUDE-CODE/FEATURE-BREAKDOWN.md"], "prompt": "", "pilot": "skip", "note": ""}, {"id": "R8", "phase": "Scale", "title": "Full production checklist + scale", "size": "-", "docs": ["09-TESTING/PRE-PRODUCTION-CHECKLIST.md", "02-ACTIONS/FIRST-10-CUSTOMERS.md"], "prompt": "", "pilot": "skip", "note": ""}], "files": ["00-START-HERE/ASSUMPTIONS-AND-EXPIRY-DATES.md", "00-START-HERE/CURRENT-STATUS.md", "00-START-HERE/DEVELOPMENT-ROADMAP.md", "00-START-HERE/PILOT-FIRST-PLAN.md", "00-START-HERE/README.md", "01-BUSINESS/BUSINESS-PLAN.md", "01-BUSINESS/CUSTOMER-VALIDATION.md", "01-BUSINESS/PRICING-AND-MONETIZATION.md", "01-BUSINESS/PRODUCT-VISION.md", "01-BUSINESS/TARGET-CUSTOMER.md", "01-BUSINESS/VALUE-PROPOSITION.md", "02-ACTIONS/FIRST-10-CUSTOMERS.md", "02-ACTIONS/FIRST-20-CUSTOMERS.md", "02-ACTIONS/MASTER-ACTION-PLAN.md", "02-ACTIONS/PILOT-PLAYBOOK.md", "02-ACTIONS/PRE-DEVELOPMENT-CHECKLIST.md", "02-ACTIONS/WEEK-1-ACTIONS.md", "02-ACTIONS/WEEK-2-ACTIONS.md", "02-ACTIONS/WEEK-3-ACTIONS.md", "02-ACTIONS/WEEK-4-ACTIONS.md", "03-ARCHITECTURE/APPLICATION-STRUCTURE.md", "03-ARCHITECTURE/AUTHENTICATION-AND-AUTHORIZATION.md", "03-ARCHITECTURE/BACKGROUND-JOBS.md", "03-ARCHITECTURE/BACKUP-AND-RECOVERY.md", "03-ARCHITECTURE/DATA-FLOW.md", "03-ARCHITECTURE/MESSAGE-LEDGER.md", "03-ARCHITECTURE/MULTI-TENANCY.md", "03-ARCHITECTURE/SCALING-STRATEGY.md", "03-ARCHITECTURE/SECURITY.md", "03-ARCHITECTURE/SYSTEM-ARCHITECTURE.md", "03-ARCHITECTURE/WEBHOOK-ARCHITECTURE.md", "03-ARCHITECTURE/WHATSAPP-INTEGRATION.md", "04-DATABASE/DATABASE-DESIGN.md", "04-DATABASE/DATABASE-MIGRATIONS.md", "04-DATABASE/ER-DIAGRAM.md", "04-DATABASE/INDEXES.md", "04-DATABASE/MULTI-TENANT-DATABASE-RULES.md", "04-DATABASE/TABLES.md", "05-BACKEND/API-DESIGN.md", "05-BACKEND/BACKEND-SETUP.md", "05-BACKEND/BILLING-LEDGER.md", "05-BACKEND/ERROR-HANDLING-AND-RETRY.md", "05-BACKEND/JOB-PROCESSING.md", "05-BACKEND/MODULES.md", "05-BACKEND/SCHEDULING.md", "05-BACKEND/SPRING-BOOT-STRUCTURE.md", "05-BACKEND/TEMPLATE-SERVICE.md", "05-BACKEND/WEBHOOK-IMPLEMENTATION.md", "05-BACKEND/WHATSAPP-SERVICE.md", "06-FRONTEND/ANALYTICS.md", "06-FRONTEND/APPLICATION-SCREENS.md", "06-FRONTEND/AUTOMATION-CONFIGURATION.md", "06-FRONTEND/DASHBOARD.md", "06-FRONTEND/FRONTEND-SETUP.md", "06-FRONTEND/INBOX.md", "06-FRONTEND/USER-FLOWS.md", "06-FRONTEND/WHATSAPP-ONBOARDING.md", "07-INFRASTRUCTURE/BACKUP-SETUP.md", "07-INFRASTRUCTURE/CADDY-SETUP.md", "07-INFRASTRUCTURE/CI-CD.md", "07-INFRASTRUCTURE/CLOUDFLARE-SETUP.md", "07-INFRASTRUCTURE/INFRASTRUCTURE-OVERVIEW.md", "07-INFRASTRUCTURE/MONITORING.md", "07-INFRASTRUCTURE/ORACLE-CLOUD-SETUP.md", "07-INFRASTRUCTURE/POSTGRES-SETUP.md", "07-INFRASTRUCTURE/PRODUCTION-DEPLOYMENT.md", "08-META-WHATSAPP/EMBEDDED-SIGNUP.md", "08-META-WHATSAPP/MESSAGE-CATEGORIES.md", "08-META-WHATSAPP/MESSAGE-PRICING.md", "08-META-WHATSAPP/MESSAGE-TEMPLATES.md", "08-META-WHATSAPP/META-BUSINESS-SETUP.md", "08-META-WHATSAPP/OCTOBER-2026-BILLING-CHANGE.md", "08-META-WHATSAPP/PILOT-MODE-SETUP.md", "08-META-WHATSAPP/TECH-PROVIDER-SETUP.md", "08-META-WHATSAPP/WEBHOOKS.md", "08-META-WHATSAPP/WHATSAPP-CLOUD-API.md", "09-TESTING/INTEGRATION-TESTS.md", "09-TESTING/MULTI-TENANCY-TESTING.md", "09-TESTING/PRE-PRODUCTION-CHECKLIST.md", "09-TESTING/SECURITY-TESTING.md", "09-TESTING/TESTING-STRATEGY.md", "09-TESTING/UNIT-TESTS.md", "09-TESTING/WHATSAPP-TESTING.md", "10-OPERATIONS/BACKUP-RESTORE-PROCEDURE.md", "10-OPERATIONS/CUSTOMER-ONBOARDING.md", "10-OPERATIONS/CUSTOMER-SUPPORT.md", "10-OPERATIONS/INCIDENT-RESPONSE.md", "10-OPERATIONS/MONITORING-AND-ALERTS.md", "10-OPERATIONS/PRODUCTION-RUNBOOK.md", "11-SECURITY-COMPLIANCE/CUSTOMER-DATA.md", "11-SECURITY-COMPLIANCE/DPDP-CONSIDERATIONS.md", "11-SECURITY-COMPLIANCE/PRIVACY-CONSIDERATIONS.md", "11-SECURITY-COMPLIANCE/SECRETS-MANAGEMENT.md", "11-SECURITY-COMPLIANCE/SECURITY-REQUIREMENTS.md", "12-SCALING/REVENUE-FUNDED-INFRASTRUCTURE.md", "12-SCALING/SCALING-0-20-CUSTOMERS.md", "12-SCALING/SCALING-100-1000-CUSTOMERS.md", "12-SCALING/SCALING-20-100-CUSTOMERS.md", "12-SCALING/WHEN-TO-INTRODUCE-MESSAGE-BROKER.md", "12-SCALING/WHEN-TO-INTRODUCE-MICROSERVICES.md", "12-SCALING/WHEN-TO-INTRODUCE-REDIS.md", "13-DECISIONS/ADR-001-MODULAR-MONOLITH.md", "13-DECISIONS/ADR-002-POSTGRES-JOB-QUEUE.md", "13-DECISIONS/ADR-003-TECH-PROVIDER-MODEL.md", "13-DECISIONS/ADR-004-MULTI-TENANCY.md", "13-DECISIONS/ADR-005-CUSTOMER-PAID-WHATSAPP-MESSAGING.md", "13-DECISIONS/ADR-006-SELF-HOSTED-POSTGRES.md", "13-DECISIONS/ADR-007-NO-AI-DEPENDENCY-FOR-CORE-AUTOMATION.md", "13-DECISIONS/ADR-008-PILOT-BEFORE-BUSINESS-REGISTRATION.md", "13-DECISIONS/DECISIONS.md", "14-CLAUDE-CODE/CLAUDE-CODE-SETUP.md", "14-CLAUDE-CODE/FEATURE-BREAKDOWN.md", "14-CLAUDE-CODE/IMPLEMENTATION-DOC-TEMPLATE.md", "14-CLAUDE-CODE/PROJECT-CLAUDE-MD-TEMPLATE.md", "14-CLAUDE-CODE/PROMPTS/PHASE-A-FOUNDATION.md", "14-CLAUDE-CODE/PROMPTS/PHASE-B-WHATSAPP.md", "14-CLAUDE-CODE/PROMPTS/PHASE-C-AUTOMATION.md", "14-CLAUDE-CODE/PROMPTS/PHASE-D-FRONTEND.md", "14-CLAUDE-CODE/PROMPTS/PHASE-E-PRODUCTION.md", "14-CLAUDE-CODE/PROMPTS/REUSABLE-PROMPTS.md", "14-CLAUDE-CODE/README.md", "14-CLAUDE-CODE/WORKFLOW.md", "SOURCE-architecture-and-cost-strategy.md", "START-HERE-MANUAL.txt"]};
+const DOCROOT = "docs/WhatsApp-SaaS-Product/";
+const KEY = "wasaas.buildlog.v1";
+let state = {done:{}, track:"pilot"};
+
+/* storage: Claude artifact store -> localStorage -> memory */
+async function load(){
+  try{ if(window.storage){ const r = await window.storage.get(KEY); if(r&&r.value) return JSON.parse(r.value);} }catch(e){}
+  try{ const v = localStorage.getItem(KEY); if(v) return JSON.parse(v); }catch(e){}
+  return null;
+}
+async function save(){
+  const s = JSON.stringify(state);
+  try{ if(window.storage){ await window.storage.set(KEY, s); return; } }catch(e){}
+  try{ localStorage.setItem(KEY, s); }catch(e){}
+}
+
+const $ = s => document.querySelector(s);
+let toastT;
+function toast(m){ const t=$("#toast"); t.textContent=m; t.classList.add("on");
+  clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove("on"),1500); }
+
+function copy(text, el){
+  const done=()=>{ toast("Copied  "+text); if(el){el.classList.add("ok"); setTimeout(()=>el.classList.remove("ok"),1100);} };
+  if(navigator.clipboard&&window.isSecureContext){ navigator.clipboard.writeText(text).then(done).catch(()=>fb()); } else fb();
+  function fb(){ const ta=document.createElement("textarea"); ta.value=text; ta.style.position="fixed"; ta.style.opacity=0;
+    document.body.appendChild(ta); ta.select(); try{document.execCommand("copy");done();}catch(e){toast("Copy failed");} ta.remove(); }
+}
+
+const active = s => state.track==="full" ? true : s.pilot!=="skip";
+function visible(){ return DATA.steps.filter(active); }
+function nextStep(){ return visible().find(s=>!state.done[s.id]); }
+
+function renderMeter(){
+  const v=visible(), d=v.filter(s=>state.done[s.id]).length;
+  const p = v.length? Math.round(d/v.length*100):0;
+  $("#mLabel").textContent = d+" of "+v.length+" done";
+  $("#mPct").textContent = p+"%";
+  $("#mBar").style.width = p+"%";
+}
+
+function docChips(docs, prompt){
+  let h="";
+  if(docs&&docs.length){
+    h+='<div class="rlabel">Read first</div>';
+    h+=docs.map(d=>'<button class="chip" data-copy="@'+DOCROOT+d+'">@'+d+'</button>').join(" ");
+  }
+  if(prompt){
+    h+='<div class="rlabel" style="margin-top:11px">Prompt</div>';
+    h+='<button class="chip" data-copy="@'+DOCROOT+'14-CLAUDE-CODE/PROMPTS/'+prompt+'">@14-CLAUDE-CODE/PROMPTS/'+prompt+'</button>';
+  }
+  return h;
+}
+
+function renderNext(){
+  const s = nextStep(), c = $("#nextCard");
+  if(!s){ c.innerHTML = '<div class="eyebrow">Complete</div><h2>Every step on this track is done.</h2>'+
+    '<div class="code">Switch to the Full track, or open 00-START-HERE/PILOT-FIRST-PLAN.md for what comes next.</div>'; return; }
+  c.innerHTML =
+    '<div class="eyebrow">Do this now</div>'+
+    '<h2>'+s.id+' &middot; '+s.title+'</h2>'+
+    '<div class="code">'+s.phase+(s.size&&s.size!=="-"?"  &middot;  "+s.size:"")+
+      (s.pilot==="simple"?"  &middot;  simplified for pilot":"")+'</div>'+
+    (s.note?'<div class="note">'+s.note+'</div>':'')+
+    '<div class="reads">'+docChips(s.docs,s.prompt)+'</div>'+
+    '<div class="nextact"><button class="btn" data-mark="'+s.id+'">Mark '+s.id+' done</button></div>';
+}
+
+function renderSteps(){
+  const phases=[]; visible().forEach(s=>{ if(!phases.includes(s.phase)) phases.push(s.phase); });
+  const nx = nextStep();
+  $("#paneBuild").innerHTML = phases.map(p=>{
+    const items = visible().filter(s=>s.phase===p);
+    const d = items.filter(s=>state.done[s.id]).length;
+    return '<section class="phase"><div class="phase-h"><h3>'+p+'</h3><span>'+d+'/'+items.length+'</span></div><div class="rail">'+
+      items.map(s=>{
+        const isDone=!!state.done[s.id], st= isDone?"done":(nx&&nx.id===s.id?"now":"todo");
+        return '<div class="step" data-s="'+st+'">'+
+          '<button class="box" role="checkbox" aria-checked="'+isDone+'" data-mark="'+s.id+'" aria-label="Toggle '+s.id+'"></button>'+
+          '<div class="sbody"><div class="sh"><span class="sid">'+s.id+'</span><span class="st">'+s.title+'</span>'+
+          (s.size&&s.size!=="-"?'<span class="tag">'+s.size+'</span>':'')+
+          (s.pilot==="simple"?'<span class="tag simple">simplified</span>':'')+
+          (s.pilot==="skip"?'<span class="tag skip">post-pilot</span>':'')+
+          '</div>'+
+          (s.note?'<div class="snote">'+s.note+'</div>':'')+
+          ((s.docs.length||s.prompt)?'<div class="sdocs">'+
+            s.docs.map(x=>'<button class="chip" data-copy="@'+DOCROOT+x+'">@'+x.split("/").pop()+'</button>').join("")+
+            (s.prompt?'<button class="chip" data-copy="@'+DOCROOT+'14-CLAUDE-CODE/PROMPTS/'+s.prompt+'">@'+s.prompt+'</button>':'')+
+          '</div>':'')+
+          '</div></div>';
+      }).join("")+'</div></section>';
+  }).join("");
+}
+
+function renderFiles(filter){
+  const f=(filter||"").toLowerCase().trim();
+  const hit = DATA.files.filter(x=>!f||x.toLowerCase().includes(f));
+  const groups={};
+  hit.forEach(x=>{ const g = x.includes("/")? x.split("/")[0] : "root"; (groups[g]=groups[g]||[]).push(x); });
+  const keys=Object.keys(groups).sort((a,b)=> a==="root"?-1: b==="root"?1: a.localeCompare(b));
+  $("#fileList").innerHTML = hit.length? keys.map(g=>
+    '<div class="fgroup"><h4>'+g+' <span style="color:var(--off)">('+groups[g].length+')</span></h4><div class="flist">'+
+    groups[g].map(x=>'<button class="frow" data-copy="@'+DOCROOT+x+'">'+x+'</button>').join("")+'</div></div>'
+  ).join("") : '<p class="hint">Nothing matches “'+f+'”. Try a shorter word — rls, webhook, backup, meta, pilot.</p>';
+}
+
+function renderAll(){ renderMeter(); renderNext(); renderSteps(); }
+
+document.addEventListener("click", e=>{
+  const c=e.target.closest("[data-copy]"); if(c){ copy(c.dataset.copy, c); return; }
+  const m=e.target.closest("[data-mark]"); if(m){ const id=m.dataset.mark;
+    state.done[id]=!state.done[id]; save(); renderAll();
+    if(state.done[id]){ const n=nextStep(); if(n) toast("Next: "+n.id+" · "+n.title); } return; }
+});
+$("#tabBuild").onclick=()=>{ $("#tabBuild").setAttribute("aria-selected","true"); $("#tabDocs").setAttribute("aria-selected","false");
+  $("#paneBuild").classList.remove("hide"); $("#paneDocs").classList.add("hide"); };
+$("#tabDocs").onclick=()=>{ $("#tabDocs").setAttribute("aria-selected","true"); $("#tabBuild").setAttribute("aria-selected","false");
+  $("#paneDocs").classList.remove("hide"); $("#paneBuild").classList.add("hide"); $("#q").focus(); };
+$("#q").oninput=e=>renderFiles(e.target.value);
+$("#tPilot").onclick=()=>{ state.track="pilot"; $("#tPilot").setAttribute("aria-pressed","true"); $("#tFull").setAttribute("aria-pressed","false"); save(); renderAll(); };
+$("#tFull").onclick=()=>{ state.track="full"; $("#tFull").setAttribute("aria-pressed","true"); $("#tPilot").setAttribute("aria-pressed","false"); save(); renderAll(); };
+$("#reset").onclick=()=>{ if(confirm("Clear all ticks? This cannot be undone.")){ state.done={}; save(); renderAll(); toast("Progress cleared"); } };
+
+(async ()=>{ const s = await load(); if(s){ state = Object.assign(state, s); }
+  $("#tPilot").setAttribute("aria-pressed", String(state.track!=="full"));
+  $("#tFull").setAttribute("aria-pressed", String(state.track==="full"));
+  renderAll(); renderFiles("");
+})();
+</script></body></html>

@@ -1,0 +1,1722 @@
+================================================================================
+                    WHATSAPP AUTOMATION SAAS
+                 COMPLETE STEP-BY-STEP MANUAL
+================================================================================
+
+  For someone starting from absolute zero.
+  Read this file top to bottom. Do not skip ahead.
+
+  Written: 19 August 2026
+  Everything with a date in it needs re-checking every 3 months. See
+  00-START-HERE/ASSUMPTIONS-AND-EXPIRY-DATES.md
+
+================================================================================
+READ THIS FIRST - YOU ARE ON THE PILOT TRACK
+================================================================================
+
+  This manual assumes you are doing a PILOT FIRST:
+
+      Build the product -> validate with 5-10 real businesses
+      -> THEN register a business and scale.
+
+  You do NOT register a company, hire an accountant, or wait weeks for
+  Meta verification before you have proof anyone wants this.
+
+  WHY THIS IS POSSIBLE
+
+    Meta's own documentation says that while your app is in DEVELOPMENT
+    mode, the WhatsApp permissions appear in the sign-up screen for anyone
+    with an admin, developer, or TESTER role on your app. Only in LIVE mode
+    do you need App Review approval.
+
+    Meta also automatically grants Business-type apps "Standard Access" to
+    all permissions, specifically so you can test.
+
+    So: keep your app in Development mode, add each pilot customer as a
+    Tester, and they can connect their own real WhatsApp Business Account
+    normally. No Business Verification. No App Review. No waiting.
+
+  WHAT THIS SAVES YOU
+
+    4-5 weeks of waiting for Meta approvals
+    Rs 1,000-2,500/month accountant fees (deferred)
+    Rs 8,000-15,000 company registration (deferred)
+    1-2 days building Razorpay billing (deferred)
+    About 4 weeks of build time (17 increments instead of 23)
+
+  PILOT LIMITS (real, and fine for 10 customers)
+
+    - Each pilot customer must accept a Facebook Tester invite
+    - About 250 conversations per 24 hours across your whole app
+    - You cannot let strangers sign up themselves
+    - That last one is the POINT. A pilot is 10 people you talk to.
+
+  *** VERIFY THIS YOURSELF BEFORE YOU BUILD ON IT ***
+  Meta changes access rules without notice. Check
+  developers.facebook.com and write the date you checked into
+  00-START-HERE/ASSUMPTIONS-AND-EXPIRY-DATES.md
+  This one assumption is what the whole pilot timeline rests on.
+
+  FULL DETAIL:  00-START-HERE/PILOT-FIRST-PLAN.md
+  HOW TO RUN IT: 02-ACTIONS/PILOT-PLAYBOOK.md
+  META SETUP:    08-META-WHATSAPP/PILOT-MODE-SETUP.md
+
+================================================================================
+HOW TO USE THIS MANUAL
+================================================================================
+
+This manual is a sequence of PARTS. Each part has STEPS.
+
+Each step tells you exactly:
+    WHAT     - what you are doing
+    WHERE    - which website or which folder on your computer
+    FILE     - which document in this workspace to open and read
+    DO       - the exact actions, in order
+    PASTE    - the exact text to paste into Claude Code (if any)
+    DONE     - how you know it worked before moving on
+
+KEEP THIS OPEN WHILE YOU WORK:
+
+    BUILD-LOG.html   <- double-click it, opens in your browser
+
+    It shows the ONE step you are on, the exact documents for it, and a
+    searchable index of all 124 files. Every file path copies as an "@"
+    mention you paste straight into Claude Code Desktop. It also
+    remembers what you have finished.
+
+    If you only keep one thing open besides Claude Code, keep that.
+
+RULES FOR YOURSELF:
+
+  1. Do the steps in order. Part 4 assumes Part 3 is finished.
+  2. Do not skip the DONE checks. They are there because skipping them
+     costs you a day later.
+  3. When you are told to read a FILE, actually read it. The manual is the
+     route; the files are the detail.
+  4. If something does not work, do not guess. The file named in that step
+     has a troubleshooting section.
+
+TIME EXPECTED:  about 7 to 8 weeks to your first PILOT customer.
+                Roughly:
+                  Part 1-2   Setup and accounts        2 days
+                  Part 3     Learning the workspace    2 days
+                  Part 4     Claude Code setup         1 day
+                  Part 5-9   Building (17 pilot steps) 6-7 weeks
+                  Part 10    Run the pilot             8-12 weeks
+                  Part 11    Register and scale        after pilot succeeds
+
+                In parallel with building, from week 1: talk to 15-20
+                businesses. That is not optional and not separate work -
+                it decides what you build in Part 7.
+
+================================================================================
+PART 0 - WHAT YOU ARE BUILDING (read once, 10 minutes)
+================================================================================
+
+THE PRODUCT
+
+  A web application that Indian small businesses subscribe to for
+  Rs 1,999 per month. It automatically replies to their customers'
+  WhatsApp messages.
+
+  Example: a clothing shop. A customer messages "what are your timings?"
+  on WhatsApp. Your software replies instantly with the shop's hours.
+  The shop owner did nothing.
+
+THE MONEY MODEL - THIS IS THE MOST IMPORTANT THING TO UNDERSTAND
+
+  There are TWO separate bills:
+
+    Bill 1:  Your customer pays YOU        Rs 1,999/month  (software)
+    Bill 2:  Your customer pays META       per message     (WhatsApp charges)
+
+  You NEVER pay for their messages. Meta bills them directly. This is
+  called the "Tech Provider" model.
+
+  Why this matters: it means you can never lose money on message volume.
+  A customer sending 100,000 messages costs you nothing extra.
+
+  It also means: if a bug in your code sends duplicate messages, you are
+  spending YOUR CUSTOMER'S money. That is worse than spending your own.
+  This is why the build plan is so careful about duplicate sends.
+
+  Meta's India message rates (from 1 July 2026, before 18% GST):
+      Marketing message        Rs 0.8631
+      Utility message         Rs 0.1150
+      Authentication          Rs 0.1150
+      Service message         Rs 0.0000  -> Rs 0.1150 from 1 Oct 2026
+      Incoming messages       FREE always
+
+  Note the 1 October 2026 change. Service messages become billable.
+  Your customers will get a bigger Meta bill and will ask you why.
+  Your dashboard (built in step F20) is your answer.
+
+WHY THE PRICE IS Rs 1,999 AND NOT Rs 2,000
+
+  UPI payments under Rs 2,000 have ZERO transaction fee in India
+  (NPCI waiver). Above Rs 2,000 you pay about 2.36% to Razorpay.
+
+  On Rs 40,000 monthly revenue that is Rs 960/month saved. Ten times
+  your entire server bill. Do not raise the price above Rs 1,999 without
+  reading 12-SCALING/REVENUE-FUNDED-INFRASTRUCTURE.md first.
+
+WHAT IT COSTS YOU TO RUN
+
+  DURING THE PILOT
+    Servers and services    about Rs 100/month  (almost all free tiers)
+    Domain name             about Rs 1,000/year
+    Accountant              Rs 0 - deferred
+    TOTAL                   about Rs 100/month
+
+  AFTER YOU REGISTER THE BUSINESS
+    Servers and services    about Rs 100/month
+    Accountant (GST)        Rs 1,000-2,500/month <- BIGGER THAN SERVERS
+    Domain                  about Rs 1,000/year
+
+  Yes, your accountant will cost 20 times your servers. That is normal
+  for an Indian SaaS. It is also the single biggest reason to run the
+  pilot first - you defer it until you know the product works.
+
+  DURING THE PILOT YOU CHARGE Rs 500/month, collected by UPI manually.
+  Not because Rs 5,000/month matters, but because a free user gives you
+  polite feedback and a paying user gives you honest feedback. Someone
+  who pays Rs 500 will consider Rs 1,999. Someone who won't pay Rs 500
+  definitely won't pay Rs 1,999.
+
+THE TECHNOLOGY (you do not need to understand this yet)
+
+  Backend    Java 21 + Spring Boot (you already know this)
+  Database   PostgreSQL 17
+  Frontend   React
+  Server     One free Oracle Cloud virtual machine
+  Queue      PostgreSQL (NOT Redis, NOT Kafka - explained in 13-DECISIONS)
+
+  You will NOT use: Redis, Kafka, Kubernetes, microservices, or AI.
+  This is deliberate. Read 13-DECISIONS/ later to understand why.
+
+================================================================================
+PART 1 - PILOT SETUP (2 days, not 2 weeks)
+================================================================================
+
+This is the LIGHT version. You are not registering a business yet.
+Everything here is free or nearly free.
+
+--------------------------------------------------------------------------------
+STEP 1.1 - SET UP A PASSWORD MANAGER (do this before anything else)
+--------------------------------------------------------------------------------
+
+WHAT   A safe place for every password and secret key.
+WHERE  Bitwarden (free) or 1Password. Bitwarden is fine.
+FILE   11-SECURITY-COMPLIANCE/SECRETS-MANAGEMENT.md
+
+WHY    You are about to create about 10 accounts and about 10 secret keys.
+       If you keep them in a notes app, one will leak. A leaked WhatsApp
+       token means someone can send messages AS YOUR CUSTOMER and destroy
+       their business reputation.
+
+DO     1. Install Bitwarden. Strong master password. Write the master
+          password on paper, keep it somewhere safe.
+       2. Create a folder "WhatsApp SaaS".
+       3. From now on: every account and key goes in there IMMEDIATELY.
+
+DONE   Password manager installed and in use.
+
+--------------------------------------------------------------------------------
+STEP 1.2 - REGISTER A DOMAIN NAME
+--------------------------------------------------------------------------------
+
+WHAT   Your internet address. Needed for HTTPS and Meta webhooks.
+WHERE  Namecheap, GoDaddy, BigRock - any registrar.
+COST   About Rs 1,000/year
+
+DO     1. Short name, easy to say on a phone call, easy to spell.
+       2. Buy it. Enable auto-renew.
+       3. Login goes in the password manager.
+
+DONE   You own a domain.
+
+--------------------------------------------------------------------------------
+STEP 1.3 - CREATE YOUR META APP (development mode - NO verification)
+--------------------------------------------------------------------------------
+
+WHAT   The app your software uses to talk to WhatsApp.
+FILE   08-META-WHATSAPP/PILOT-MODE-SETUP.md   <- follow this file, not
+       META-BUSINESS-SETUP.md (that one is for after the pilot)
+TIME   1 hour. NO WAITING FOR APPROVAL.
+
+*** DO NOT START BUSINESS VERIFICATION. ***
+*** DO NOT REQUEST ADVANCED ACCESS. ***
+*** DO NOT SWITCH THE APP TO LIVE MODE. ***
+
+Those three things are what cost you 4-5 weeks and require company
+documents. You are deliberately skipping all of them for the pilot.
+
+DO     1. Open 08-META-WHATSAPP/PILOT-MODE-SETUP.md and follow it.
+       2. Personal Facebook account (real name).
+       3. Business portfolio at business.facebook.com - you can use your
+          own name as the business name. Do NOT click "Start Verification".
+       4. App at developers.facebook.com, type BUSINESS.
+       5. Add the WhatsApp product. This automatically gives you a FREE
+          test WhatsApp account and test phone number you can develop
+          against - no payment method needed.
+       6. Store in the password manager:
+             App ID       (public - safe in the browser)
+             App Secret   (SECRET - server only, never in frontend code)
+             Verify token (you choose this - keep it secret)
+       7. LEAVE THE APP IN DEVELOPMENT MODE. There is a Live/Development
+          toggle at the top of the App Dashboard. Do not touch it.
+
+DONE   App created, in Development mode. You sent yourself a "hello world"
+       message from the test number. Keys stored.
+
+--------------------------------------------------------------------------------
+STEP 1.4 - CREATE THE FREE INFRASTRUCTURE ACCOUNTS
+--------------------------------------------------------------------------------
+
+FILE   07-INFRASTRUCTURE/INFRASTRUCTURE-OVERVIEW.md
+
+DO     Create these. All free. Credentials into the password manager.
+
+       a) ORACLE CLOUD - https://www.oracle.com/cloud/free/
+          READ 07-INFRASTRUCTURE/ORACLE-CLOUD-SETUP.md BEFORE SIGNING UP.
+
+          *** IRREVERSIBLE CHOICE AT SIGNUP ***
+          The "home region" can NEVER be changed. Choose India West
+          (Mumbai) or India South (Hyderabad). Getting this wrong means
+          deleting the account and starting again.
+
+          Also: Oracle HALVED the free ARM allocation on 15 June 2026,
+          from 4 CPU/24GB to 2 CPU/12GB, with no announcement. Instances
+          over the limit were terminated. Provision within 2 CPU / 12 GB.
+
+       b) CLOUDFLARE - https://cloudflare.com   (DNS, frontend, storage)
+       c) BACKBLAZE B2 - https://backblaze.com  (backups, 10 GB free)
+          Backups must NOT go to Oracle. Different vendor on purpose.
+       d) SENTRY - https://sentry.io            (crash reports)
+       e) BETTER STACK - https://betterstack.com (uptime alerts)
+          NOT UptimeRobot - its free plan has been personal/non-commercial
+          only since 1 December 2024.
+       f) BREVO - https://brevo.com             (password reset emails)
+       g) GITHUB - https://github.com           (PRIVATE repository)
+
+DONE   All seven created, all credentials stored.
+
+--------------------------------------------------------------------------------
+STEP 1.5 - START TALKING TO BUSINESSES (from week 1, in parallel)
+--------------------------------------------------------------------------------
+
+WHAT   15-20 conversations with real small business owners.
+FILE   02-ACTIONS/PILOT-PLAYBOOK.md    <- the finding-customers section
+       01-BUSINESS/CUSTOMER-VALIDATION.md
+
+*** THIS IS NOT SEPARATE FROM BUILDING. IT DECIDES WHAT YOU BUILD. ***
+
+WHY    Part 7 of this manual is five weeks of automation features. If you
+       build them based on a guess, you waste five weeks. These
+       conversations are what turn the guess into a decision (D-01).
+
+DO     1. Read the "Finding pilot customers" section of PILOT-PLAYBOOK.md
+       2. Line up 15-20 businesses. NOT close friends - friends lie to be
+          kind, and you lose the ability to ask them honestly later.
+          Your own tailor, gym, clinic, coaching centre, pharmacy are
+          ideal: real relationship, not friendship.
+       3. Ask the seven questions in the playbook. Then shut up and listen.
+       4. Write down their EXACT WORDS for "what five questions do your
+          customers ask most?"
+       5. Do NOT ask "would you pay for this?" People say yes to be nice.
+          Ask if they will join the pilot at Rs 500/month, right now.
+       6. Aim for 10 who say yes.
+
+DONE   15-20 conversations done. 10 candidate pilot customers identified.
+       You have their actual FAQ lists written down.
+
+--------------------------------------------------------------------------------
+STEP 1.6 - WHAT YOU ARE DELIBERATELY NOT DOING YET
+--------------------------------------------------------------------------------
+
+Do NOT do any of these now. Each one is deferred until the pilot proves
+the product works. This is the whole point of the pilot track.
+
+  NOT registering a company              saves Rs 8,000-15,000 one-off
+  NOT engaging a CA / GST registration   saves Rs 1,000-2,500 PER MONTH
+  NOT creating a Razorpay account        saves days of KYC waiting
+  NOT building F21 (billing)             saves 1-2 days of build
+  NOT starting Meta Business Verification saves 1-3 weeks of waiting
+  NOT requesting Meta Advanced Access    saves 1-4 weeks of waiting
+  NOT paying a lawyer for ToS/privacy    saves Rs 10,000-25,000
+
+If you are unsure about your GST position, ask a CA ONE question now
+(most will answer a single question free): "at roughly Rs 5,000/month of
+software revenue, do I need to register for GST?" Get the answer, write
+it down, move on. Do not engage them monthly yet.
+
+During the pilot you collect Rs 500/month by UPI, manually, to your own
+account. That is the entire billing system. No code, no Razorpay, no KYC.
+
+--------------------------------------------------------------------------------
+STEP 1.7 - CHECKPOINT
+--------------------------------------------------------------------------------
+
+  [ ] Password manager set up, everything stored in it
+  [ ] Domain registered
+  [ ] Meta app created, in DEVELOPMENT mode
+  [ ] Test WhatsApp number works - you messaged yourself
+  [ ] Business Verification NOT started (correct)
+  [ ] Advanced Access NOT requested (correct)
+  [ ] Oracle Cloud account with the CORRECT region
+  [ ] Cloudflare, Backblaze, Sentry, Better Stack, Brevo, GitHub created
+  [ ] 15-20 business conversations done
+  [ ] 10 pilot candidates identified with their real FAQ lists
+  [ ] You verified Meta's dev-mode/Tester rules yourself and wrote the
+      date in 00-START-HERE/ASSUMPTIONS-AND-EXPIRY-DATES.md
+
+Write today's date in 00-START-HERE/CURRENT-STATUS.md.
+
+Notice what is NOT on this list: waiting for anyone's approval.
+You can start building tomorrow.
+
+================================================================================
+PART 2 - SET UP YOUR COMPUTER
+================================================================================
+
+--------------------------------------------------------------------------------
+STEP 2.1 - INSTALL THE TOOLS
+--------------------------------------------------------------------------------
+
+WHAT   The software you need on your machine.
+FILE   05-BACKEND/BACKEND-SETUP.md
+       14-CLAUDE-CODE/CLAUDE-CODE-SETUP.md
+
+You are using CLAUDE CODE DESKTOP, so you do NOT need to install Node.js
+or the Claude Code CLI. The desktop app includes Claude Code.
+
+DO     Install these. Verify each with the command shown.
+
+       CLAUDE CODE DESKTOP
+           Download from Anthropic's site. Mac and Windows (Linux beta).
+           Sign in. You need a paid plan (Pro, Max, Team, or Enterprise)
+           for the Code tab.
+
+       GIT   <- REQUIRED, especially on Windows
+           Check:  git --version
+           On Windows, local sessions will not work without it.
+           Most Macs already have it.
+
+       JAVA 21 (Temurin)
+           Check:  java -version
+           Expect: something starting with "21."
+
+       DOCKER DESKTOP
+           Check:  docker --version
+           Only used to run PostgreSQL locally while developing.
+
+       NODE.JS 20 or 22
+           Check:  node --version
+           Needed for the React frontend build (Part 8), not for
+           Claude Code itself.
+
+       AN IDE - IntelliJ IDEA Community is fine.
+           You will mostly work in Claude Code, but you want an editor
+           for reading code yourself.
+
+       psql (PostgreSQL command line client)
+           Check:  psql --version
+
+DONE   All commands above run without error. Claude Code Desktop opens
+       and you can see the "Code" tab.
+
+--------------------------------------------------------------------------------
+STEP 2.2 - CREATE YOUR PROJECT FOLDER AND GIT REPOSITORY
+--------------------------------------------------------------------------------
+
+WHAT   The folder where your code will live.
+
+*** IMPORTANT: DO THIS IN A TERMINAL BEFORE YOU OPEN THE FOLDER ***
+*** IN CLAUDE CODE DESKTOP ***
+
+WHY    Claude Code anchors its project memory to the Git repository root.
+       If you point the desktop app at a folder that is not a Git
+       repository, project memory will not attach properly. Ten seconds
+       now saves confusion later.
+
+       Yes, you still need a terminal for this one command. After this
+       you can stay in the desktop app.
+
+DO     Open a terminal and run these, one line at a time:
+
+           mkdir wasaas
+           cd wasaas
+           git init
+           mkdir docs
+
+DONE   You have a folder called wasaas, it is a Git repository
+       (a hidden .git folder exists), and it contains an empty docs folder.
+
+--------------------------------------------------------------------------------
+STEP 2.3 - PUT THIS DOCUMENTATION INSIDE YOUR PROJECT
+--------------------------------------------------------------------------------
+
+WHAT   Copy this whole documentation workspace into your code project.
+
+WHY    This is the single highest-value thing you will do in this manual.
+       When the documentation lives inside your repository, Claude Code
+       can READ it.
+
+       On DESKTOP this is even better: type "@" in the prompt box and it
+       autocompletes file paths from your project. So you can write:
+
+           Read @docs/WhatsApp-SaaS-Product/03-ARCHITECTURE/
+           MULTI-TENANCY.md and plan increment F02.
+
+       and it opens the actual file. You never have to hunt through
+       folders or copy-paste document contents.
+
+       Without this, you re-explain your architecture in every session,
+       and Claude Code invents its own approach when you forget.
+
+DO     1. Download the zip file you were given.
+       2. Extract it.
+       3. Copy the entire "WhatsApp-SaaS-Product" folder into the "docs"
+          folder inside your wasaas project.
+
+       You should end up with:
+
+           wasaas/
+           |-- .git/
+           |-- docs/
+               |-- WhatsApp-SaaS-Product/
+                   |-- START-HERE-MANUAL.txt      <- this file
+                   |-- 00-START-HERE/
+                   |-- 01-BUSINESS/
+                   |-- 02-ACTIONS/
+                   |-- 03-ARCHITECTURE/
+                   |-- 04-DATABASE/
+                   |-- 05-BACKEND/
+                   |-- 06-FRONTEND/
+                   |-- 07-INFRASTRUCTURE/
+                   |-- 08-META-WHATSAPP/
+                   |-- 09-TESTING/
+                   |-- 10-OPERATIONS/
+                   |-- 11-SECURITY-COMPLIANCE/
+                   |-- 12-SCALING/
+                   |-- 13-DECISIONS/
+                   |-- 14-CLAUDE-CODE/
+
+       4. Then commit it:
+
+           git add .
+           git commit -m "docs: architecture and execution workspace"
+
+DONE   The docs folder is inside your project and committed to Git.
+
+================================================================================
+PART 3 - LEARN THE WORKSPACE (2 days - do not skip this)
+================================================================================
+
+You now have about 100 documents. You do not read them all. You read
+these seven, in this order, and you refer to the rest when a step
+tells you to.
+
+--------------------------------------------------------------------------------
+STEP 3.1 - READ THESE SEVEN FILES, IN ORDER
+--------------------------------------------------------------------------------
+
+  1. 00-START-HERE/README.md
+     The map. Which folder contains what. Read the 12 Golden Rules
+     twice - they are the rules that keep this project shippable.
+
+  2. 01-BUSINESS/BUSINESS-PLAN.md
+     What you are selling, to whom, for how much, and why they would buy.
+
+  3. 01-BUSINESS/TARGET-CUSTOMER.md
+     Who your customer actually is. Everything in the frontend design
+     follows from this.
+
+  4. 03-ARCHITECTURE/SYSTEM-ARCHITECTURE.md
+     How the whole system fits together. One diagram, then the reasoning.
+
+  5. 03-ARCHITECTURE/MULTI-TENANCY.md
+     *** READ THIS ONE TWICE ***
+     How you stop one customer seeing another customer's data.
+     This is the failure that ends the business. Everything else is
+     a bug you fix; this is a bug you do not recover from.
+
+  6. 14-CLAUDE-CODE/FEATURE-BREAKDOWN.md
+     The 23 things you will build, in order. This is your build plan.
+
+  7. 13-DECISIONS/DECISIONS.md
+     The questions still open. One of them (D-01) BLOCKS part 7.
+
+DONE   You have read all seven. You can explain, out loud, without
+       looking: what the product does, who buys it, and how tenant
+       isolation works.
+
+       If you cannot explain tenant isolation, read
+       03-ARCHITECTURE/MULTI-TENANCY.md again. It is that important.
+
+--------------------------------------------------------------------------------
+STEP 3.2 - CLOSE DECISION D-01 (blocks Part 7 - do it now)
+--------------------------------------------------------------------------------
+
+WHAT   Decide exactly what your automation feature does.
+FILE   13-DECISIONS/DECISIONS.md
+
+WHY    The build plan for Part 7 (steps F12 to F16) assumes a specific
+       feature set: keyword rules, FAQ matching, scheduled messages.
+       That is a sensible default, but it is a GUESS, not your decision.
+
+       If you build 5 weeks of features nobody asked for, you have
+       wasted 5 weeks. This is the most common way solo founders fail.
+
+DO     1. Open 13-DECISIONS/DECISIONS.md and read D-01.
+       2. Then go and TALK TO FIVE REAL SMALL BUSINESS OWNERS.
+          Not friends who will be nice. Real shop owners, clinics,
+          coaching centres, service businesses.
+       3. Ask them, exactly: "What are the five questions your customers
+          ask you most often on WhatsApp?"
+       4. Write down their actual answers.
+       5. Then decide what F12-F16 will build, and write your decision
+          into DECISIONS.md with today's date and your reasoning.
+       6. Read 01-BUSINESS/CUSTOMER-VALIDATION.md for how to run these
+          conversations without leading the answer.
+
+DONE   D-01 is answered in DECISIONS.md with a date and reasoning.
+       You have five real businesses' actual FAQ lists written down.
+
+       You can start Part 5 without this. You cannot start Part 7
+       without it.
+
+================================================================================
+PART 4 - SET UP CLAUDE CODE (1 day)
+================================================================================
+
+Claude Code is the tool that writes the code. This part configures it so
+that it writes YOUR architecture, not its own idea of a good architecture.
+
+--------------------------------------------------------------------------------
+STEP 4.1 - READ THE SETUP GUIDE FIRST
+--------------------------------------------------------------------------------
+
+FILE   14-CLAUDE-CODE/CLAUDE-CODE-SETUP.md
+
+Read the whole file now. It is short. This step of the manual is a
+summary; that file is the detail.
+
+--------------------------------------------------------------------------------
+STEP 4.2 - OPEN YOUR PROJECT IN CLAUDE CODE DESKTOP
+--------------------------------------------------------------------------------
+
+You already installed the app in step 2.1. Now point it at your project.
+
+DO     1. Open Claude Code Desktop
+       2. Click the CODE tab
+       3. New session
+       4. Environment: choose LOCAL
+          (Local = Claude works with the files on your machine. The other
+           options - Cloud and SSH - will not work for this project
+           because you need local PostgreSQL, local Docker, and a local
+           .env file.)
+       5. Click SELECT FOLDER and choose your "wasaas" folder
+       6. You should now see your file tree, including docs/
+
+DONE   The project is open. You can see docs/WhatsApp-SaaS-Product/ in
+       the file panel.
+
+--------------------------------------------------------------------------------
+STEP 4.3 - CREATE THE CLAUDE.md FILE (the most important config file)
+--------------------------------------------------------------------------------
+
+WHAT   A file Claude Code reads at the start of EVERY session. It
+       contains your project's non-negotiable rules.
+
+FILE   14-CLAUDE-CODE/PROJECT-CLAUDE-MD-TEMPLATE.md
+
+WHY    Without this file, Claude Code will:
+         - add Redis or Kafka because "SaaS needs a queue"
+         - forget that every table needs a tenant_id column
+         - call the WhatsApp API directly from a web request
+       All three of those are serious problems in this specific product.
+       The CLAUDE.md file prevents them, in every session, without you
+       having to remember.
+
+DO     1. Open docs/WhatsApp-SaaS-Product/14-CLAUDE-CODE/
+             PROJECT-CLAUDE-MD-TEMPLATE.md
+       2. Copy everything between the two lines that say
+             ---8<--- COPY FROM HERE ---8<---
+             ---8<--- COPY TO HERE ---8<---
+       3. Create a NEW file at the ROOT of your wasaas folder,
+          named exactly:   CLAUDE.md
+          (capital letters, .md extension, at the top level - not
+          inside docs/)
+       4. Paste the copied text into it.
+       5. Change "com.example.wasaas" to your own package name if you
+          want a different one. Change it here and remember it -
+          you will use the same name in every prompt.
+       6. Commit it:
+             git add CLAUDE.md
+             git commit -m "chore: project memory for Claude Code"
+
+DONE   A file called CLAUDE.md exists at the top level of your project
+       and is committed.
+
+--------------------------------------------------------------------------------
+STEP 4.4 - SET UP PERMISSIONS (stops accidents)
+--------------------------------------------------------------------------------
+
+WHAT   Tell Claude Code what it may and may not do without asking.
+
+DO     Create a folder .claude in your project root, and inside it a
+       file called settings.json containing:
+
+           {
+             "permissions": {
+               "allow": [
+                 "Bash(./mvnw *)",
+                 "Bash(git status)",
+                 "Bash(git diff *)",
+                 "Bash(git log *)",
+                 "Bash(docker compose *)",
+                 "Bash(psql *)"
+               ],
+               "deny": [
+                 "Bash(git push *)",
+                 "Bash(rm -rf *)",
+                 "Read(./.env)",
+                 "Read(./**/*.pem)",
+                 "Read(./**/secrets*)"
+               ]
+             }
+           }
+
+       Then:
+           git add .claude/settings.json
+           git commit -m "chore: Claude Code permissions"
+
+WHY    "deny git push" means nothing reaches GitHub without you looking
+       at it first.
+       "deny Read .env" means your real secret keys can never end up in
+       a conversation transcript.
+
+DONE   .claude/settings.json exists and is committed.
+
+--------------------------------------------------------------------------------
+STEP 4.5 - LEARN THE WORKING LOOP (read it, then use it 23 times)
+--------------------------------------------------------------------------------
+
+FILE   14-CLAUDE-CODE/WORKFLOW.md   <- read this whole file now
+
+The loop you will repeat 23 times:
+
+    1. Start a FRESH session   (Desktop: "New session" in the sidebar)
+    2. Paste the increment prompt from the PROMPTS folder
+    3. READ THE PLAN it gives you. Correct it if wrong.
+    4. Say "plan looks right, implement it"
+    5. Run the build YOURSELF:   ./mvnw clean verify
+    6. Review the diff in the app (click the "+12 -1" indicator)
+    7. Check the Definition of Done list in the prompt
+    8. Commit YOURSELF (Claude Code is not allowed to)
+    9. Update 00-START-HERE/CURRENT-STATUS.md
+
+THE FOUR RULES THAT MATTER MOST:
+
+  ONE INCREMENT PER SESSION.
+      Two in one session is where quality drops. The context gets
+      cluttered and it starts contradicting decisions from earlier.
+
+  ALWAYS READ THE PLAN BEFORE APPROVING.
+      Correcting a plan costs you one message. Correcting 600 lines of
+      wrong code costs you an hour. Look specifically for: a new
+      dependency you did not approve, a missing tenant_id, a WhatsApp
+      API call in the wrong place.
+
+  YOU RUN THE BUILD. YOU COMMIT.
+      Do not accept "all tests pass" on trust. Run ./mvnw clean verify
+      in the built-in terminal. If you cannot explain what a file does,
+      ask before committing.
+
+  ONE SESSION AT A TIME.
+      The desktop app can run parallel sessions. Do not use them here.
+      The increments depend on each other and two sessions will produce
+      conflicting database migrations.
+
+  PUSH BACK WHEN IT OVER-BUILDS.
+      It will sometimes add an abstraction or a library you do not need.
+      Say: "Remove that. Rule 9 in CLAUDE.md. Solve it with Postgres."
+      This is normal. It is a collaborator, not an oracle.
+
+DONE   You have read WORKFLOW.md and you can recite the nine steps.
+
+--------------------------------------------------------------------------------
+STEP 4.6 - HOW TO ACTUALLY RUN AN INCREMENT (desktop, step by step)
+--------------------------------------------------------------------------------
+
+If you have never used a tool like this, here is exactly what happens.
+
+  1. OPEN THE TRACKER
+     Double-click BUILD-LOG.html (in the docs folder). It opens in your
+     browser and shows, at the top, the ONE step you are on right now,
+     plus the exact documents for it.
+
+  2. NEW SESSION
+     In Claude Code Desktop, click "New session" in the sidebar.
+     One increment = one session. Do not reuse a session.
+
+  3. COPY THE PROMPT
+     Open the prompt file named on the tracker card, for example
+     docs/WhatsApp-SaaS-Product/14-CLAUDE-CODE/PROMPTS/
+       PHASE-A-FOUNDATION.md
+     Find the section for your increment (for example "F00").
+     Below it is a block starting with ```text
+     Copy everything BETWEEN the ```text line and the closing ``` line.
+     Do NOT copy the ``` lines themselves.
+
+  4. PASTE AND SEND
+     Paste into the prompt box at the bottom. Press Enter.
+
+  5. READ THE PLAN
+     It replies with a PLAN before writing code. The desktop app has a
+     dedicated plan viewer - read it properly.
+     Look for: a dependency you did not approve, a missing tenant_id,
+     a WhatsApp API call in the wrong place, work belonging to a later
+     increment.
+
+  6. APPROVE OR CORRECT
+     Good?  Type: plan looks right, implement it
+     Wrong? Say what is wrong. It re-plans. Correcting a plan costs one
+     message; correcting 600 lines of code costs an hour.
+
+  7. RUN THE BUILD YOURSELF
+     Use the built-in terminal:   ./mvnw clean verify
+     Do not accept "all tests pass" on trust.
+
+  8. REVIEW THE DIFF
+     A change indicator like "+12 -1" appears. Click it for file-by-file
+     review. If you cannot explain what a file does, ask before you
+     commit it.
+
+  9. COMMIT YOURSELF
+     Claude Code is denied "git push" by your settings.json, and you
+     should do the commit. That is your review gate.
+
+ 10. TICK IT OFF
+     Tick the step in BUILD-LOG.html and update
+     00-START-HERE/CURRENT-STATUS.md
+
+THE "@" TRICK - THIS IS THE ONE THAT SAVES YOU THE MOST TIME
+--------------------------------------------------------------------------------
+
+Type "@" in the prompt box and it autocompletes file paths from your
+project. So instead of opening documents and copying their contents,
+you just reference them:
+
+    Read @docs/WhatsApp-SaaS-Product/03-ARCHITECTURE/MULTI-TENANCY.md
+    and @docs/WhatsApp-SaaS-Product/09-TESTING/MULTI-TENANCY-TESTING.md,
+    then plan increment F02.
+
+BUILD-LOG.html has a click-to-copy button for every one of the 124 files
+that copies exactly this format. Click, paste, done. You never navigate
+folders manually.
+
+(The "@" trick works for LOCAL sessions only. Cloud sessions cannot see
+your files - another reason you chose Local in step 4.2.)
+
+USEFUL COMMANDS (type these in the prompt box)
+--------------------------------------------------------------------------------
+    /memory    show which memory files are loaded (use when a CLAUDE.md
+               rule is being ignored)
+    /doctor    check your setup is healthy
+    /compact   shrink a long conversation (your project CLAUDE.md
+               survives this - it is re-read from disk)
+
+*** ONE WARNING ABOUT PARALLEL SESSIONS ***
+The desktop app can run several sessions at once, each in its own Git
+worktree. It is a real feature and it is the WRONG tool for this project.
+
+Your 23 increments are a dependency chain - F02 needs F01, F09 needs F07
+and F08. Two sessions building two increments against the same database
+schema will produce conflicting Flyway migrations (both creating V7__)
+and contradictory decisions about the same code.
+
+One increment. One session. Review. Commit. Then the next.
+
+================================================================================
+PART 5 - BUILD PHASE A: FOUNDATION (about 1.5 weeks, 5 increments)
+================================================================================
+
+GOAL   A working, multi-tenant, secure web application. No WhatsApp yet.
+
+PROMPT FILE FOR THIS WHOLE PART:
+       14-CLAUDE-CODE/PROMPTS/PHASE-A-FOUNDATION.md
+
+Why no WhatsApp yet: you get the customer-isolation foundation correct
+BEFORE you put anything valuable in the system that could leak.
+
+--------------------------------------------------------------------------------
+STEP 5.1 - F00: PROJECT SKELETON (half a day)
+--------------------------------------------------------------------------------
+
+READ FIRST   05-BACKEND/BACKEND-SETUP.md
+PASTE        The F00 prompt from PROMPTS/PHASE-A-FOUNDATION.md
+DONE WHEN    - ./mvnw clean verify passes
+             - http://localhost:8080/actuator/health returns 200
+             - docs/IMPLEMENTATION/F00-project-skeleton.md was written
+THEN         Commit. Update CURRENT-STATUS.md.
+
+--------------------------------------------------------------------------------
+STEP 5.2 - F01: TENANT AND USER MODEL (1-2 days)
+--------------------------------------------------------------------------------
+
+READ FIRST   04-DATABASE/DATABASE-DESIGN.md
+             03-ARCHITECTURE/MULTI-TENANCY.md  (again)
+PASTE        The F01 prompt
+DONE WHEN    - Registration creates a tenant, a user, and a membership,
+               all in one transaction
+             - Passwords stored as Argon2id hashes, never plaintext
+             - Tests use Testcontainers, not H2
+THEN         Commit. Update status.
+
+--------------------------------------------------------------------------------
+STEP 5.3 - F02: TENANT ISOLATION AND ROW-LEVEL SECURITY (1-2 days)
+--------------------------------------------------------------------------------
+
+*** THIS IS THE MOST IMPORTANT INCREMENT IN THE ENTIRE PROJECT ***
+
+READ FIRST   03-ARCHITECTURE/MULTI-TENANCY.md
+             04-DATABASE/MULTI-TENANT-DATABASE-RULES.md
+             09-TESTING/MULTI-TENANCY-TESTING.md
+PASTE        The F02 prompt
+
+DONE WHEN    All FOUR tests pass:
+             1. Tenant A's queries cannot return Tenant B's rows
+             2. A raw SQL query that FORGETS tenant_id is still blocked
+             3. Reading tenant context when unset throws an error
+             4. Turning OFF row-level security makes test 2 FAIL
+
+TEST 4 EXPLAINED (because it looks strange):
+             Test 4 proves that test 2 is actually testing something.
+             Without test 4, test 2 might be passing for the wrong
+             reason - and you would believe you have two layers of
+             protection when you have one.
+
+             You must verify test 4 BY HAND, once. Turn RLS off, run
+             test 2, watch it fail, turn RLS back on.
+
+ALSO CHECK   Your application must connect to PostgreSQL as a
+             NON-SUPERUSER role. Superusers bypass row-level security
+             entirely, which silently makes all of this useless.
+             Verify:  SELECT rolsuper FROM pg_roles
+                      WHERE rolname='wasaas_app';
+             It must return false.
+
+             Testcontainers defaults to a superuser. This is the single
+             most common way people ship broken tenant isolation while
+             believing their tests prove otherwise.
+
+THEN         Commit. Update status. Take a break - this one is hard.
+
+--------------------------------------------------------------------------------
+STEP 5.4 - F03: LOGIN AND SESSIONS (1-2 days)
+--------------------------------------------------------------------------------
+
+READ FIRST   03-ARCHITECTURE/AUTHENTICATION-AND-AUTHORIZATION.md
+PASTE        The F03 prompt
+DONE WHEN    - Login works, session cookie set
+             - Session survives an application restart (it is in Postgres)
+             - The X-Tenant-Id header from F02 is REMOVED and grants nothing
+             - Wrong password and unknown email give IDENTICAL responses
+THEN         Commit. Update status.
+
+--------------------------------------------------------------------------------
+STEP 5.5 - F04: PASSWORD RESET (half a day)
+--------------------------------------------------------------------------------
+
+PASTE        The F04 prompt
+DONE WHEN    - Reset email arrives, link works exactly once
+             - Token stored hashed, expires in 30 minutes
+             - Using it logs out all existing sessions
+THEN         Commit. Update status.
+
+--------------------------------------------------------------------------------
+STEP 5.6 - PHASE A CHECKPOINT
+--------------------------------------------------------------------------------
+
+  [ ] ./mvnw clean verify passes everything
+  [ ] All four multi-tenancy tests pass
+  [ ] You verified by hand that disabling RLS breaks test 2
+  [ ] App connects as a non-superuser
+  [ ] You can explain row-level security to another person
+  [ ] docs/IMPLEMENTATION/ has F00 through F04
+  [ ] CURRENT-STATUS.md is current
+
+  ALSO CHECK NOW:
+  [ ] Meta Business Verification - approved yet?
+  [ ] Meta Advanced Access - approved yet?
+
+  If Meta is still pending, that is fine. In Part 6 you will build the
+  parts that do not need Meta (F07 and F08) first.
+
+================================================================================
+PART 6 - BUILD PHASE B: WHATSAPP CORE (about 3 weeks, 7 increments)
+================================================================================
+
+GOAL   Messages flow in and out, reliably, per customer, with a full
+       audit trail.
+
+PROMPT FILE:  14-CLAUDE-CODE/PROMPTS/PHASE-B-WHATSAPP.md
+
+*** THIS IS THE HARDEST PART. GO SLOWLY. ***
+
+Every increment here has a failure mode that either leaks data or
+spends your customer's money. Do not rush to finish a step.
+
+--------------------------------------------------------------------------------
+STEP 6.1 - F05: WHATSAPP ACCOUNT STORAGE AND TOKEN ENCRYPTION (half day)
+--------------------------------------------------------------------------------
+
+READ FIRST   03-ARCHITECTURE/WHATSAPP-INTEGRATION.md
+             11-SECURITY-COMPLIANCE/SECRETS-MANAGEMENT.md
+PASTE        The F05 prompt
+
+BEFORE YOU START, generate the encryption key:
+             openssl rand -base64 32
+       Store it in your password manager AND in your local .env file as
+       TOKEN_ENCRYPTION_KEY. Never commit .env.
+
+DONE WHEN    - Token encrypts and decrypts correctly
+             - The token is unreadable in the database
+             - Converting the record to JSON never includes the token
+             - The application REFUSES TO START without the key
+THEN         Commit. Update status.
+
+--------------------------------------------------------------------------------
+STEP 6.2 - F06: CONNECT A CUSTOMER'S WHATSAPP (3-4 days)
+--------------------------------------------------------------------------------
+
+*** PILOT TRACK: NOT BLOCKED. Build this now. ***
+Your app is in Development mode, so Standard Access is enough. Advanced
+Access is only needed once you switch to Live mode, after the pilot.
+See 08-META-WHATSAPP/PILOT-MODE-SETUP.md
+
+READ FIRST   08-META-WHATSAPP/EMBEDDED-SIGNUP.md
+             08-META-WHATSAPP/TECH-PROVIDER-SETUP.md
+PASTE        The F06 prompt
+
+WHAT HAPPENS  Your customer clicks a button, Facebook's own popup opens,
+              they connect their WhatsApp Business Account, and you end
+              up holding an encrypted key that lets you send messages
+              on their behalf.
+
+DONE WHEN     - You connected YOUR OWN test business end to end
+              - Webhooks are subscribed (a separate API call - easy to
+                forget, and nothing arrives without it)
+              - The token is stored encrypted
+              - Running connect twice updates rather than duplicating
+              - Meta error 200 produces a clear message, not a 500
+
+IF YOU SEE ERROR CODE 200 during the PILOT: check that the person
+connecting has ACCEPTED their Tester invitation on your app. In
+development mode only admins/developers/testers can complete the flow.
+Send them: https://developers.facebook.com/settings/developer/requests/
+
+(After the pilot, in Live mode, error 200 means missing Advanced Access.)
+
+THEN          Commit. Update status.
+
+--------------------------------------------------------------------------------
+STEP 6.3 - F07: THE JOB QUEUE (3-4 days)
+--------------------------------------------------------------------------------
+
+READ FIRST   03-ARCHITECTURE/BACKGROUND-JOBS.md
+             05-BACKEND/JOB-PROCESSING.md
+             13-DECISIONS/ADR-002-POSTGRES-JOB-QUEUE.md
+PASTE        The F07 prompt
+
+WHY THIS MATTERS  Everything slow or unreliable goes through this queue:
+                  sending messages, processing webhooks, syncing
+                  templates. If the queue is wrong, messages get sent
+                  twice (costing your customer money) or lost.
+
+WHAT IT IS        A table in PostgreSQL, claimed with
+                  "SELECT ... FOR UPDATE SKIP LOCKED".
+                  NOT Redis. NOT Kafka. Read ADR-002 to understand why -
+                  and to be able to resist the urge to add them.
+
+DONE WHEN         All FIVE tests pass:
+                  1. Two workers never claim the same job
+                  2. Killing the app mid-job means the job is retried
+                  3. Failures back off and eventually give up
+                  4. Permanent failures do not retry at all
+                  5. The same idempotency key creates only one job
+
+THEN              Commit. Update status.
+
+--------------------------------------------------------------------------------
+STEP 6.4 - F08: THE MESSAGE LEDGER (1-2 days)
+--------------------------------------------------------------------------------
+
+READ FIRST   03-ARCHITECTURE/MESSAGE-LEDGER.md
+             05-BACKEND/BILLING-LEDGER.md
+             08-META-WHATSAPP/OCTOBER-2026-BILLING-CHANGE.md
+PASTE        The F08 prompt
+
+WHAT IT IS   A permanent, append-only record of every message. This is
+             how your customer reconciles Meta's invoice. After
+             1 October 2026 it is the only way you can explain their bill.
+
+TWO RULES    - Write the ledger row BEFORE calling Meta's API. If the
+               API call succeeds but the record was never written, you
+               have a message you cannot account for.
+             - NEVER update a ledger row. Status changes are new rows in
+               a separate table.
+
+DONE WHEN    - Ledger row exists before the send is attempted
+             - Status changes append, never overwrite
+             - Monthly counts per category work in one query
+             - Full phone numbers are NOT stored (hash + last 4 only)
+THEN         Commit. Update status.
+
+--------------------------------------------------------------------------------
+STEP 6.5 - F09: SENDING MESSAGES (1-2 days)
+--------------------------------------------------------------------------------
+
+READ FIRST   05-BACKEND/WHATSAPP-SERVICE.md
+PASTE        The F09 prompt
+DONE WHEN    - You sent a real WhatsApp message to your own phone
+             - It went through the job queue, not directly
+             - The ledger has the Meta message id
+             - Retryable and permanent errors behave differently
+             - The same idempotency key sends exactly ONE message
+THEN         Commit. Update status.
+
+--------------------------------------------------------------------------------
+STEP 6.6 - F10: RECEIVING WEBHOOKS (3-4 days)
+--------------------------------------------------------------------------------
+
+READ FIRST   05-BACKEND/WEBHOOK-IMPLEMENTATION.md
+             03-ARCHITECTURE/WEBHOOK-ARCHITECTURE.md
+             08-META-WHATSAPP/WEBHOOKS.md
+PASTE        The F10 prompt
+
+WHAT IT IS   Meta sends you an HTTP request every time someone messages
+             your customer. You must respond within 2 seconds or Meta
+             considers it failed.
+
+THE RULE     verify signature -> save the raw data -> add a job ->
+             return 200. Nothing else. No business logic. No API calls.
+
+TESTING LOCALLY  Meta needs a public URL. Use ngrok:
+                     ngrok http 8080
+                 Then set the webhook URL in Meta's dashboard to
+                     https://YOUR-ID.ngrok.io/api/webhooks/whatsapp
+
+DONE WHEN    - Meta's verification handshake passes
+             - A tampered request body returns 403
+             - A duplicate event has exactly one effect
+             - Response time p99 under 2 seconds, measured
+THEN         Commit. Update status.
+
+--------------------------------------------------------------------------------
+STEP 6.7 - F11: PROCESSING INCOMING MESSAGES (1-2 days)
+--------------------------------------------------------------------------------
+
+PASTE        The F11 prompt
+DONE WHEN    - A real message creates a contact, a conversation, and a
+               ledger entry
+             - The 24-hour reply window is calculated correctly
+             - Delivery status updates (sent/delivered/read) are recorded
+             - Unknown event types are marked ignored, not crashed on
+THEN         Commit. Update status.
+
+--------------------------------------------------------------------------------
+STEP 6.8 - PHASE B CHECKPOINT (do all of this properly)
+--------------------------------------------------------------------------------
+
+  [ ] Full round trip works: someone messages your test number, a
+      contact and conversation appear, you queue a reply, it sends,
+      the delivery status is recorded
+  [ ] ./mvnw clean verify passes
+  [ ] You killed the app mid-send, restarted, and NO duplicate message
+      arrived on the phone
+  [ ] Searching the codebase for the token shows it only in the crypto
+      class and the account service
+  [ ] No token appears in any log file
+  [ ] docs/IMPLEMENTATION/ has F05 through F11
+  [ ] CURRENT-STATUS.md updated
+
+If any of these fail, fix it NOW. Everything after this builds on it.
+
+================================================================================
+PART 7 - BUILD PHASE C: AUTOMATION (about 1.5 weeks, 3 pilot increments)
+================================================================================
+
+*** STOP. Have you closed decision D-01 (step 3.2)? ***
+*** If not, go back and do it. Otherwise you are about to build     ***
+*** five weeks of features based on a guess.                        ***
+
+GOAL         The product does something useful without you touching it.
+PROMPT FILE  14-CLAUDE-CODE/PROMPTS/PHASE-C-AUTOMATION.md
+
+  STEP 7.1  F12  Templates - sync from Meta, submit new ones
+                 READ 08-META-WHATSAPP/MESSAGE-TEMPLATES.md and
+                      MESSAGE-CATEGORIES.md first
+                 Note: Meta decides the category, not you. Marketing
+                 costs about 7.5 times Utility in India.
+
+  STEP 7.2  F13  Keyword rules - "if message contains X, reply Y"
+                 Watch for: only ONE rule should fire per message.
+                 Watch for: a per-contact rate limit, so a loop can
+                 never spam someone and run up their Meta bill.
+
+  STEP 7.3  F14  FAQ matching - answers typed questions using
+                 PostgreSQL full-text search plus fuzzy matching.
+                 No AI. Read 13-DECISIONS/ADR-007 for why.
+                 Key rule: below the confidence threshold, hand over to
+                 a human. Never guess. A wrong answer about price is
+                 worse than no answer.
+
+  STEP 7.4  F15  *** DEFERRED FOR PILOT - SKIP THIS ***
+                 Buttons and lists, plus reply consolidation.
+                 READ 08-META-WHATSAPP/MESSAGE-PRICING.md
+                 Three replies cost three times one reply. Your customer
+                 pays that. Consolidation is a feature, not a nicety.
+
+  STEP 7.5  F16  *** DEFERRED FOR PILOT - SKIP THIS ***
+                 Scheduled messages.
+                 Key rule: running the scheduler twice must not send
+                 twice.
+
+  CHECKPOINT
+  [ ] Someone can message your test number and get a useful automatic
+      answer without you doing anything
+  [ ] Unmatched questions are being logged (this dataset is the honest
+      answer to "will we ever need AI?")
+  [ ] docs/IMPLEMENTATION/ has F12 through F16
+
+================================================================================
+PART 8 - BUILD PHASE D: THE USER INTERFACE (about 2.5 weeks, 4 increments)
+================================================================================
+
+GOAL         A customer can use this without calling you.
+PROMPT FILE  14-CLAUDE-CODE/PROMPTS/PHASE-D-FRONTEND.md
+
+READ FIRST   06-FRONTEND/FRONTEND-SETUP.md
+             06-FRONTEND/APPLICATION-SCREENS.md
+             06-FRONTEND/USER-FLOWS.md
+
+  STEP 8.1  F17  React setup, login screens, app shell
+  STEP 8.2  F18  The WhatsApp connection screen
+                 READ 06-FRONTEND/WHATSAPP-ONBOARDING.md
+                 *** The payment-method warning on this screen is the
+                 single most important piece of UI in the product. ***
+                 If a customer connects but never adds a payment method
+                 in Meta's WhatsApp Manager, nothing sends and they will
+                 conclude your product is broken.
+  STEP 8.3  F19  *** SIMPLIFIED FOR PILOT ***
+                 Build a basic read-only view of rules and FAQs. During
+                 the pilot YOU configure their rules on the onboarding
+                 call - 10 customers do not need self-serve editing.
+                 Build the full editing screens after the pilot.
+                 Automation, FAQ, and template configuration screens
+                 READ 06-FRONTEND/AUTOMATION-CONFIGURATION.md
+                 Design test: a 45-year-old shop owner, on a phone,
+                 adds a working auto-reply without calling you.
+  STEP 8.4  F20  Inbox and dashboard
+                 READ 06-FRONTEND/INBOX.md and DASHBOARD.md
+                 The message counts here are commercially urgent
+                 because of the 1 October 2026 billing change.
+
+  TEST EVERY SCREEN AT 360 PIXELS WIDE. Your customers are on
+  mid-range Android phones on patchy 4G.
+
+  CHECKPOINT
+  [ ] You can demo the whole product to a stranger
+  [ ] Every list screen has loading, empty, error, and loaded states
+  [ ] Dashboard counts match a direct database query exactly
+  [ ] Everything usable one-handed at 360px
+
+================================================================================
+PART 9 - BUILD PHASE E: PRODUCTION (about 1 week, 2 pilot increments)
+================================================================================
+
+GOAL         It runs on a real server and you can recover from disaster.
+PROMPT FILE  14-CLAUDE-CODE/PROMPTS/PHASE-E-PRODUCTION.md
+
+--------------------------------------------------------------------------------
+STEP 9.1 - F21: BILLING
+--------------------------------------------------------------------------------
+
+*** DEFERRED FOR PILOT - SKIP THIS ENTIRE INCREMENT ***
+
+During the pilot you collect Rs 500/month manually by UPI. Send a
+WhatsApp message with your UPI ID on the 1st of the month. That is the
+whole billing system. No Razorpay, no KYC, no code, no waiting.
+
+Come back and build F21 in PART 11, after the pilot succeeds.
+
+Everything below is for AFTER the pilot:
+
+READ FIRST   01-BUSINESS/PRICING-AND-MONETIZATION.md
+PASTE        The F21 prompt
+DONE WHEN    - A real Rs 1 test payment activates an account
+             - Subscription status changes ONLY via verified webhooks
+             - An unpaid account cannot SEND but can still LOG IN and
+               EXPORT DATA
+               (never lock someone out of their own conversations over
+                a failed card - that earns you a chargeback and a
+                terrible review)
+             - GSTIN and legal name are captured for invoices
+
+--------------------------------------------------------------------------------
+STEP 9.2 - F22: SERVER SETUP AS A SCRIPT (3-4 days)
+--------------------------------------------------------------------------------
+
+READ FIRST   07-INFRASTRUCTURE/PRODUCTION-DEPLOYMENT.md   <- the runbook
+             07-INFRASTRUCTURE/ORACLE-CLOUD-SETUP.md
+             07-INFRASTRUCTURE/POSTGRES-SETUP.md
+             07-INFRASTRUCTURE/CADDY-SETUP.md
+PASTE        The F22 prompt
+
+TWO WARNINGS FROM THE ORACLE DOC - read them before you start:
+  1. Oracle's Ubuntu images ship with iptables rules that silently drop
+     inbound traffic and survive reboots. Your ports will look closed
+     even with correct cloud firewall settings. Hours lost if unknown.
+  2. "Out of capacity" when creating an ARM instance is NORMAL in Indian
+     regions. Retry every few hours. It can take a day or two.
+
+ALSO      Set the Cloudflare DNS record for "api" to DNS-only (grey
+          cloud) until Caddy has obtained its certificate. Proxying
+          blocks the certificate challenge.
+
+DONE WHEN - The script rebuilds a bare server end to end in under an
+            hour, unattended
+          - The app connects to PostgreSQL as a NON-SUPERUSER
+          - HTTPS works on your real domain
+          - Both services restart automatically after a reboot
+          - A failed deploy rolls back automatically
+
+--------------------------------------------------------------------------------
+STEP 9.3 - F23: BACKUPS AND MONITORING (1-2 days)
+--------------------------------------------------------------------------------
+
+READ FIRST   07-INFRASTRUCTURE/BACKUP-SETUP.md
+             10-OPERATIONS/BACKUP-RESTORE-PROCEDURE.md
+             07-INFRASTRUCTURE/MONITORING.md
+PASTE        The F23 prompt
+
+*** THIS INCREMENT IS NOT FINISHED UNTIL YOU HAVE RESTORED A BACKUP ***
+
+A backup you have never restored is not a backup. It is a file you
+hope is a backup.
+
+TWO CRITICAL POINTS:
+  1. Backups go to BACKBLAZE, not Oracle. Same-vendor backup means one
+     account suspension loses both your data and your recovery path.
+  2. The backup encryption private key must NOT live only on the server
+     being backed up. Store it in your password manager and on paper.
+     If the server dies and the key died with it, your backups are
+     unreadable files.
+
+DONE WHEN - Nightly encrypted backup lands in Backblaze
+          - YOU HAVE RESTORED ONE into a scratch database and verified
+            the row counts, and written it in the restore test log
+          - Deliberately breaking a backup run ALERTS you (test it)
+          - Stopping the app alerts you within 3 minutes (test it)
+          - Sentry does not leak tokens (test with a fake token)
+
+================================================================================
+PART 10 - RUN THE PILOT (8 to 12 weeks)
+================================================================================
+
+FILE   02-ACTIONS/PILOT-PLAYBOOK.md   <- your main guide for this part
+
+--------------------------------------------------------------------------------
+STEP 10.1 - PRE-PILOT CHECKS (not the full production checklist)
+--------------------------------------------------------------------------------
+
+FILE   09-TESTING/PRE-PRODUCTION-CHECKLIST.md
+
+For the pilot you do NOT need every box ticked. But these are
+non-negotiable even with 5 customers:
+
+  [ ] All four multi-tenancy tests pass, and you verified BY HAND that
+      turning RLS off makes test 2 fail
+  [ ] The app connects to PostgreSQL as a NON-SUPERUSER
+      (SELECT rolsuper FROM pg_roles WHERE rolname='wasaas_app' -> false)
+  [ ] You killed the app mid-send and NO duplicate message arrived
+  [ ] Webhook signature verification rejects a tampered body
+  [ ] No token appears in any log
+  [ ] Nightly backup runs AND YOU HAVE RESTORED ONE and logged it
+  [ ] Stopping the app alerts you within 3 minutes (tested for real)
+  [ ] A basic privacy policy is live on your domain
+
+You can skip for the pilot: lawyer-reviewed terms, GST invoice fields,
+Razorpay, penetration testing, the full launch checklist.
+
+You cannot skip: tenant isolation, no-duplicate-sends, backups.
+A cross-tenant leak or lost data with 10 customers does not just cost
+you those 10 - it costs you the references you need to get the next 50.
+
+--------------------------------------------------------------------------------
+STEP 10.2 - ONBOARD CUSTOMER NUMBER ONE (while still building)
+--------------------------------------------------------------------------------
+
+FILE   02-ACTIONS/PILOT-PLAYBOOK.md    (the onboarding section)
+       10-OPERATIONS/CUSTOMER-ONBOARDING.md
+
+*** DO THIS AROUND WEEK 5, BEFORE YOU FINISH BUILDING ***
+
+You will find three things wrong that no amount of testing would show
+you. Fixing them for one person is far cheaper than for ten.
+
+BEFORE THE CALL
+  1. Get their Facebook account name or ID
+  2. Meta App Dashboard -> App Roles -> Roles -> Add People
+     Add them as TESTER (not Developer - Tester is the minimum)
+  3. Send them this link to accept:
+     https://developers.facebook.com/settings/developer/requests/
+  4. Send the "what you'll need" message from CUSTOMER-ONBOARDING.md
+
+ON THE CALL (45-60 minutes, screen shared)
+  1. They accept the Tester invitation
+  2. Explain what it means, plainly:
+     "This only lets our software connect to the WhatsApp account you
+      choose. No access to your personal Facebook. You can remove it
+      any time from your Facebook developer settings."
+  3. They click Connect WhatsApp -> Meta's popup -> they connect their
+     own real WhatsApp Business Account
+  4. *** VERIFY A PAYMENT METHOD IS ATTACHED IN WHATSAPP MANAGER ***
+     This is the number one failure point. Without it nothing sends and
+     they will think your product is broken.
+  5. Build their top 5 FAQs together, using the exact words you wrote
+     down in step 1.5
+  6. Add 1-2 keyword rules
+  7. TEST FROM THEIR OWN PHONE. They must see it work themselves.
+  8. Set expectations: "this is a pilot, things will break, message me"
+  9. Agree the Rs 500 and how they pay (UPI on the 1st)
+
+DO NOT END THE CALL until an automated reply has arrived on their phone.
+
+--------------------------------------------------------------------------------
+STEP 10.3 - ONBOARD THE REST (weeks 6 to 8)
+--------------------------------------------------------------------------------
+
+Week 6: 2-3 more.  Week 7-8: up to 10 total.
+
+After each one, write down: which steps did YOU have to do for them?
+That count must reach zero before you can ever let strangers sign up.
+It is the single most useful number the pilot produces.
+
+--------------------------------------------------------------------------------
+STEP 10.4 - RUN IT (weeks 8 to 12)
+--------------------------------------------------------------------------------
+
+WEEKLY, PER CUSTOMER (15 min each - CALL them, do not send a survey)
+  1. Did it reply to anything useful this week?
+  2. Did it get anything wrong?
+  3. What did you want it to do that it couldn't?
+  4. Have you shown it to anyone else?   <- strongest signal there is
+
+WEEKLY, YOUR SIDE
+  - Review each customer's unmatched messages. Propose 2 specific FAQs
+    each. Five minutes of your time; feels like a service they pay for.
+  - Check dead jobs, delivery failures, WhatsApp quality ratings
+  - Check you are not near the ~250 conversations/24h app-wide cap
+  - Update the pilot scoreboard (template in PILOT-PLAYBOOK.md)
+
+THE TWO COLUMNS THAT DECIDE EVERYTHING
+  "Paid?"      and      "Referred?"
+  Usage without either is a polite user, not a customer.
+
+--------------------------------------------------------------------------------
+STEP 10.5 - THE DECISION (week 12)
+--------------------------------------------------------------------------------
+
+FILE   00-START-HERE/PILOT-FIRST-PLAN.md  (exit criteria section)
+
+Register the business only when ALL of these are true:
+
+  [ ] 5-10 businesses used it for at least 4 CONTINUOUS weeks
+  [ ] At least 5 have actually paid you, twice
+  [ ] At least 3 said unprompted they would pay Rs 1,999
+  [ ] You know why the ones who left, left
+  [ ] You can name the exact step where people get stuck
+  [ ] You know the top 3 feature gaps IN THEIR WORDS
+  [ ] Under 5 support hours/week per 10 customers
+  [ ] Zero cross-tenant incidents, zero data loss, zero duplicate sends
+
+IF YES -> go to PART 11.
+
+IF NO after 8 weeks of pilot -> the honest read is that the PRODUCT
+needs to change, not that it needs a company registration.
+Options: change the feature set, change the customer segment, or stop.
+All three are legitimate.
+
+Finding this out in 12 weeks for about Rs 5,000 is a GOOD result. The
+failure you avoided was finding out in 12 months for Rs 2,00,000.
+
+================================================================================
+PART 11 - REGISTER THE BUSINESS AND SCALE (only after the pilot works)
+================================================================================
+
+FILE   00-START-HERE/PILOT-FIRST-PLAN.md  (the transition section)
+
+Do these IN ORDER. Each one depends on the one before it.
+
+--------------------------------------------------------------------------------
+STEP 11.1 - REGISTER THE BUSINESS
+--------------------------------------------------------------------------------
+
+DO     Ask your CA what structure suits your situation. A sole
+       proprietorship is the lightest path in India; Udyam (MSME)
+       registration is free and done online.
+
+       You need this because Meta Business Verification requires
+       registration documents. That is the actual reason for doing it
+       now rather than earlier.
+
+DONE   You have registration documents you can upload to Meta.
+
+--------------------------------------------------------------------------------
+STEP 11.2 - ENGAGE THE CA PROPERLY
+--------------------------------------------------------------------------------
+
+COST   Rs 1,000-2,500/month - your largest recurring cost, bigger than
+       all your servers combined.
+
+DO     GST registration if applicable, monthly filing, and confirm what
+       your invoices must contain. Your B2B customers will need GST
+       invoices to claim input credit - without them, they will not buy.
+
+--------------------------------------------------------------------------------
+STEP 11.3 - META BUSINESS VERIFICATION (1-3 weeks of waiting)
+--------------------------------------------------------------------------------
+
+FILE   08-META-WHATSAPP/META-BUSINESS-SETUP.md   <- now you use this file
+
+DO     Upload your registration documents. Type the business name
+       EXACTLY as it appears on the document, including punctuation.
+       Mismatches are the most common rejection reason.
+
+--------------------------------------------------------------------------------
+STEP 11.4 - META APP REVIEW / ADVANCED ACCESS (1-4 weeks)
+--------------------------------------------------------------------------------
+
+FILE   08-META-WHATSAPP/TECH-PROVIDER-SETUP.md
+
+DO     Request ADVANCED access for whatsapp_business_management and
+       whatsapp_business_messaging.
+
+       App Review requires a SCREEN RECORDING of your app actually using
+       each permission. This is where the pilot pays you back: you have
+       a real working product and real customers to record, instead of
+       building a mock-up specifically for the submission.
+
+--------------------------------------------------------------------------------
+STEP 11.5 - RAZORPAY AND BUILD F21
+--------------------------------------------------------------------------------
+
+DO     1. Create the Razorpay account, complete KYC (days)
+       2. NOW build increment F21 - go back to PART 9, step 9.1, and
+          use the F21 prompt in PROMPTS/PHASE-E-PRODUCTION.md
+       3. Price: Rs 1,999. Make UPI the default and most prominent
+          option - it is 0% fee under Rs 2,000.
+
+--------------------------------------------------------------------------------
+STEP 11.6 - SWITCH THE META APP TO LIVE MODE
+--------------------------------------------------------------------------------
+
+DO     Only after Advanced Access is approved. Flip the toggle in the
+       App Dashboard.
+
+       From this point: strangers can sign up themselves, the ~250
+       conversations/24h cap lifts, and pilot customers no longer need
+       Tester roles (remove them).
+
+       New limit to know: 10 NEW business customers per rolling 7 days,
+       rising to 200/week after Business Verification AND App Review AND
+       Access Verification are all complete.
+
+--------------------------------------------------------------------------------
+STEP 11.7 - MOVE PILOT CUSTOMERS TO Rs 1,999
+--------------------------------------------------------------------------------
+
+DO     Give a month's notice, as you promised at signup.
+
+       Consider keeping them permanently at a lower rate. They took the
+       risk when the product was unproven and they are your references.
+       That discount buys you more than it costs.
+
+--------------------------------------------------------------------------------
+STEP 11.8 - BUILD WHAT THE PILOT TOLD YOU TO BUILD
+--------------------------------------------------------------------------------
+
+DO     Now build the deferred increments, in this order:
+         F19 full   - self-serve config screens (needed to scale)
+         F15        - buttons and lists
+         F16        - scheduled messages
+       Then whatever your top 3 feature gaps were. Those came from real
+       customers, so they beat anything on the original roadmap.
+
+--------------------------------------------------------------------------------
+STEP 11.9 - RUN THE FULL PRODUCTION CHECKLIST, THEN SCALE
+--------------------------------------------------------------------------------
+
+FILE   09-TESTING/PRE-PRODUCTION-CHECKLIST.md   (now do ALL of it)
+       02-ACTIONS/FIRST-10-CUSTOMERS.md
+       02-ACTIONS/FIRST-20-CUSTOMERS.md
+       10-OPERATIONS/CUSTOMER-ONBOARDING.md
+
+--------------------------------------------------------------------------------
+RUNNING THE BUSINESS (from here on)
+--------------------------------------------------------------------------------
+
+DAILY (2 min)     SELECT status, count(*) FROM jobs GROUP BY status;
+                  Check Sentry for new error types.
+
+WEEKLY (10 min)   FILE 10-OPERATIONS/MONITORING-AND-ALERTS.md
+                  Disk, slow queries, delivery failures, quality ratings,
+                  expired tokens, unmatched messages.
+
+MONTHLY (30 min)  RESTORE A BACKUP AND LOG IT.
+                  Check Meta rates (they revise 1 Jan/Apr/Jul/Oct).
+                  Review 00-START-HERE/ASSUMPTIONS-AND-EXPIRY-DATES.md
+
+WHEN IT BREAKS    10-OPERATIONS/PRODUCTION-RUNBOOK.md
+                  10-OPERATIONS/INCIDENT-RESPONSE.md
+
+CUSTOMER ISSUE    10-OPERATIONS/CUSTOMER-SUPPORT.md
+
+TEMPTED BY        12-SCALING/WHEN-TO-INTRODUCE-REDIS.md
+REDIS/KAFKA/K8S   12-SCALING/WHEN-TO-INTRODUCE-MESSAGE-BROKER.md
+                  12-SCALING/WHEN-TO-INTRODUCE-MICROSERVICES.md
+                  Read the relevant one first. The answer is almost
+                  always "not yet", and they explain the real triggers.
+
+================================================================================
+QUICK REFERENCE - WHICH FILE DO I OPEN?
+================================================================================
+
+I want to...                              Open...
+------------------------------------------------------------------------------
+know what step I am on / find any doc     BUILD-LOG.html  (in your browser)
+understand the pilot-first plan           00-START-HERE/PILOT-FIRST-PLAN.md
+find and run pilot customers              02-ACTIONS/PILOT-PLAYBOOK.md
+set up Meta for the pilot (dev mode)      08-META-WHATSAPP/PILOT-MODE-SETUP.md
+know why we pilot before registering      13-DECISIONS/
+                                            ADR-008-PILOT-BEFORE-BUSINESS-
+                                            REGISTRATION.md
+know what to do next                      00-START-HERE/CURRENT-STATUS.md
+see the whole build plan                  14-CLAUDE-CODE/FEATURE-BREAKDOWN.md
+find the prompt for step F##              14-CLAUDE-CODE/PROMPTS/PHASE-?-*.md
+remember the working loop                 14-CLAUDE-CODE/WORKFLOW.md
+review code / debug / stop scope creep    14-CLAUDE-CODE/PROMPTS/
+                                            REUSABLE-PROMPTS.md
+set up Meta AFTER the pilot               08-META-WHATSAPP/META-BUSINESS-SETUP.md
+understand Meta's charges                 08-META-WHATSAPP/MESSAGE-PRICING.md
+understand the Oct 2026 billing change    08-META-WHATSAPP/
+                                            OCTOBER-2026-BILLING-CHANGE.md
+understand tenant isolation               03-ARCHITECTURE/MULTI-TENANCY.md
+write an isolation test                   09-TESTING/MULTI-TENANCY-TESTING.md
+set up the server                         07-INFRASTRUCTURE/
+                                            PRODUCTION-DEPLOYMENT.md
+set up backups                            07-INFRASTRUCTURE/BACKUP-SETUP.md
+restore a backup                          10-OPERATIONS/
+                                            BACKUP-RESTORE-PROCEDURE.md
+fix something in production                10-OPERATIONS/PRODUCTION-RUNBOOK.md
+handle a customer complaint                10-OPERATIONS/CUSTOMER-SUPPORT.md
+onboard a customer                         10-OPERATIONS/CUSTOMER-ONBOARDING.md
+decide whether to add Redis                12-SCALING/WHEN-TO-INTRODUCE-REDIS.md
+know why a decision was made               13-DECISIONS/
+check a fact has not expired               00-START-HERE/
+                                            ASSUMPTIONS-AND-EXPIRY-DATES.md
+launch checklist                           09-TESTING/
+                                            PRE-PRODUCTION-CHECKLIST.md
+
+================================================================================
+THE TEN THINGS THAT WILL COST YOU THE MOST IF YOU GET THEM WRONG
+================================================================================
+
+ 1. Registering a company, hiring a CA, and waiting for Meta verification
+    BEFORE anyone has confirmed they want this. That is Rs 20,000+ and
+    5 weeks spent on looking legitimate instead of on learning.
+    Run the pilot first.
+
+ 2. Switching your Meta app to LIVE mode during the pilot. That is what
+    triggers the Advanced Access requirement. Leave it in Development.
+
+ 3. Choosing the wrong Oracle Cloud region at signup. It cannot be
+    changed. Mumbai or Hyderabad.
+
+ 4. Running tests as a PostgreSQL superuser. Superusers bypass row-level
+    security, so your isolation tests pass while your isolation is
+    broken. Testcontainers does this BY DEFAULT.
+
+ 5. Skipping multi-tenancy "because it's only a pilot". Adding tenant_id
+    and RLS to a schema with live data is genuinely painful. Build it
+    once, at the start, correctly.
+
+ 6. Not writing the ledger row BEFORE calling Meta's API. You end up with
+    messages you cannot account for on your customer's invoice - and your
+    customer pays that invoice, not you.
+
+ 7. Doing work inside the webhook handler. You must respond in under
+    2 seconds. Verify, save, queue, return 200. Nothing else.
+
+ 8. Never testing a backup restore. Losing a pilot customer's data loses
+    the customer AND the reference you needed to get the next fifty.
+
+ 9. Running a FREE pilot. Free users are polite and tell you nothing.
+    Charge Rs 500 by UPI. The money is irrelevant; the signal is not.
+
+10. Building Phase C features without doing the 15-20 customer
+    conversations first. That is five weeks of work based on a guess.
+
+BONUS, and it will bite you: not warning customers about Meta's separate
+bill, loudly and repeatedly. It is the number one cause of angry
+month-two conversations, in the pilot and after.
+
+================================================================================
+WHEN YOU FEEL STUCK
+================================================================================
+
+If a step is not working:
+     1. Re-read the FILE named in that step. The answer is usually there.
+     2. Check 00-START-HERE/CURRENT-STATUS.md - did you skip a step?
+     3. Use the debugging prompt in 14-CLAUDE-CODE/PROMPTS/
+        REUSABLE-PROMPTS.md instead of guessing.
+
+If you cannot find the right document:
+     Open BUILD-LOG.html -> "All docs" tab -> type a word -> click the
+     path to copy it as an @ mention. Paste into Claude Code.
+
+If Claude Code is ignoring your rules:
+     1. Type /memory to confirm CLAUDE.md is loaded
+     2. Quote the specific rule back to it in your message
+     3. If it added a dependency: "Remove that. Rule 9 in CLAUDE.md."
+
+If you feel behind schedule:
+     You are building a real product alone. 10-12 weeks is realistic,
+     not fast. The two things that actually determine whether this works
+     are: tenant isolation being correct, and talking to real customers.
+     Everything else can slip.
+
+If you are tempted to skip the tests:
+     Read the list of ten things above. Items 4, 5, 6, and 7 are all
+     "you skipped the test and found out in production". In this product,
+     production failures spend your customers' money.
+
+================================================================================
+                              END OF MANUAL
+
+  Your next action is STEP 1.1 - set up a password manager.
+  Then STEP 1.5 - start talking to businesses. Do that in parallel with
+  everything else; it decides what you build.
+
+  You are on the PILOT TRACK. You are not registering a company yet.
+  Nothing on your critical path is waiting for anyone's approval.
+
+  Then work down in order. Update 00-START-HERE/CURRENT-STATUS.md after
+  every step so that when you come back after a break you know exactly
+  where you were.
+
+================================================================================
