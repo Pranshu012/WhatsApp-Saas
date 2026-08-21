@@ -47,12 +47,24 @@ public class JobWorker {
 
     @Scheduled(fixedDelayString = "${app.jobs.poll-interval-ms:1000}")
     public void poll() {
-        Instant staleThreshold = Instant.now().minus(lockTimeoutSecs, ChronoUnit.SECONDS);
-        List<Job> claimedJobs = jobService.claimJobs(workerId, batchSize, staleThreshold);
+        java.util.UUID previousTenant = com.example.wasaas.tenant.context.TenantContext.get();
+        com.example.wasaas.tenant.context.TenantContext.clear();
+        try {
+            Instant staleThreshold = Instant.now().minus(lockTimeoutSecs, ChronoUnit.SECONDS);
+            List<Job> claimedJobs = jobService.claimJobs(workerId, batchSize, staleThreshold);
 
-        for (Job job : claimedJobs) {
-            JobHandler handler = handlers.get(job.getJobType());
-            jobService.processJob(job, handler);
+            for (Job job : claimedJobs) {
+                JobHandler handler = handlers.get(job.getJobType());
+                try {
+                    jobService.processJob(job, handler);
+                } finally {
+                    com.example.wasaas.tenant.context.TenantContext.clear();
+                }
+            }
+        } finally {
+            if (previousTenant != null) {
+                com.example.wasaas.tenant.context.TenantContext.set(previousTenant);
+            }
         }
     }
 }
