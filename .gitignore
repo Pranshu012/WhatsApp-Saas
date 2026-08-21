@@ -1,0 +1,10 @@
+target/
+*.class
+.env
+.env.local
+*.pem
+*.p12
+.idea/
+.vscode/
+*.iml
+.claude/settings.local.json

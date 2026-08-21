@@ -1,0 +1,32 @@
+spring:
+  application.name: wasaas
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/wasaas}
+    username: ${DB_USER:wasaas}
+    password: ${DB_PASSWORD:localdev}
+    hikari.maximum-pool-size: ${DB_POOL_MAX:10}
+  jpa:
+    hibernate.ddl-auto: validate
+    open-in-view: false
+    properties.hibernate.jdbc.time_zone: UTC
+  flyway:
+    enabled: true
+    validate-on-migrate: true
+server:
+  port: ${SERVER_PORT:8080}
+  forward-headers-strategy: framework
+management:
+  endpoints.web.exposure.include: health,info
+  endpoint.health.show-details: never
+logging.pattern.console: "%d{ISO8601} %-5level [%X{requestId}] %logger{36} - %msg%n"
+app:
+  meta:
+    app-id: ${META_APP_ID:}
+    app-secret: ${META_APP_SECRET:}
+    graph-version: ${META_GRAPH_VERSION:v21.0}
+    webhook-verify-token: ${META_WEBHOOK_VERIFY_TOKEN:}
+  crypto.token-key: ${TOKEN_ENCRYPTION_KEY:}
+  jobs:
+    poll-interval-ms: 1000
+    batch-size: 10
+    lock-timeout-secs: 300

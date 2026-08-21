@@ -1,0 +1,6 @@
+spring:
+  config.activate.on-profile: local
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/wasaas}
+    username: ${DB_USER:wasaas}
+    password: ${DB_PASSWORD:localdev}
