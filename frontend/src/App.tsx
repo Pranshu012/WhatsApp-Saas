@@ -9,10 +9,10 @@ import { RegisterScreen } from './features/auth/RegisterScreen';
 import { ForgotPasswordScreen } from './features/auth/ForgotPasswordScreen';
 import { ResetPasswordScreen } from './features/auth/ResetPasswordScreen';
 import { FeaturePlaceholder } from './features/placeholders/FeaturePlaceholder';
+import { WhatsAppConnectionScreen } from './features/whatsapp/WhatsAppConnectionScreen';
 import {
   LayoutDashboard,
   MessageCircle,
-  Smartphone,
   Zap,
   HelpCircle,
   FileText,
@@ -85,17 +85,7 @@ export const App: React.FC = () => {
               {/* WhatsApp Onboarding & Connection */}
               <Route
                 path="/whatsapp"
-                element={
-                  <FeaturePlaceholder
-                    title="WhatsApp Business Account"
-                    subtitle="Connect your Meta WhatsApp Business Account via Embedded Signup."
-                    icon={Smartphone}
-                    incrementBadge="F18"
-                    emptyTitle="WhatsApp Not Connected"
-                    emptyDescription="Connect your official WhatsApp number via Meta Embedded Signup popup to start automated and scheduled messaging."
-                    actionLabel="Connect with Facebook"
-                  />
-                }
+                element={<WhatsAppConnectionScreen />}
               />
 
               {/* Keyword Automation Rules */}
