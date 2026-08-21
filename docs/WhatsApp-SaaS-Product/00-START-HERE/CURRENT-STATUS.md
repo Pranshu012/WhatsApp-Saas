@@ -10,19 +10,19 @@
 ```text
 Current Phase:        PHASE A — Foundation
 
-Current Goal:         Install Docker Desktop before F01's required Testcontainers tests.
+Current Goal:         Implement F02 tenant isolation and row-level security.
 
-Last Completed:       F00 project skeleton: native PostgreSQL 17, Flyway V1, and the health
-                      endpoint verified; `./mvnw clean verify` passes.
+Last Completed:       F01 tenant, user, and owner-membership registration with Argon2id hashing;
+                      native PostgreSQL verification and `./mvnw clean verify` pass.
 
-Currently Working On: Runtime prerequisites for F01
+Currently Working On: F02 — tenant isolation and row-level security
 
-Next Task:            Install Docker Desktop (and Java 21 when administrator access is available),
-                      then begin F01 with Testcontainers.
+Next Task:            Read the F02 tenancy and test documents, implement both isolation layers,
+                      then complete Testcontainers parity when Docker becomes available.
 
-Blocked By:           Docker Desktop is required to run F01's mandated Testcontainers tests.
-                      Java 21 also requires an interactive macOS administrator-password prompt;
-                      Java 26 currently compiles F00 but is not the project target runtime.
+Blocked By:           Docker Desktop remains required for Testcontainers parity. Java 21 also
+                      requires an interactive macOS administrator-password prompt; Java 26 is
+                      currently used for local compilation but is not the project target runtime.
 
 Important Decisions:  - Tech Provider model, customer pays Meta directly (ADR-003, ADR-005)
                       - Modular monolith, single VM (ADR-001)
@@ -43,6 +43,7 @@ Append a line each session. Newest at top.
 
 | Date | Phase | What I did | Next |
 |---|---|---|---|
+| 2026-08-21 | F01 | Added tenant/user/membership registration with Argon2id; native end-to-end check and build pass | F02 RLS and tenant context |
 | 2026-08-21 | F00 | Verified native PostgreSQL 17, Flyway V1, and HTTP 200 health endpoint | Install Docker, then F01 Testcontainers |
 | 2026-08-21 | F00 | Retried Temurin 21 installation; macOS requires interactive sudo authentication | Install Java 21 and Docker Desktop, then verify F00 runtime |
 | 2026-08-21 | F00 | Added Spring Boot skeleton, local Postgres compose config, Flyway baseline, error/logging contracts; unit build passes on Java 26 | Install Java 21 + Docker, verify full runtime |
