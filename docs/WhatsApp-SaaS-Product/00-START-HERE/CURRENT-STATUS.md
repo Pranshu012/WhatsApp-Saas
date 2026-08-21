@@ -10,14 +10,14 @@
 ```text
 Current Phase:        PHASE A — Foundation
 
-Current Goal:         Implement F02 tenant isolation and row-level security.
+Current Goal:         Implement F03 Authentication and Authorisation.
 
-Last Completed:       F01 tenant, user, and owner-membership registration with Argon2id hashing;
+Last Completed:       F02 - Tenant isolation, RLS and TenantContext.
                       native PostgreSQL verification and `./mvnw clean verify` pass.
 
-Currently Working On: F02 — tenant isolation and row-level security
+Currently Working On: F03 — Authentication
 
-Next Task:            Read the F02 tenancy and test documents, implement both isolation layers,
+Next Task:            Read the F03 authentication rules and implement Spring Security config.
                       then complete Testcontainers parity when Docker becomes available.
 
 Blocked By:           Docker Desktop remains required for Testcontainers parity. Java 21 also
@@ -43,6 +43,8 @@ Append a line each session. Newest at top.
 
 | Date | Phase | What I did | Next |
 |---|---|---|---|
+| 2026-08-21 | F02 | Implemented TenantContext, TenantFilterAspect, and V3 RLS migration for Postgres | F03 Authentication |
+
 | 2026-08-21 | F01 | Added tenant/user/membership registration with Argon2id; native end-to-end check and build pass | F02 RLS and tenant context |
 | 2026-08-21 | F00 | Verified native PostgreSQL 17, Flyway V1, and HTTP 200 health endpoint | Install Docker, then F01 Testcontainers |
 | 2026-08-21 | F00 | Retried Temurin 21 installation; macOS requires interactive sudo authentication | Install Java 21 and Docker Desktop, then verify F00 runtime |
