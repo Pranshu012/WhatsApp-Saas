@@ -18,9 +18,11 @@ public class TenantFilterAspect {
 
     @Before("execution(* org.springframework.data.repository.Repository+.*(..))")
     public void enableTenantFilter() {
+        Session session = entityManager.unwrap(Session.class);
         if (TenantContext.get() != null) {
-            Session session = entityManager.unwrap(Session.class);
             session.enableFilter("tenantFilter").setParameter("tenantId", TenantContext.get());
+        } else {
+            session.disableFilter("tenantFilter");
         }
     }
 }

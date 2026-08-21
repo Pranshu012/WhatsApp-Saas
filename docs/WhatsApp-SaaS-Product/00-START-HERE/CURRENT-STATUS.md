@@ -8,17 +8,17 @@
 ---
 
 ```text
-Current Phase:        PHASE B — WhatsApp Core (F05–F11)
+Current Phase:        PHASE C — Templates & Automation (F12–F16)
 
-Current Goal:         Implement F11 Inbound Message Processing & 24h Service Window Tracking.
+Current Goal:         Implement F12 Meta Template Management & Category Sync.
 
-Last Completed:       F10 - Inbound Webhook Receiver & HMAC Verification
-                      (GET verification handshake, raw byte HMAC-SHA256 verification,
-                       V10 webhook_events table with deduplication, and 64/64 tests passing).
+Last Completed:       F11 - Inbound Message Processing & 24h Service Window Tracking
+                      (Contacts & Conversations tables, 24h window calculation, INBOUND_FREE ledger,
+                       InboundMessageReceivedEvent, and 70/70 tests passing. PHASE B COMPLETE).
 
-Currently Working On: F11 — Inbound Message Processing
+Currently Working On: F12 — Meta Template Management & Category Sync
 
-Next Task:            Read F11 specification in PHASE-B-WHATSAPP.md and implement V11 contacts/conversations migration.
+Next Task:            Read F12 specification in PHASE-C-AUTOMATION.md and implement template synchronization.
 
 Blocked By:           Docker Desktop remains required for Testcontainers parity. Java 21 also
                       requires an interactive macOS administrator-password prompt; Java 26 is
@@ -43,6 +43,7 @@ Append a line each session. Newest at top.
 
 | Date | Phase | What I did | Next |
 |---|---|---|---|
+| 2026-08-21 | F11 | Implemented Inbound Message Processing, Contacts & Conversations, 24h window tracking, and INBOUND_FREE ledger (PHASE B COMPLETE) | F12 Template Management |
 | 2026-08-21 | F10 | Implemented Webhook Receiver with GET handshake, raw HMAC verification, V10 webhook_events, and fast ingest | F11 Inbound Message Processing |
 | 2026-08-21 | F09 | Implemented Outbound Messaging with WhatsAppCloudClient, SendMessageJobHandler, MessagingService, and Ledger tracking | F10 Webhook Receiver & HMAC |
 | 2026-08-21 | F08 | Implemented Message Ledger with V9 migration, SHA-256 phone hashing, append-only events, and DB trigger guard | F09 Outbound Messaging |

@@ -136,4 +136,39 @@ public class LedgerService {
 
         return result;
     }
+
+    @Transactional
+    public UUID recordInboundMessage(UUID whatsappAccountId, String fromPhone, String wamid, Instant timestamp) {
+        UUID tenantId = TenantContext.require();
+
+        if (wamid != null && !wamid.isBlank()) {
+            Optional<MessageLedger> existing = ledgerRepository.findByWamid(wamid);
+            if (existing.isPresent()) {
+                log.info("Inbound message with wamid [{}] already recorded in ledger", wamid);
+                return existing.get().getId();
+            }
+        }
+
+        String phoneHash = PhonePrivacyUtils.hashPhoneNumber(fromPhone);
+        String phoneLast4 = PhonePrivacyUtils.extractLast4(fromPhone);
+
+        MessageLedger ledger = new MessageLedger(
+                whatsappAccountId,
+                MessageDirection.INBOUND,
+                phoneHash,
+                phoneLast4,
+                BillingCategory.INBOUND_FREE,
+                null,
+                ConversationWindow.IN_WINDOW,
+                MessageLedgerStatus.DELIVERED,
+                null,
+                null
+        );
+        ledger.setTenantId(tenantId);
+        ledger.setWamid(wamid);
+
+        MessageLedger saved = ledgerRepository.save(ledger);
+        log.debug("Recorded inbound message on ledger for tenant [{}], wamid [{}]", tenantId, wamid);
+        return saved.getId();
+    }
 }
