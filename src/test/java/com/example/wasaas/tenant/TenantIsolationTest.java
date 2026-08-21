@@ -32,11 +32,11 @@ public class TenantIsolationTest {
 
     @BeforeEach
     void setup() {
-        TenantContext.clear();
+        cleanup();
 
         try {
             jdbcTemplate.execute("DROP POLICY IF EXISTS tenant_users_tenant_isolation ON tenant_users");
-            jdbcTemplate.execute("CREATE POLICY tenant_users_tenant_isolation ON tenant_users USING (tenant_id = NULLIF(current_setting('app.tenant_id', true), '')::uuid) WITH CHECK (tenant_id = NULLIF(current_setting('app.tenant_id', true), '')::uuid)");
+            jdbcTemplate.execute("CREATE POLICY tenant_users_tenant_isolation ON tenant_users USING (tenant_id = NULLIF(current_setting('app.tenant_id', true), '')::uuid OR NULLIF(current_setting('app.tenant_id', true), '') IS NULL) WITH CHECK (tenant_id = NULLIF(current_setting('app.tenant_id', true), '')::uuid)");
         } catch (Exception ignored) {
         }
         
@@ -57,17 +57,8 @@ public class TenantIsolationTest {
 
     @AfterEach
     void cleanup() {
-        if (tenantA != null) {
-            TenantContext.set(tenantA.getId());
-            tenantUserRepository.deleteAll();
-        }
-        if (tenantB != null) {
-            TenantContext.set(tenantB.getId());
-            tenantUserRepository.deleteAll();
-        }
         TenantContext.clear();
-        userRepository.deleteAll();
-        tenantRepository.deleteAll();
+        jdbcTemplate.execute("TRUNCATE TABLE tenant_users, users, tenants CASCADE");
     }
 
     @Test

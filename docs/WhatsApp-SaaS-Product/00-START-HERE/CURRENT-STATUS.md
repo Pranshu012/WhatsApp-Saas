@@ -10,15 +10,15 @@
 ```text
 Current Phase:        PHASE A — Foundation
 
-Current Goal:         Implement F03 Authentication and Authorisation.
+Current Goal:         Implement F04 Password Reset.
 
-Last Completed:       F02 - Tenant isolation, RLS and TenantContext.
-                      native PostgreSQL verification and `./mvnw clean verify` pass.
+Last Completed:       F03 - Authentication and Server-Side Sessions (Spring Session JDBC,
+                      JSON login/logout/me/csrf endpoints, rate limiting, timing defense,
+                      TenantPrincipal context binding, and 15/15 tests passing).
 
-Currently Working On: F03 — Authentication
+Currently Working On: F04 — Password Reset
 
-Next Task:            Read the F03 authentication rules and implement Spring Security config.
-                      then complete Testcontainers parity when Docker becomes available.
+Next Task:            Read F04 specification and implement password reset with expiring tokens.
 
 Blocked By:           Docker Desktop remains required for Testcontainers parity. Java 21 also
                       requires an interactive macOS administrator-password prompt; Java 26 is
@@ -43,8 +43,8 @@ Append a line each session. Newest at top.
 
 | Date | Phase | What I did | Next |
 |---|---|---|---|
+| 2026-08-21 | F03 | Implemented Spring Session JDBC, JSON login, logout, me, csrf endpoints, rate limiting, and session-principal TenantContext | F04 Password Reset |
 | 2026-08-21 | F02 | Implemented TenantContext, TenantFilterAspect, and V3 RLS migration for Postgres | F03 Authentication |
-
 | 2026-08-21 | F01 | Added tenant/user/membership registration with Argon2id; native end-to-end check and build pass | F02 RLS and tenant context |
 | 2026-08-21 | F00 | Verified native PostgreSQL 17, Flyway V1, and HTTP 200 health endpoint | Install Docker, then F01 Testcontainers |
 | 2026-08-21 | F00 | Retried Temurin 21 installation; macOS requires interactive sudo authentication | Install Java 21 and Docker Desktop, then verify F00 runtime |

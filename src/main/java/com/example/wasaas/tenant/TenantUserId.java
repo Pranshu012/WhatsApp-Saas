@@ -10,6 +10,7 @@ public class TenantUserId implements Serializable {
     @Column(name = "tenant_id") private UUID tenantId;
     @Column(name = "user_id") private UUID userId;
     public UUID getTenantId() { return tenantId; }
+    public UUID getUserId() { return userId; }
     protected TenantUserId() { }
     public TenantUserId(UUID tenantId, UUID userId) { this.tenantId = tenantId; this.userId = userId; }
     @Override public boolean equals(Object other) {

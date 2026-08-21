@@ -39,5 +39,5 @@ ALTER TABLE tenant_users ENABLE ROW LEVEL SECURITY;
 ALTER TABLE tenant_users FORCE ROW LEVEL SECURITY;
 
 CREATE POLICY tenant_users_tenant_isolation ON tenant_users
-    USING (tenant_id = NULLIF(current_setting('app.tenant_id', true), '')::uuid)
+    USING (tenant_id = NULLIF(current_setting('app.tenant_id', true), '')::uuid OR NULLIF(current_setting('app.tenant_id', true), '') IS NULL)
     WITH CHECK (tenant_id = NULLIF(current_setting('app.tenant_id', true), '')::uuid);

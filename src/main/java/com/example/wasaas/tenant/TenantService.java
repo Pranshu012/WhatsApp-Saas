@@ -37,7 +37,12 @@ public class TenantService {
 
         Tenant tenant = tenantRepository.save(Tenant.active(command.businessName().trim(), slug));
         User user = userRepository.save(User.active(email, passwordEncoder.encode(command.password()), command.fullName().trim()));
-        tenantUserRepository.save(TenantUser.owner(tenant, user));
+        try {
+            com.example.wasaas.tenant.context.TenantContext.set(tenant.getId());
+            tenantUserRepository.save(TenantUser.owner(tenant, user));
+        } finally {
+            com.example.wasaas.tenant.context.TenantContext.clear();
+        }
         return new RegistrationResult(tenant.getBusinessName(), tenant.getSlug(), user.getFullName(), user.getEmail());
     }
 }
