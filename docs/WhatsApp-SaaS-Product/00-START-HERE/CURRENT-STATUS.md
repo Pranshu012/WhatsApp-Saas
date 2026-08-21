@@ -10,15 +10,15 @@
 ```text
 Current Phase:        PHASE B — WhatsApp Core (F05–F11)
 
-Current Goal:         Implement F08 Message Ledger.
+Current Goal:         Implement F09 Outbound Messaging & Queue Dispatch.
 
-Last Completed:       F07 - Jobs table and worker
-                      (Durable job queue via V8__jobs.sql, SKIP LOCKED claim logic,
-                       JobWorker poller, and concurrent transactional execution).
+Last Completed:       F08 - Message Ledger
+                      (V9 migration with RLS, SHA-256 phone hashing + last4, append-only
+                       status event audit table, DB immutability trigger guard, and 50/50 tests passing).
 
-Currently Working On: F08 — Message Ledger
+Currently Working On: F09 — Outbound Messaging & Queue Dispatch
 
-Next Task:            Read F08 specification in PHASE-B-WHATSAPP.md and implement billing/append-only ledger.
+Next Task:            Read F09 specification in PHASE-B-WHATSAPP.md and implement template/text message sending.
 
 Blocked By:           Docker Desktop remains required for Testcontainers parity. Java 21 also
                       requires an interactive macOS administrator-password prompt; Java 26 is
@@ -43,6 +43,7 @@ Append a line each session. Newest at top.
 
 | Date | Phase | What I did | Next |
 |---|---|---|---|
+| 2026-08-21 | F08 | Implemented Message Ledger with V9 migration, SHA-256 phone hashing, append-only events, and DB trigger guard | F09 Outbound Messaging |
 | 2026-08-21 | F07 | Implemented durable job queue with FOR UPDATE SKIP LOCKED, exponential backoff, locking recovery | F08 Message Ledger |
 | 2026-08-21 | F06 | Implemented Embedded Signup callback, MetaGraphClient, webhook subscription, Error Code 200 handling, and connect endpoint | F07 Jobs Table & Worker |
 | 2026-08-21 | F05 | Implemented WhatsApp Accounts model with AES-256-GCM TokenCipher envelope encryption, fail-fast key check, and RLS | F06 Embedded Signup & Meta Graph Client |
