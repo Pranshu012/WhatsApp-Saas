@@ -58,6 +58,7 @@ public class MessagingServiceTest {
     @Autowired private JobWorker jobWorker;
     @Autowired private JobRepository jobRepository;
     @Autowired private MessageLedgerRepository ledgerRepository;
+    @Autowired private com.example.wasaas.template.WhatsAppTemplateRepository templateRepository;
     @Autowired private WhatsAppAccountService accountService;
     @Autowired private WhatsAppAccountRepository accountRepository;
     @Autowired private WhatsAppCloudClient cloudClient;
@@ -153,6 +154,21 @@ public class MessagingServiceTest {
     @Test
     void testSendTemplateMessageFormattedCorrectly() {
         String recipient = "+15559876543";
+
+        templateRepository.save(new com.example.wasaas.template.WhatsAppTemplate(
+                tenantId,
+                account.getId(),
+                "meta_order_receipt",
+                "order_receipt",
+                "en_US",
+                com.example.wasaas.template.TemplateCategory.MARKETING,
+                com.example.wasaas.template.TemplateCategory.MARKETING,
+                com.example.wasaas.template.TemplateStatus.APPROVED,
+                null,
+                "Your receipt is {{1}}",
+                null,
+                null
+        ));
 
         mockServer.expect(requestTo(metaProperties.getApiBaseUrl() + "/" + PHONE_ID + "/messages"))
                 .andExpect(method(HttpMethod.POST))

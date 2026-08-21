@@ -14,3 +14,4 @@
 | F09 | Outbound messaging | Complete — verified with queue dispatch, ledger intent, rate limiting, retry backoff, and error 190 handling | 2026-08-21 | [F09](F09-outbound-messaging.md) |
 | F10 | Webhook receiver | Complete — verified with GET handshake, raw HMAC verification, fast ingest, and deduplication | 2026-08-21 | [F10](F10-webhook-receiver.md) |
 | F11 | Inbound message processing | Complete — verified with contact upsert, 24h service window, INBOUND_FREE ledger, and status events | 2026-08-21 | [F11](F11-inbound-message-processing.md) |
+| F12 | Meta template management & category sync | Complete — verified with Meta authoritative category sync, conflict alerts, and pre-send safety guards | 2026-08-21 | [F12](F12-template-management.md) |

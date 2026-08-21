@@ -32,6 +32,7 @@ public class SendMessageJobHandler implements JobHandler {
     private final WhatsAppAccountRepository accountRepository;
     private final WhatsAppCloudClient whatsAppCloudClient;
     private final LedgerService ledgerService;
+    private final com.example.wasaas.template.TemplateService templateService;
     private final AccountRateLimiter rateLimiter;
     private final ObjectMapper objectMapper;
 
@@ -39,12 +40,14 @@ public class SendMessageJobHandler implements JobHandler {
                                  WhatsAppAccountRepository accountRepository,
                                  WhatsAppCloudClient whatsAppCloudClient,
                                  LedgerService ledgerService,
+                                 com.example.wasaas.template.TemplateService templateService,
                                  AccountRateLimiter rateLimiter,
                                  ObjectMapper objectMapper) {
         this.accountService = accountService;
         this.accountRepository = accountRepository;
         this.whatsAppCloudClient = whatsAppCloudClient;
         this.ledgerService = ledgerService;
+        this.templateService = templateService;
         this.rateLimiter = rateLimiter;
         this.objectMapper = objectMapper;
     }
@@ -63,9 +66,18 @@ public class SendMessageJobHandler implements JobHandler {
             throw new PermanentJobException("WhatsApp account [" + account.getId() + "] is not connected (status: " + account.getStatus() + ")");
         }
 
-        BillingCategory billingCategory = payload.billingCategory() != null
-                ? payload.billingCategory()
-                : ("TEMPLATE".equalsIgnoreCase(payload.type()) ? BillingCategory.MARKETING : BillingCategory.SERVICE);
+        BillingCategory billingCategory;
+        if ("TEMPLATE".equalsIgnoreCase(payload.type())) {
+            int paramCount = countTemplateParams(payload.components());
+            com.example.wasaas.template.WhatsAppTemplate template = templateService.assertSendable(
+                    account.getTenantId(), payload.templateName(), payload.languageCode(), paramCount);
+
+            billingCategory = template.getCategory() != null
+                    ? mapTemplateCategory(template.getCategory())
+                    : (payload.billingCategory() != null ? payload.billingCategory() : BillingCategory.MARKETING);
+        } else {
+            billingCategory = payload.billingCategory() != null ? payload.billingCategory() : BillingCategory.SERVICE;
+        }
 
         ConversationWindow conversationWindow = "TEMPLATE".equalsIgnoreCase(payload.type())
                 ? ConversationWindow.OUT_OF_WINDOW
@@ -136,5 +148,24 @@ public class SendMessageJobHandler implements JobHandler {
             ledgerService.recordFailure(ledgerId, 500, e.getMessage());
             throw e;
         }
+    }
+
+    private int countTemplateParams(java.util.List<com.example.wasaas.whatsapp.client.TemplateComponent> components) {
+        if (components == null || components.isEmpty()) return 0;
+        int count = 0;
+        for (com.example.wasaas.whatsapp.client.TemplateComponent comp : components) {
+            if (comp.parameters() != null) {
+                count += comp.parameters().size();
+            }
+        }
+        return count;
+    }
+
+    private BillingCategory mapTemplateCategory(com.example.wasaas.template.TemplateCategory category) {
+        return switch (category) {
+            case MARKETING -> BillingCategory.MARKETING;
+            case UTILITY -> BillingCategory.UTILITY;
+            case AUTHENTICATION -> BillingCategory.AUTHENTICATION;
+        };
     }
 }

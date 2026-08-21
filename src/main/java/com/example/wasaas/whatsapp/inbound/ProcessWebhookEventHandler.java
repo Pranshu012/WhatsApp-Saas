@@ -10,6 +10,7 @@ import com.example.wasaas.job.PermanentJobException;
 import com.example.wasaas.ledger.LedgerService;
 import com.example.wasaas.ledger.MessageLedgerStatus;
 import com.example.wasaas.ledger.PhonePrivacyUtils;
+import com.example.wasaas.template.WhatsAppTemplateRepository;
 import com.example.wasaas.tenant.context.TenantContext;
 import com.example.wasaas.whatsapp.WhatsAppAccount;
 import com.example.wasaas.whatsapp.WhatsAppAccountRepository;
@@ -37,6 +38,7 @@ public class ProcessWebhookEventHandler implements JobHandler {
     private final ContactRepository contactRepository;
     private final ConversationRepository conversationRepository;
     private final LedgerService ledgerService;
+    private final WhatsAppTemplateRepository templateRepository;
     private final ApplicationEventPublisher eventPublisher;
     private final ObjectMapper objectMapper;
 
@@ -45,6 +47,7 @@ public class ProcessWebhookEventHandler implements JobHandler {
                                       ContactRepository contactRepository,
                                       ConversationRepository conversationRepository,
                                       LedgerService ledgerService,
+                                      WhatsAppTemplateRepository templateRepository,
                                       ApplicationEventPublisher eventPublisher,
                                       ObjectMapper objectMapper) {
         this.webhookEventRepository = webhookEventRepository;
@@ -52,6 +55,7 @@ public class ProcessWebhookEventHandler implements JobHandler {
         this.contactRepository = contactRepository;
         this.conversationRepository = conversationRepository;
         this.ledgerService = ledgerService;
+        this.templateRepository = templateRepository;
         this.eventPublisher = eventPublisher;
         this.objectMapper = objectMapper;
     }
@@ -72,21 +76,18 @@ public class ProcessWebhookEventHandler implements JobHandler {
         WebhookEvent event = webhookEventRepository.findById(webhookEventId)
                 .orElseThrow(() -> new PermanentJobException("WebhookEvent not found for ID: " + webhookEventId));
 
-        if (event.getPhoneNumberId() == null || event.getPhoneNumberId().isBlank()) {
-            log.info("Webhook event [{}] has no phoneNumberId, marking IGNORED", webhookEventId);
+        WhatsAppAccount account = null;
+        if (event.getPhoneNumberId() != null && !event.getPhoneNumberId().isBlank()) {
+            account = accountRepository.findByPhoneNumberId(event.getPhoneNumberId()).orElse(null);
+        } else if (event.getWabaId() != null && !event.getWabaId().isBlank()) {
+            account = accountRepository.findByWabaId(event.getWabaId()).orElse(null);
+        }
+
+        if (account == null) {
+            log.warn("Unknown account for webhook event [{}] (phone={}, waba={})", webhookEventId, event.getPhoneNumberId(), event.getWabaId());
             event.markIgnored();
             webhookEventRepository.save(event);
             return;
-        }
-
-        WhatsAppAccount account = accountRepository.findByPhoneNumberId(event.getPhoneNumberId())
-                .orElse(null);
-
-        if (account == null) {
-            log.warn("Unknown phoneNumberId [{}] on webhook event [{}]", event.getPhoneNumberId(), webhookEventId);
-            event.markFailed();
-            webhookEventRepository.save(event);
-            throw new PermanentJobException("Unknown phone_number_id: " + event.getPhoneNumberId());
         }
 
         UUID tenantId = account.getTenantId();
@@ -109,6 +110,9 @@ public class ProcessWebhookEventHandler implements JobHandler {
             } else if (valueNode.has("statuses") && valueNode.get("statuses").isArray() && !valueNode.get("statuses").isEmpty()) {
                 processStatusUpdates(valueNode, event);
                 event.markProcessed();
+            } else if (valueNode.has("message_template_id") || valueNode.has("message_template_name")) {
+                processTemplateStatusUpdate(valueNode, account);
+                event.markProcessed();
             } else {
                 log.info("Unsupported webhook event shape in event [{}], marking IGNORED", webhookEventId);
                 event.markIgnored();
@@ -118,6 +122,37 @@ public class ProcessWebhookEventHandler implements JobHandler {
 
         } finally {
             TenantContext.clear();
+        }
+    }
+
+    private void processTemplateStatusUpdate(JsonNode valueNode, WhatsAppAccount account) {
+        String metaTemplateId = valueNode.has("message_template_id") ? valueNode.get("message_template_id").asText() : null;
+        String templateName = valueNode.has("message_template_name") ? valueNode.get("message_template_name").asText() : null;
+        String language = valueNode.has("message_template_language") ? valueNode.get("message_template_language").asText() : null;
+        String eventStatus = valueNode.has("event") ? valueNode.get("event").asText() : null;
+        String reason = valueNode.has("reason") ? valueNode.get("reason").asText() : null;
+
+        java.util.Optional<com.example.wasaas.template.WhatsAppTemplate> templateOpt = java.util.Optional.empty();
+        if (metaTemplateId != null) {
+            templateOpt = templateRepository.findByTenantIdAndMetaTemplateId(account.getTenantId(), metaTemplateId);
+        }
+        if (templateOpt.isEmpty() && templateName != null && language != null) {
+            templateOpt = templateRepository.findByTenantIdAndNameAndLanguage(account.getTenantId(), templateName, language);
+        }
+
+        if (templateOpt.isPresent()) {
+            com.example.wasaas.template.WhatsAppTemplate template = templateOpt.get();
+            if (eventStatus != null) {
+                try {
+                    template.setStatus(com.example.wasaas.template.TemplateStatus.valueOf(eventStatus.toUpperCase()));
+                } catch (IllegalArgumentException ignored) {}
+            }
+            if (reason != null) {
+                template.setRejectionReason(reason);
+            }
+            templateRepository.save(template);
+            log.info("Updated template [{}] status to [{}] via webhook for tenant [{}]",
+                    template.getName(), template.getStatus(), account.getTenantId());
         }
     }
 

@@ -1,6 +1,7 @@
 package com.example.wasaas.whatsapp.meta;
 
 import com.example.wasaas.common.exception.DomainException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +16,7 @@ import org.springframework.web.client.RestClient;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 @Component
 public class MetaGraphClient {
@@ -109,6 +111,38 @@ public class MetaGraphClient {
         if (response == null || !response.success()) {
             throw new DomainException(HttpStatus.BAD_GATEWAY, "Failed to subscribe app to WABA webhooks");
         }
+    }
+
+    public List<MetaTemplateItem> listTemplates(String wabaId, String accessToken) {
+        String uri = metaProperties.getApiBaseUrl() + "/" + wabaId + "/message_templates?limit=100";
+
+        MetaTemplateListResponse response = restClient.get()
+                .uri(uri)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
+                .accept(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .body(MetaTemplateListResponse.class);
+
+        return response != null && response.data() != null ? response.data() : java.util.List.of();
+    }
+
+    public String createTemplate(String wabaId, String accessToken, CreateMetaTemplateRequest request) {
+        String uri = metaProperties.getApiBaseUrl() + "/" + wabaId + "/message_templates";
+
+        JsonNode response = restClient.post()
+                .uri(uri)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .body(request)
+                .retrieve()
+                .body(JsonNode.class);
+
+        if (response == null || !response.has("id")) {
+            throw new DomainException(HttpStatus.BAD_GATEWAY, "Meta template creation did not return a valid template ID");
+        }
+
+        return response.get("id").asText();
     }
 
     private void handleMetaErrorResponse(ClientHttpResponse response) throws IOException {
