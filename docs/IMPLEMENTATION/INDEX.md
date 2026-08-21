@@ -19,3 +19,4 @@
 | F14 | FAQ matching | Complete — verified with PostgreSQL FTS + pg_trgm combined ranking, typo tolerance, and confidence threshold | 2026-08-21 | [F14](F14-faq-matching.md) |
 | F15 | Interactive replies and consolidation | Complete — verified with buttons, list menus, inbound reply attribution, ReplyBuilder, and cost warnings | 2026-08-21 | [F15](F15-interactive-replies-consolidation.md) |
 | F16 | Scheduled messages | Complete — verified with UTC timestamp storage, timezone preservation, SKIP LOCKED due claiming, idempotency keys, and honest cancellation | 2026-08-21 | [F16](F16-scheduled-messages.md) |
+| F17 | React setup, auth, and app shell | Complete — verified with React 18, Vite, TypeScript, CSRF token handling, session bootstrap, 360px responsiveness, and zero bundle secrets | 2026-08-22 | [F17](F17-react-auth-app-shell.md) |
