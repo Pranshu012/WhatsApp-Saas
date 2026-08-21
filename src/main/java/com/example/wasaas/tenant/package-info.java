@@ -1,2 +1,5 @@
-/** Tenant feature boundary; implemented in F01. */
+@org.hibernate.annotations.FilterDef(
+        name = "tenantFilter",
+        parameters = @org.hibernate.annotations.ParamDef(name = "tenantId", type = java.util.UUID.class)
+)
 package com.example.wasaas.tenant;

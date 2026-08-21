@@ -11,7 +11,6 @@ import jakarta.persistence.Table;
 import com.example.wasaas.user.User;
 
 @Entity
-@org.hibernate.annotations.FilterDef(name = "tenantFilter", parameters = @org.hibernate.annotations.ParamDef(name = "tenantId", type = java.util.UUID.class))
 @org.hibernate.annotations.Filter(name = "tenantFilter", condition = "tenant_id = :tenantId")
 @Table(name = "tenant_users")
 public class TenantUser {

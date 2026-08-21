@@ -9,3 +9,6 @@ server:
     session:
       cookie:
         secure: false
+app:
+  crypto:
+    token-key: MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIzNDU2Nzg5MDE=
