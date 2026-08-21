@@ -8,17 +8,17 @@
 ---
 
 ```text
-Current Phase:        PHASE A — Foundation
+Current Phase:        PHASE A Complete → PHASE B (WhatsApp Core)
 
-Current Goal:         Implement F04 Password Reset.
+Current Goal:         Implement F05 WhatsApp Accounts table and TokenCipher (Envelope Encryption).
 
-Last Completed:       F03 - Authentication and Server-Side Sessions (Spring Session JDBC,
-                      JSON login/logout/me/csrf endpoints, rate limiting, timing defense,
-                      TenantPrincipal context binding, and 15/15 tests passing).
+Last Completed:       F04 - Password Reset (SHA-256 token hashing at rest, 30-min expiry,
+                      single-use enforcement, anti-enumeration, session revocation on reset,
+                      and 23/23 tests passing).
 
-Currently Working On: F04 — Password Reset
+Currently Working On: F05 — WhatsApp Accounts & Token Encryption
 
-Next Task:            Read F04 specification and implement password reset with expiring tokens.
+Next Task:            Read F05 specification in PHASE-B-WHATSAPP.md and implement AES-256-GCM TokenCipher.
 
 Blocked By:           Docker Desktop remains required for Testcontainers parity. Java 21 also
                       requires an interactive macOS administrator-password prompt; Java 26 is
@@ -43,6 +43,7 @@ Append a line each session. Newest at top.
 
 | Date | Phase | What I did | Next |
 |---|---|---|---|
+| 2026-08-21 | F04 | Implemented Password Reset with SHA-256 hashed tokens, 30-min expiry, anti-enumeration, global session revocation, and EmailSender | F05 WhatsApp Accounts & TokenCipher |
 | 2026-08-21 | F03 | Implemented Spring Session JDBC, JSON login, logout, me, csrf endpoints, rate limiting, and session-principal TenantContext | F04 Password Reset |
 | 2026-08-21 | F02 | Implemented TenantContext, TenantFilterAspect, and V3 RLS migration for Postgres | F03 Authentication |
 | 2026-08-21 | F01 | Added tenant/user/membership registration with Argon2id; native end-to-end check and build pass | F02 RLS and tenant context |

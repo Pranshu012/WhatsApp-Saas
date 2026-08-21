@@ -16,14 +16,18 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
 
     private final AuthService authService;
+    private final PasswordResetService passwordResetService;
 
-    public AuthController(AuthService authService) {
+    public AuthController(AuthService authService, PasswordResetService passwordResetService) {
         this.authService = authService;
+        this.passwordResetService = passwordResetService;
     }
 
     @PostMapping("/login")
@@ -63,5 +67,15 @@ public class AuthController {
             return new CsrfResponse("", "X-CSRF-TOKEN", "_csrf");
         }
         return new CsrfResponse(token.getToken(), token.getHeaderName(), token.getParameterName());
+    }
+
+    @PostMapping("/forgot-password")
+    public Map<String, String> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
+        return passwordResetService.forgotPassword(request);
+    }
+
+    @PostMapping("/reset-password")
+    public Map<String, String> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
+        return passwordResetService.resetPassword(request);
     }
 }

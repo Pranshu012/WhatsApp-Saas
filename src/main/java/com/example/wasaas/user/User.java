@@ -34,4 +34,10 @@ public class User {
     public UserStatus getStatus() { return status; }
     public void disable() { this.status = UserStatus.DISABLED; }
     public void activate() { this.status = UserStatus.ACTIVE; }
+    public void updatePassword(String newPasswordHash) {
+        if (newPasswordHash == null || newPasswordHash.isBlank()) {
+            throw new IllegalArgumentException("Password hash cannot be empty");
+        }
+        this.passwordHash = newPasswordHash;
+    }
 }
