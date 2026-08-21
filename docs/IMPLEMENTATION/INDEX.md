@@ -22,3 +22,4 @@
 | F17 | React setup, auth, and app shell | Complete — verified with React 18, Vite, TypeScript, CSRF token handling, session bootstrap, 360px responsiveness, and zero bundle secrets | 2026-08-22 | [F17](F17-react-auth-app-shell.md) |
 | F18 | WhatsApp connection screen | Complete — verified with Meta Embedded Signup popup, 6 connection states, abandonment recovery, health metrics, and payment warning | 2026-08-22 | [F18](F18-whatsapp-onboarding.md) |
 | F19 | Automation configuration screens | Complete — verified with rules editor, live FAQ typo tester, templates catalog with sync/cost warning, and unmatched inbox | 2026-08-22 | [F19](F19-automation-configuration.md) |
+| F20 | Inbox and dashboard | Complete — verified with 24h window countdown, manual reply, ledger monthly category counts, delivery outcomes, and scheduler | 2026-08-22 | [F20](F20-inbox-and-dashboard.md) |

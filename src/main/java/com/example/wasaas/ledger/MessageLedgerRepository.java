@@ -32,4 +32,18 @@ public interface MessageLedgerRepository extends JpaRepository<MessageLedger, UU
             @Param("start") Instant start,
             @Param("end") Instant end
     );
+
+    @Query("""
+        SELECT l.status as status, COUNT(l) as total
+        FROM MessageLedger l
+        WHERE l.tenantId = :tenantId
+          AND l.createdAt >= :start
+          AND l.createdAt < :end
+        GROUP BY l.status
+    """)
+    List<StatusOutcomeCount> countByStatusForDateRange(
+            @Param("tenantId") UUID tenantId,
+            @Param("start") Instant start,
+            @Param("end") Instant end
+    );
 }

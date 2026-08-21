@@ -164,3 +164,73 @@ export interface UnmatchedMessageResponse {
   wamid: string;
   receivedAt: string;
 }
+
+export interface DashboardStatsResponse {
+  currentMonth: string;
+  totalMessages: number;
+  categoryCounts: {
+    MARKETING: number;
+    UTILITY: number;
+    AUTHENTICATION: number;
+    SERVICE: number;
+    INBOUND_FREE: number;
+  };
+  deliveryOutcomes: {
+    INTENT: number;
+    SENT: number;
+    DELIVERED: number;
+    READ: number;
+    FAILED: number;
+  };
+  deliveryRatePercent: number;
+  note: string;
+}
+
+export interface ConversationSummaryDto {
+  id: string;
+  contactId: string;
+  contactName?: string;
+  phoneE164: string;
+  lastInboundAt?: string;
+  lastOutboundAt?: string;
+  status: string;
+  serviceWindowActive: boolean;
+  serviceWindowExpiresAt?: string;
+}
+
+export interface MessageLedgerDto {
+  id: string;
+  whatsappAccountId: string;
+  direction: 'INBOUND' | 'OUTBOUND';
+  wamid: string;
+  recipientPhoneHash: string;
+  recipientPhoneLast4: string;
+  billingCategory: 'MARKETING' | 'UTILITY' | 'AUTHENTICATION' | 'SERVICE' | 'INBOUND_FREE';
+  templateName?: string;
+  conversationWindow?: string;
+  status: 'INTENT' | 'SENT' | 'DELIVERED' | 'READ' | 'FAILED';
+  statusAt: string;
+  createdAt: string;
+  errorCode?: string;
+  errorMessage?: string;
+}
+
+export interface ScheduledMessageResponse {
+  id: string;
+  contactId: string;
+  templateId: string;
+  whatsappAccountId: string;
+  scheduledFor: string;
+  timezone?: string;
+  status: 'PENDING' | 'CLAIMED' | 'DISPATCHED' | 'CANCELLED' | 'FAILED';
+  claimedAt?: string;
+  createdAt: string;
+}
+
+export interface CreateScheduleRequest {
+  contactId: string;
+  templateId: string;
+  whatsappAccountId: string;
+  scheduledFor: string;
+  timezone?: string;
+}

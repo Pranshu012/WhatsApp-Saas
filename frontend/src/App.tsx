@@ -14,12 +14,10 @@ import { AutomationRulesScreen } from './features/automation/AutomationRulesScre
 import { FaqScreen } from './features/faq/FaqScreen';
 import { TemplatesScreen } from './features/templates/TemplatesScreen';
 import { UnmatchedMessagesScreen } from './features/unmatched/UnmatchedMessagesScreen';
-import {
-  LayoutDashboard,
-  MessageCircle,
-  Calendar,
-  Settings,
-} from 'lucide-react';
+import { DashboardScreen } from './features/dashboard/DashboardScreen';
+import { InboxScreen } from './features/inbox/InboxScreen';
+import { ScheduledMessagesScreen } from './features/scheduled/ScheduledMessagesScreen';
+import { Settings } from 'lucide-react';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -51,36 +49,10 @@ export const App: React.FC = () => {
               }
             >
               {/* Dashboard */}
-              <Route
-                path="/"
-                element={
-                  <FeaturePlaceholder
-                    title="Dashboard"
-                    subtitle="Message volume, delivery rates, and ledger billing counts."
-                    icon={LayoutDashboard}
-                    incrementBadge="F20"
-                    emptyTitle="No message activity yet"
-                    emptyDescription="Connect your WhatsApp account to view real-time monthly message usage, delivery breakdowns, and cost estimates."
-                    actionLabel="Connect WhatsApp"
-                    onAction={() => window.location.assign('/whatsapp')}
-                  />
-                }
-              />
+              <Route path="/" element={<DashboardScreen />} />
 
               {/* Inbox */}
-              <Route
-                path="/inbox"
-                element={
-                  <FeaturePlaceholder
-                    title="Inbox"
-                    subtitle="Customer conversations with 24-hour service window tracking."
-                    icon={MessageCircle}
-                    incrementBadge="F20"
-                    emptyTitle="Inbox is empty"
-                    emptyDescription="Incoming customer WhatsApp messages will appear here for manual replies inside the 24-hour service window."
-                  />
-                }
-              />
+              <Route path="/inbox" element={<InboxScreen />} />
 
               {/* WhatsApp Onboarding & Connection */}
               <Route
@@ -98,20 +70,7 @@ export const App: React.FC = () => {
               <Route path="/templates" element={<TemplatesScreen />} />
 
               {/* Scheduled Messages */}
-              <Route
-                path="/scheduled"
-                element={
-                  <FeaturePlaceholder
-                    title="Scheduled Messages"
-                    subtitle="Plan and broadcast automated template messages at scheduled UTC times."
-                    icon={Calendar}
-                    incrementBadge="F20"
-                    emptyTitle="No scheduled messages"
-                    emptyDescription="Schedule order reminders, appointment updates, or announcements for delivery at a future date and time."
-                    actionLabel="Schedule Message"
-                  />
-                }
-              />
+              <Route path="/scheduled" element={<ScheduledMessagesScreen />} />
 
               {/* Unmatched Messages */}
               <Route path="/unmatched" element={<UnmatchedMessagesScreen />} />
