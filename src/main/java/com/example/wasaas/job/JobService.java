@@ -114,6 +114,7 @@ public class JobService {
             return;
         }
 
+        UUID previousTenant = com.example.wasaas.tenant.context.TenantContext.get();
         try {
             if (job.getTenantId() != null) {
                 com.example.wasaas.tenant.context.TenantContext.set(job.getTenantId());
@@ -144,7 +145,11 @@ public class JobService {
             }
             jobRepository.save(job);
         } finally {
-            com.example.wasaas.tenant.context.TenantContext.clear();
+            if (previousTenant != null) {
+                com.example.wasaas.tenant.context.TenantContext.set(previousTenant);
+            } else {
+                com.example.wasaas.tenant.context.TenantContext.clear();
+            }
         }
     }
 }

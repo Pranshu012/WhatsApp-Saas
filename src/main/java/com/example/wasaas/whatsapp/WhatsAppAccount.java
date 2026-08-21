@@ -136,4 +136,8 @@ public class WhatsAppAccount extends BaseTenantEntity {
     public void disconnect() {
         this.status = WhatsAppAccountStatus.DISCONNECTED;
     }
+
+    public void setStatus(WhatsAppAccountStatus status) {
+        this.status = status;
+    }
 }

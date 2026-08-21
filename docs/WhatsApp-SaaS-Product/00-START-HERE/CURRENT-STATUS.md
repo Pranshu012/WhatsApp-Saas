@@ -10,15 +10,15 @@
 ```text
 Current Phase:        PHASE B — WhatsApp Core (F05–F11)
 
-Current Goal:         Implement F09 Outbound Messaging & Queue Dispatch.
+Current Goal:         Implement F10 Webhook Receiver & HMAC-SHA256 Signature Verification.
 
-Last Completed:       F08 - Message Ledger
-                      (V9 migration with RLS, SHA-256 phone hashing + last4, append-only
-                       status event audit table, DB immutability trigger guard, and 50/50 tests passing).
+Last Completed:       F09 - Outbound Messaging & Queue Dispatch
+                      (WhatsAppCloudClient, SendMessageJobHandler, MessagingService,
+                       ledger-first intent recording, token revocation handling, and 56/56 tests passing).
 
-Currently Working On: F09 — Outbound Messaging & Queue Dispatch
+Currently Working On: F10 — Webhook Receiver & HMAC Verification
 
-Next Task:            Read F09 specification in PHASE-B-WHATSAPP.md and implement template/text message sending.
+Next Task:            Read F10 specification in PHASE-B-WHATSAPP.md and implement GET verification challenge + POST HMAC verify.
 
 Blocked By:           Docker Desktop remains required for Testcontainers parity. Java 21 also
                       requires an interactive macOS administrator-password prompt; Java 26 is
@@ -43,6 +43,7 @@ Append a line each session. Newest at top.
 
 | Date | Phase | What I did | Next |
 |---|---|---|---|
+| 2026-08-21 | F09 | Implemented Outbound Messaging with WhatsAppCloudClient, SendMessageJobHandler, MessagingService, and Ledger tracking | F10 Webhook Receiver & HMAC |
 | 2026-08-21 | F08 | Implemented Message Ledger with V9 migration, SHA-256 phone hashing, append-only events, and DB trigger guard | F09 Outbound Messaging |
 | 2026-08-21 | F07 | Implemented durable job queue with FOR UPDATE SKIP LOCKED, exponential backoff, locking recovery | F08 Message Ledger |
 | 2026-08-21 | F06 | Implemented Embedded Signup callback, MetaGraphClient, webhook subscription, Error Code 200 handling, and connect endpoint | F07 Jobs Table & Worker |
