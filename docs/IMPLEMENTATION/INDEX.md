@@ -12,3 +12,4 @@
 | F07 | Jobs table and worker | Complete — verified with FOR UPDATE SKIP LOCKED, exponential backoff, and concurrency tests | 2026-08-21 | [F07](F07-jobs-table-worker.md) |
 | F08 | Message ledger | Complete — verified with phone hashing, append-only events, monthly aggregation, and DB trigger guard | 2026-08-21 | [F08](F08-message-ledger.md) |
 | F09 | Outbound messaging | Complete — verified with queue dispatch, ledger intent, rate limiting, retry backoff, and error 190 handling | 2026-08-21 | [F09](F09-outbound-messaging.md) |
+| F10 | Webhook receiver | Complete — verified with GET handshake, raw HMAC verification, fast ingest, and deduplication | 2026-08-21 | [F10](F10-webhook-receiver.md) |

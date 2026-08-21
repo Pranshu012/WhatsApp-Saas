@@ -31,6 +31,7 @@ public class SecurityConfig {
                                 "/api/auth/forgot-password",
                                 "/api/auth/reset-password",
                                 "/api/auth/csrf",
+                                "/api/webhooks/**",
                                 "/actuator/**"
                         )
                 )
@@ -41,6 +42,7 @@ public class SecurityConfig {
                                 "/api/auth/forgot-password",
                                 "/api/auth/reset-password",
                                 "/api/auth/csrf",
+                                "/api/webhooks/**",
                                 "/actuator/**"
                         ).permitAll()
                         .anyRequest().authenticated()

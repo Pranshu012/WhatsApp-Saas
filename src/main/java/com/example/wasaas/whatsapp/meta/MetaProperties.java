@@ -11,6 +11,7 @@ public class MetaProperties {
     private String graphVersion = "v20.0";
     private String appId = "";
     private String appSecret = "";
+    private String webhookVerifyToken = "";
     private int connectTimeoutMs = 5000;
     private int readTimeoutMs = 10000;
 
@@ -25,6 +26,9 @@ public class MetaProperties {
 
     public String getAppSecret() { return appSecret; }
     public void setAppSecret(String appSecret) { this.appSecret = appSecret; }
+
+    public String getWebhookVerifyToken() { return webhookVerifyToken; }
+    public void setWebhookVerifyToken(String webhookVerifyToken) { this.webhookVerifyToken = webhookVerifyToken; }
 
     public int getConnectTimeoutMs() { return connectTimeoutMs; }
     public void setConnectTimeoutMs(int connectTimeoutMs) { this.connectTimeoutMs = connectTimeoutMs; }

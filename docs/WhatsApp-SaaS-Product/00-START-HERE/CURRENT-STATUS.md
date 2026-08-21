@@ -10,15 +10,15 @@
 ```text
 Current Phase:        PHASE B — WhatsApp Core (F05–F11)
 
-Current Goal:         Implement F10 Webhook Receiver & HMAC-SHA256 Signature Verification.
+Current Goal:         Implement F11 Inbound Message Processing & 24h Service Window Tracking.
 
-Last Completed:       F09 - Outbound Messaging & Queue Dispatch
-                      (WhatsAppCloudClient, SendMessageJobHandler, MessagingService,
-                       ledger-first intent recording, token revocation handling, and 56/56 tests passing).
+Last Completed:       F10 - Inbound Webhook Receiver & HMAC Verification
+                      (GET verification handshake, raw byte HMAC-SHA256 verification,
+                       V10 webhook_events table with deduplication, and 64/64 tests passing).
 
-Currently Working On: F10 — Webhook Receiver & HMAC Verification
+Currently Working On: F11 — Inbound Message Processing
 
-Next Task:            Read F10 specification in PHASE-B-WHATSAPP.md and implement GET verification challenge + POST HMAC verify.
+Next Task:            Read F11 specification in PHASE-B-WHATSAPP.md and implement V11 contacts/conversations migration.
 
 Blocked By:           Docker Desktop remains required for Testcontainers parity. Java 21 also
                       requires an interactive macOS administrator-password prompt; Java 26 is
@@ -43,6 +43,7 @@ Append a line each session. Newest at top.
 
 | Date | Phase | What I did | Next |
 |---|---|---|---|
+| 2026-08-21 | F10 | Implemented Webhook Receiver with GET handshake, raw HMAC verification, V10 webhook_events, and fast ingest | F11 Inbound Message Processing |
 | 2026-08-21 | F09 | Implemented Outbound Messaging with WhatsAppCloudClient, SendMessageJobHandler, MessagingService, and Ledger tracking | F10 Webhook Receiver & HMAC |
 | 2026-08-21 | F08 | Implemented Message Ledger with V9 migration, SHA-256 phone hashing, append-only events, and DB trigger guard | F09 Outbound Messaging |
 | 2026-08-21 | F07 | Implemented durable job queue with FOR UPDATE SKIP LOCKED, exponential backoff, locking recovery | F08 Message Ledger |
