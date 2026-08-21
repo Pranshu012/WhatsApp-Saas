@@ -45,7 +45,7 @@ None. The temporary local database role is documented above and becomes `wasaas_
 |---|---|
 | `GlobalExceptionHandlerTest` | A `NotFoundException` becomes a clean 404 `ApiError`. |
 
-The Postgres startup, Flyway migration, and health endpoint must still be verified after Docker Desktop becomes available.
+The Postgres startup, Flyway migration, and health endpoint must still be verified after Java 21 and Docker Desktop are installed. Temurin's package installer needs an interactive macOS administrator-password prompt, so it cannot be completed from this agent session.
 
 ## Gotchas — read before touching this code
 

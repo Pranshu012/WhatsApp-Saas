@@ -19,8 +19,9 @@ Currently Working On: F00 — local Docker/PostgreSQL runtime verification
 Next Task:            Finish Java 21 and Docker Desktop installation, start PostgreSQL,
                       then verify Flyway V1 and `/actuator/health`.
 
-Blocked By:           Java 21 and Docker Desktop installation did not complete. The existing
-                      Java 26 can compile F00 but does not satisfy the project requirement.
+Blocked By:           Java 21 installation requires an interactive macOS administrator-password
+                      prompt. Docker Desktop has not yet been installed. Java 26 can compile F00
+                      but does not satisfy the project requirement.
 
 Important Decisions:  - Tech Provider model, customer pays Meta directly (ADR-003, ADR-005)
                       - Modular monolith, single VM (ADR-001)
@@ -41,6 +42,7 @@ Append a line each session. Newest at top.
 
 | Date | Phase | What I did | Next |
 |---|---|---|---|
+| 2026-08-21 | F00 | Retried Temurin 21 installation; macOS requires interactive sudo authentication | Install Java 21 and Docker Desktop, then verify F00 runtime |
 | 2026-08-21 | F00 | Added Spring Boot skeleton, local Postgres compose config, Flyway baseline, error/logging contracts; unit build passes on Java 26 | Install Java 21 + Docker, verify full runtime |
 | 2026-08-21 | Setup | Created local repository, copied docs, added cross-agent guidance | Install Java 21 and Docker, then F00 |
 | 2026-08-18 | — | Created documentation workspace | Start Phase 0.1 (domain) |
