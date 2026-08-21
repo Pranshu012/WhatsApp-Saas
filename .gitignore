@@ -10,3 +10,10 @@ target/
 .claude/settings.local.json
 .DS_Store
 */.DS_Store
+
+# Node & Frontend
+node_modules/
+**/node_modules/
+dist/
+**/dist/
+.vite/
