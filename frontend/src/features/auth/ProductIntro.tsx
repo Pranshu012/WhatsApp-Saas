@@ -1,46 +1,28 @@
 import React from 'react';
-import { CheckCircle2, MessageCircleMore, Smartphone, Sparkles } from 'lucide-react';
+import { MessageCircle, Sparkles } from 'lucide-react';
 
-/** Explains the product before asking a new business owner to create an account. */
+/** A compact product preview — not a second onboarding flow. */
 export const ProductIntro: React.FC = () => (
-  <section className="w-full sm:max-w-md lg:w-[28rem] lg:max-w-none xl:w-[32rem] bg-slate-900 text-white p-7 sm:p-10 xl:p-12 flex flex-col justify-between rounded-3xl shadow-xl shadow-slate-900/15">
-    <div>
-      <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-brand-500/20 text-brand-100 text-xs font-semibold">
-        <Sparkles className="w-4 h-4" />
-        Made for small businesses
+  <section className="w-full lg:w-[29rem] xl:w-[33rem] rounded-[2rem] bg-gradient-to-br from-brand-600 via-brand-700 to-slate-900 p-7 sm:p-9 xl:p-11 text-white shadow-2xl shadow-brand-900/20 overflow-hidden relative">
+    <div className="absolute -right-20 -top-20 w-56 h-56 rounded-full bg-white/10 blur-2xl" />
+    <div className="relative">
+      <div className="flex items-center gap-2 text-sm font-semibold text-brand-100">
+        <span className="w-8 h-8 rounded-xl bg-white/15 flex items-center justify-center"><MessageCircle className="w-4 h-4" /></span>
+        WhatsApp Business Helper
       </div>
-      <h1 className="mt-5 text-2xl sm:text-3xl xl:text-4xl font-bold tracking-tight leading-tight">
-        Reply to customers on WhatsApp, even when you are busy.
-      </h1>
-      <p className="mt-4 text-slate-300 leading-relaxed">
-        Set up simple answers for common customer questions like price, location, timings, and orders. You stay in control of every reply.
-      </p>
+      <h1 className="mt-7 text-3xl sm:text-4xl font-bold tracking-tight leading-[1.1]">Every customer gets a quick, helpful reply.</h1>
+      <p className="mt-4 max-w-md text-brand-100 leading-relaxed">Answer common WhatsApp questions automatically, while you focus on running your business.</p>
+      <div className="mt-8 rounded-2xl bg-white p-4 sm:p-5 text-slate-900 shadow-lg">
+        <div className="flex items-center gap-2 border-b border-slate-100 pb-3">
+          <div className="w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center text-white"><MessageCircle className="w-4 h-4" /></div>
+          <div><p className="text-sm font-semibold">Your business on WhatsApp</p><p className="text-xs text-emerald-600">● Ready to help customers</p></div>
+        </div>
+        <div className="mt-4 space-y-3 text-sm">
+          <div className="max-w-[82%] rounded-2xl rounded-tl-md bg-slate-100 px-3.5 py-2.5 text-slate-600">What are your shop timings?</div>
+          <div className="ml-auto max-w-[88%] rounded-2xl rounded-tr-md bg-emerald-500 px-3.5 py-2.5 text-white">We are open Monday to Saturday, 10 AM to 8 PM.</div>
+        </div>
+      </div>
+      <p className="mt-5 flex items-center gap-2 text-xs text-brand-100"><Sparkles className="w-4 h-4" /> Simple setup. You choose every answer.</p>
     </div>
-
-    <div className="space-y-4 my-7 sm:my-10">
-      <p className="text-sm font-semibold text-white">Get started in 3 simple steps</p>
-      <Step icon={Smartphone} number="1" title="Connect WhatsApp" text="Connect your business number securely through Meta." />
-      <Step icon={MessageCircleMore} number="2" title="Add common questions" text="Write the answers you already give customers every day." />
-      <Step icon={CheckCircle2} number="3" title="Turn on instant replies" text="Customers get quick help while you focus on your work." />
-    </div>
-
-    <p className="text-xs leading-relaxed text-slate-400 border-t border-slate-700 pt-5">
-      Your WhatsApp account and Meta message charges remain under your control. We never ask for your Meta password or payment details.
-    </p>
   </section>
-);
-
-const Step: React.FC<{
-  icon: React.ComponentType<{ className?: string }>;
-  number: string;
-  title: string;
-  text: string;
-}> = ({ icon: Icon, number, title, text }) => (
-  <div className="flex gap-3">
-    <div className="w-8 h-8 rounded-full bg-brand-500 text-white shrink-0 flex items-center justify-center text-sm font-bold">{number}</div>
-    <div>
-      <div className="flex items-center gap-2 text-sm font-semibold"><Icon className="w-4 h-4 text-brand-300" />{title}</div>
-      <p className="mt-1 text-sm text-slate-300 leading-relaxed">{text}</p>
-    </div>
-  </div>
 );

@@ -72,25 +72,26 @@ export const RegisterScreen: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center py-8 px-4 sm:px-6 lg:px-8">
-      <div className="w-full max-w-6xl flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-12">
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center py-8 px-4 sm:px-6 lg:px-8">
+      <div className="w-full max-w-6xl flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-14">
         <ProductIntro />
-        <div className="w-full sm:max-w-md">
-        <div className="flex justify-center">
-          <div className="w-12 h-12 rounded-2xl bg-brand-600 flex items-center justify-center text-white shadow-lg shadow-brand-500/20">
+        <div className="w-full sm:max-w-[27rem]">
+        <div className="flex items-center gap-3">
+          <div className="w-11 h-11 rounded-xl bg-brand-600 flex items-center justify-center text-white shadow-lg shadow-brand-500/20">
             <MessageSquare className="w-6 h-6" />
           </div>
+          <span className="font-bold text-slate-900">WhatsApp SaaS</span>
         </div>
-        <h2 className="mt-4 text-center text-2xl font-bold tracking-tight text-gray-900">
+        <h2 className="mt-8 text-3xl font-bold tracking-tight text-slate-900">
           Start automating customer replies
         </h2>
-        <p className="mt-2 text-center text-sm text-gray-600">
+        <p className="mt-2 text-sm text-slate-600">
           Create your account, then connect WhatsApp and add the answers customers ask for most.
         </p>
       </div>
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-4 shadow-sm border border-gray-200 rounded-2xl sm:px-10">
+      <div className="mt-7 w-full">
+        <div className="bg-white p-6 sm:p-8 shadow-xl shadow-slate-200/60 border border-slate-200 rounded-2xl">
           {error && (
             <AlertBanner
               type="error"
