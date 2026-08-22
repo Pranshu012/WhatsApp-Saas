@@ -3,6 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { MessageSquare, ArrowRight, Lock, Mail, Loader2 } from 'lucide-react';
 import { AlertBanner } from '../../components/AlertBanner';
+import { ProductIntro } from './ProductIntro';
 
 export const LoginScreen: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -37,20 +38,25 @@ export const LoginScreen: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center py-8 px-4 sm:px-6 lg:px-8">
+      <div className="w-full max-w-6xl flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-12">
+        <ProductIntro />
+        <div className="w-full sm:max-w-md">
         <div className="flex justify-center">
           <div className="w-12 h-12 rounded-2xl bg-brand-600 flex items-center justify-center text-white shadow-lg shadow-brand-500/20">
             <MessageSquare className="w-6 h-6" />
           </div>
         </div>
         <h2 className="mt-4 text-center text-2xl font-bold tracking-tight text-gray-900">
-          Sign in to your account
+          Welcome back
         </h2>
+        <p className="mt-2 text-center text-sm text-gray-600">
+          Sign in to manage your WhatsApp replies and customer messages.
+        </p>
         <p className="mt-2 text-center text-sm text-gray-600">
           Or{' '}
           <Link to="/register" className="font-medium text-brand-600 hover:text-brand-500">
-            start your 14-day free trial
+            create your business account
           </Link>
         </p>
       </div>
@@ -121,7 +127,7 @@ export const LoginScreen: React.FC = () => {
 
             <div>
               <label htmlFor="tenantSlug" className="block text-xs font-medium text-gray-500 mb-1">
-                Workspace identifier / Slug <span className="text-gray-400 font-normal">(optional)</span>
+                Business code <span className="text-gray-400 font-normal">(optional — only if your team gave you one)</span>
               </label>
               <input
                 id="tenantSlug"
@@ -130,7 +136,7 @@ export const LoginScreen: React.FC = () => {
                 value={tenantSlug}
                 onChange={(e) => setTenantSlug(e.target.value)}
                 className="block w-full px-3 py-2 border border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-xs min-h-[44px]"
-                placeholder="e.g. my-store (leave blank if unsure)"
+                placeholder="Leave blank if you are not sure"
               />
             </div>
 
@@ -152,6 +158,7 @@ export const LoginScreen: React.FC = () => {
               )}
             </button>
           </form>
+        </div>
         </div>
       </div>
     </div>

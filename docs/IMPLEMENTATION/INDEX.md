@@ -23,3 +23,6 @@
 | F18 | WhatsApp connection screen | Complete — verified with Meta Embedded Signup popup, 6 connection states, abandonment recovery, health metrics, and payment warning | 2026-08-22 | [F18](F18-whatsapp-onboarding.md) |
 | F19 | Automation configuration screens | Complete — verified with rules editor, live FAQ typo tester, templates catalog with sync/cost warning, and unmatched inbox | 2026-08-22 | [F19](F19-automation-configuration.md) |
 | F20 | Inbox and dashboard | Complete — verified with 24h window countdown, manual reply, ledger monthly category counts, delivery outcomes, and scheduler | 2026-08-22 | [F20](F20-inbox-and-dashboard.md) |
+| F21 | Razorpay subscriptions and payment lifecycle | Not implemented — no checkout, verified Razorpay webhook, subscription state machine, payment events, or billing UI | 2026-08-22 | [Audit](../AUDIT/2026-08-22-product-readiness.md) |
+| F22 | Production infrastructure as code | Present in repository — provisioning, Caddy, systemd and deploy workflow require a clean-VM rehearsal | 2026-08-22 | [Audit](../AUDIT/2026-08-22-product-readiness.md) |
+| F23 | Backups and monitoring | Partial — scripts exist but an encrypted off-site backup and scratch restore have not been evidenced | 2026-08-22 | [Audit](../AUDIT/2026-08-22-product-readiness.md) |

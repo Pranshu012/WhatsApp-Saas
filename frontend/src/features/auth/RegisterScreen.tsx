@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { MessageSquare, ArrowRight, Lock, Mail, Building, User, Loader2 } from 'lucide-react';
 import { AlertBanner } from '../../components/AlertBanner';
+import { ProductIntro } from './ProductIntro';
 
 export const RegisterScreen: React.FC = () => {
   const [businessName, setBusinessName] = useState('');
@@ -71,18 +72,20 @@ export const RegisterScreen: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center py-8 px-4 sm:px-6 lg:px-8">
+      <div className="w-full max-w-6xl flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-12">
+        <ProductIntro />
+        <div className="w-full sm:max-w-md">
         <div className="flex justify-center">
           <div className="w-12 h-12 rounded-2xl bg-brand-600 flex items-center justify-center text-white shadow-lg shadow-brand-500/20">
             <MessageSquare className="w-6 h-6" />
           </div>
         </div>
         <h2 className="mt-4 text-center text-2xl font-bold tracking-tight text-gray-900">
-          Create your business account
+          Start automating customer replies
         </h2>
         <p className="mt-2 text-center text-sm text-gray-600">
-          14-day free trial. No credit card required.
+          Create your account, then connect WhatsApp and add the answers customers ask for most.
         </p>
       </div>
 
@@ -123,11 +126,11 @@ export const RegisterScreen: React.FC = () => {
             {/* Workspace Slug */}
             <div>
               <label htmlFor="slug" className="block text-sm font-medium text-gray-700 mb-1">
-                Workspace URL Identifier
+                Business code
               </label>
               <div className="flex rounded-lg shadow-sm border border-gray-300 overflow-hidden focus-within:ring-2 focus-within:ring-brand-500 focus-within:border-brand-500">
                 <span className="inline-flex items-center px-3 text-gray-400 bg-gray-50 text-xs border-r border-gray-200">
-                  wasaas.in/
+                  your-business/
                 </span>
                 <input
                   id="slug"
@@ -224,7 +227,7 @@ export const RegisterScreen: React.FC = () => {
                   </>
                 ) : (
                   <>
-                    Start 14-Day Free Trial
+                    Create My Business Account
                     <ArrowRight className="w-4 h-4" />
                   </>
                 )}
@@ -240,6 +243,7 @@ export const RegisterScreen: React.FC = () => {
               </Link>
             </p>
           </div>
+        </div>
         </div>
       </div>
     </div>
