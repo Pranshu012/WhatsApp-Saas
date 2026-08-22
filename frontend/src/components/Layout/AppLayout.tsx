@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { Sidebar } from './Sidebar';
-import { Menu, LogOut, User, Building2 } from 'lucide-react';
+import { Menu, LogOut, Building2 } from 'lucide-react';
 
 interface AppLayoutProps {
   children?: React.ReactNode;
@@ -47,16 +47,21 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
           </div>
 
           {/* User Profile & Logout Action */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <button
+              type="button"
+              onClick={() => navigate('/guide')}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-xl transition-all min-h-[38px]"
+              title="View Setup Guide & Feature Map"
+            >
+              <span>🚀 Setup Guide</span>
+            </button>
+
             <div className="hidden sm:flex flex-col items-end text-xs">
               <span className="font-medium text-gray-800">{user?.fullName || user?.email}</span>
               <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-brand-100 text-brand-800 uppercase tracking-wider">
                 {user?.role || 'OWNER'}
               </span>
-            </div>
-
-            <div className="w-8 h-8 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-600 sm:hidden">
-              <User className="w-4 h-4" />
             </div>
 
             <button

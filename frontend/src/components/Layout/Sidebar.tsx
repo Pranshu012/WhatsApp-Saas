@@ -12,6 +12,7 @@ import {
   Settings,
   X,
   MessageSquare,
+  Sparkles,
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
@@ -28,6 +29,7 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { label: 'Home', href: '/', icon: LayoutDashboard },
+  { label: '🚀 Quick Setup Guide', href: '/guide', icon: Sparkles },
   { label: 'Inbox', href: '/inbox', icon: MessageCircle },
   { label: 'Connect WhatsApp', href: '/whatsapp', icon: Smartphone },
   { label: 'Auto Replies', href: '/automation', icon: Zap },

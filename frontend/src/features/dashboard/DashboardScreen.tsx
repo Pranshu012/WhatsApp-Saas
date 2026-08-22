@@ -140,6 +140,14 @@ export const DashboardScreen: React.FC = () => {
         <div className="flex items-center gap-3 self-start sm:self-auto">
           <button
             type="button"
+            onClick={() => navigate('/guide')}
+            className="inline-flex items-center gap-1.5 px-4 py-2.5 text-xs font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-xl min-h-[44px] transition-all"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+            Setup Guide
+          </button>
+          <button
+            type="button"
             onClick={() => navigate('/inbox')}
             className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-bold text-white bg-brand-600 hover:bg-brand-700 rounded-xl min-h-[44px] shadow-md shadow-brand-500/20 transition-all"
           >
@@ -148,6 +156,33 @@ export const DashboardScreen: React.FC = () => {
           </button>
         </div>
       </div>
+
+      {/* Non-Tech Setup Banner */}
+      {(!isConnected || totalAutomations < 3) && (
+        <div className="bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-brand-500/10 border border-emerald-300/80 rounded-3xl p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm">
+          <div className="flex items-start gap-3.5">
+            <div className="w-10 h-10 rounded-2xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-md shadow-emerald-600/20 mt-0.5">
+              <Sparkles className="w-5 h-5" />
+            </div>
+            <div>
+              <h3 className="text-base font-bold text-slate-900">
+                New here? Set up your WhatsApp bot in 4 easy steps
+              </h3>
+              <p className="text-xs text-slate-600 mt-0.5 leading-relaxed">
+                Connect your number, add 3 common questions, and test your bot. No coding or tech knowledge needed!
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => navigate('/guide')}
+            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-md transition-all self-start sm:self-auto shrink-0 min-h-[40px]"
+          >
+            <span>Open Quick Setup Guide</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      )}
 
       {/* 2. Top Status & Quick Action Hub (3 Hero Cards) */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
