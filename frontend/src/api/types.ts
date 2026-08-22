@@ -22,7 +22,6 @@ export interface CsrfTokenResponse {
 
 export interface RegistrationRequest {
   businessName: string;
-  slug: string;
   fullName: string;
   email: string;
   password: string;

@@ -57,11 +57,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       body: JSON.stringify(req),
     });
     // Auto-login after successful registration
-    await login({
-      email: req.email,
-      password: req.password,
-      tenantSlug: req.slug,
-    });
+      await login({
+        email: req.email,
+        password: req.password,
+        tenantSlug: response.slug,
+      });
     return response;
   };
 

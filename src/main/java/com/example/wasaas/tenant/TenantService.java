@@ -27,14 +27,10 @@ public class TenantService {
     @Transactional
     public RegistrationResult registerTenant(RegistrationCommand command) {
         String email = command.email().trim().toLowerCase(Locale.ROOT);
-        String slug = command.slug().trim().toLowerCase(Locale.ROOT);
+        String slug = resolveAvailableSlug(command.slug(), command.businessName());
         if (userRepository.existsByEmail(email)) {
             throw new DomainException(HttpStatus.CONFLICT, "An account already exists for this email");
         }
-        if (tenantRepository.existsBySlug(slug)) {
-            throw new DomainException(HttpStatus.CONFLICT, "This business URL is already in use");
-        }
-
         Tenant tenant = tenantRepository.save(Tenant.active(command.businessName().trim(), slug));
         User user = userRepository.save(User.active(email, passwordEncoder.encode(command.password()), command.fullName().trim()));
         try {
@@ -44,5 +40,31 @@ public class TenantService {
             com.example.wasaas.tenant.context.TenantContext.clear();
         }
         return new RegistrationResult(tenant.getBusinessName(), tenant.getSlug(), user.getFullName(), user.getEmail());
+    }
+
+    private String resolveAvailableSlug(String requestedSlug, String businessName) {
+        if (requestedSlug != null && !requestedSlug.isBlank()) {
+            String requested = requestedSlug.toLowerCase(Locale.ROOT).trim();
+            if (tenantRepository.existsBySlug(requested)) {
+                throw new DomainException(HttpStatus.CONFLICT, "This business URL is already in use");
+            }
+            return requested;
+        }
+
+        String raw = businessName;
+        String base = raw.toLowerCase(Locale.ROOT)
+                .replaceAll("[^a-z0-9]+", "-")
+                .replaceAll("^-+|-+$", "");
+        if (base.isBlank()) {
+            base = "business";
+        }
+        base = base.substring(0, Math.min(base.length(), 70)).replaceAll("-+$", "");
+
+        String candidate = base;
+        int suffix = 2;
+        while (tenantRepository.existsBySlug(candidate)) {
+            candidate = base + "-" + suffix++;
+        }
+        return candidate;
     }
 }

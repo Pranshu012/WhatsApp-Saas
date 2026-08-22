@@ -3,12 +3,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { MessageSquare, ArrowRight, Lock, Mail, Building, User, Loader2 } from 'lucide-react';
 import { AlertBanner } from '../../components/AlertBanner';
-import { ProductIntro } from './ProductIntro';
 
 export const RegisterScreen: React.FC = () => {
   const [businessName, setBusinessName] = useState('');
-  const [slug, setSlug] = useState('');
-  const [slugManuallyEdited, setSlugManuallyEdited] = useState(false);
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -21,22 +18,6 @@ export const RegisterScreen: React.FC = () => {
   const handleBusinessNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
     setBusinessName(val);
-    if (!slugManuallyEdited) {
-      const generatedSlug = val
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/^-+|-+$/g, '');
-      setSlug(generatedSlug);
-    }
-  };
-
-  const handleSlugChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSlugManuallyEdited(true);
-    setSlug(
-      e.target.value
-        .toLowerCase()
-        .replace(/[^a-z0-9-]+/g, '')
-    );
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -48,17 +29,11 @@ export const RegisterScreen: React.FC = () => {
       return;
     }
 
-    if (!slug || slug.trim().length === 0) {
-      setError('Please provide a valid workspace slug.');
-      return;
-    }
-
     setLoading(true);
 
     try {
       await register({
         businessName: businessName.trim(),
-        slug: slug.trim(),
         fullName: fullName.trim(),
         email: email.trim(),
         password,
@@ -72,23 +47,20 @@ export const RegisterScreen: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center py-8 px-4 sm:px-6 lg:px-8">
-      <div className="w-full max-w-6xl flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-14">
-        <ProductIntro />
-        <div className="w-full sm:max-w-[27rem]">
-        <div className="flex items-center gap-3">
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center py-10 px-4 sm:px-6">
+      <div className="w-full max-w-lg">
+        <div className="flex justify-center">
           <div className="w-11 h-11 rounded-xl bg-brand-600 flex items-center justify-center text-white shadow-lg shadow-brand-500/20">
             <MessageSquare className="w-6 h-6" />
           </div>
-          <span className="font-bold text-slate-900">WhatsApp SaaS</span>
         </div>
-        <h2 className="mt-8 text-3xl font-bold tracking-tight text-slate-900">
+        <p className="mt-3 text-center font-bold text-slate-900">WhatsApp SaaS</p>
+        <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-slate-900">
           Start automating customer replies
         </h2>
-        <p className="mt-2 text-sm text-slate-600">
-          Create your account, then connect WhatsApp and add the answers customers ask for most.
+        <p className="mt-2 text-center text-sm text-slate-600">
+          Create your account in less than a minute. We will create your business workspace automatically.
         </p>
-      </div>
 
       <div className="mt-7 w-full">
         <div className="bg-white p-6 sm:p-8 shadow-xl shadow-slate-200/60 border border-slate-200 rounded-2xl">
@@ -120,28 +92,6 @@ export const RegisterScreen: React.FC = () => {
                   onChange={handleBusinessNameChange}
                   className="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-sm min-h-[44px]"
                   placeholder="e.g. Patel Electronics"
-                />
-              </div>
-            </div>
-
-            {/* Workspace Slug */}
-            <div>
-              <label htmlFor="slug" className="block text-sm font-medium text-gray-700 mb-1">
-                Business code
-              </label>
-              <div className="flex rounded-lg shadow-sm border border-gray-300 overflow-hidden focus-within:ring-2 focus-within:ring-brand-500 focus-within:border-brand-500">
-                <span className="inline-flex items-center px-3 text-gray-400 bg-gray-50 text-xs border-r border-gray-200">
-                  your-business/
-                </span>
-                <input
-                  id="slug"
-                  name="slug"
-                  type="text"
-                  required
-                  value={slug}
-                  onChange={handleSlugChange}
-                  className="block w-full px-3 py-2 text-gray-900 placeholder-gray-400 focus:outline-none text-sm min-h-[44px]"
-                  placeholder="patel-electronics"
                 />
               </div>
             </div>
@@ -245,7 +195,7 @@ export const RegisterScreen: React.FC = () => {
             </p>
           </div>
         </div>
-        </div>
+      </div>
       </div>
     </div>
   );
