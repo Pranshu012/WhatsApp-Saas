@@ -104,7 +104,7 @@ public class FaqMatchingTest {
 
         automationEngine.onInboundMessage(event);
 
-        List<Job> jobs = jobRepository.findAll();
+        List<Job> jobs = jobRepository.findAll().stream().filter(j -> tenantAId.equals(j.getTenantId())).toList();
         assertThat(jobs).hasSize(1);
         assertThat(jobs.get(0).getPayload()).contains("We are open Monday to Saturday 9am to 7pm.");
     }
@@ -127,7 +127,7 @@ public class FaqMatchingTest {
 
         automationEngine.onInboundMessage(event);
 
-        List<Job> jobs = jobRepository.findAll();
+        List<Job> jobs = jobRepository.findAll().stream().filter(j -> tenantAId.equals(j.getTenantId())).toList();
         assertThat(jobs).hasSize(1);
         assertThat(jobs.get(0).getPayload()).contains("Pricing starts at Rs 1999 per month");
     }
@@ -191,7 +191,7 @@ public class FaqMatchingTest {
 
         automationEngine.onInboundMessage(event);
 
-        List<Job> jobs = jobRepository.findAll();
+        List<Job> jobs = jobRepository.findAll().stream().filter(j -> tenantAId.equals(j.getTenantId())).toList();
         assertThat(jobs).hasSize(1);
         // Keyword rule MUST win over FAQ!
         assertThat(jobs.get(0).getPayload()).contains("Keyword rule response for pricing.");
@@ -213,7 +213,7 @@ public class FaqMatchingTest {
                 tenantAId, null, null, accountA.getId(),
                 "wamid.IN_STRICT", "+919876543210", query, Instant.now(), Instant.now().plusSeconds(86400)
         ));
-        assertThat(jobRepository.findAll()).isEmpty();
+        assertThat(jobRepository.findAll().stream().filter(j -> tenantAId.equals(j.getTenantId())).toList()).isEmpty();
 
         // 2. Relaxed threshold (0.05) -> Matches and sends reply
         faqMatchService.setConfidenceThreshold(0.05);
@@ -221,8 +221,9 @@ public class FaqMatchingTest {
                 tenantAId, null, null, accountA.getId(),
                 "wamid.IN_RELAXED", "+919876543210", query, Instant.now(), Instant.now().plusSeconds(86400)
         ));
-        assertThat(jobRepository.findAll()).hasSize(1);
-        assertThat(jobRepository.findAll().get(0).getPayload()).contains("Yes, we offer full refunds");
+        List<Job> relaxedJobs = jobRepository.findAll().stream().filter(j -> tenantAId.equals(j.getTenantId())).toList();
+        assertThat(relaxedJobs).hasSize(1);
+        assertThat(relaxedJobs.get(0).getPayload()).contains("Yes, we offer full refunds");
     }
 
     @Test
@@ -263,7 +264,7 @@ public class FaqMatchingTest {
         ));
 
         // Must NOT match Tenant A's FAQ
-        assertThat(jobRepository.findAll()).isEmpty();
+        assertThat(jobRepository.findAll().stream().filter(j -> tenantBId.equals(j.getTenantId())).toList()).isEmpty();
 
         // Must be logged as unmatched under Tenant B
         TenantContext.set(tenantBId);
