@@ -56,6 +56,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       method: 'POST',
       body: JSON.stringify(req),
     });
+    // Automatically establish user session right after signup
+    try {
+      const sessionData = await apiClient<UserSession>('/api/auth/login', {
+        method: 'POST',
+        body: JSON.stringify({
+          email: req.email,
+          password: req.password,
+        }),
+      });
+      setUser(sessionData);
+    } catch {
+      await refreshUser();
+    }
     return response;
   };
 

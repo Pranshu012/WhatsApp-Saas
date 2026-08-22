@@ -1,9 +1,10 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { AuthProvider } from './context/AuthContext';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { AppLayout } from './components/Layout/AppLayout';
+import { LandingPage } from './features/landing/LandingPage';
 import { LoginScreen } from './features/auth/LoginScreen';
 import { RegisterScreen } from './features/auth/RegisterScreen';
 import { ForgotPasswordScreen } from './features/auth/ForgotPasswordScreen';
@@ -17,6 +18,7 @@ import { DashboardScreen } from './features/dashboard/DashboardScreen';
 import { InboxScreen } from './features/inbox/InboxScreen';
 import { ScheduledMessagesScreen } from './features/scheduled/ScheduledMessagesScreen';
 import { SettingsScreen } from './features/settings/SettingsScreen';
+import { MessageSquare } from 'lucide-react';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -27,12 +29,42 @@ const queryClient = new QueryClient({
   },
 });
 
+const RootRoute: React.FC = () => {
+  const { isAuthenticated, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-12 h-12 rounded-2xl bg-brand-600 flex items-center justify-center text-white shadow-lg animate-bounce">
+            <MessageSquare className="w-6 h-6" />
+          </div>
+          <div className="text-sm font-medium text-slate-500">Loading WhatsApp SaaS...</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return <LandingPage />;
+  }
+
+  return (
+    <AppLayout>
+      <DashboardScreen />
+    </AppLayout>
+  );
+};
+
 export const App: React.FC = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <BrowserRouter>
           <Routes>
+            {/* Smart Root Route: Landing Page for Visitors, Dashboard for Logged-In Users */}
+            <Route path="/" element={<RootRoute />} />
+
             {/* Public Auth Routes */}
             <Route path="/login" element={<LoginScreen />} />
             <Route path="/register" element={<RegisterScreen />} />
@@ -47,34 +79,14 @@ export const App: React.FC = () => {
                 </ProtectedRoute>
               }
             >
-              {/* Dashboard */}
-              <Route path="/" element={<DashboardScreen />} />
-
-              {/* Inbox */}
+              <Route path="/dashboard" element={<DashboardScreen />} />
               <Route path="/inbox" element={<InboxScreen />} />
-
-              {/* WhatsApp Onboarding & Connection */}
-              <Route
-                path="/whatsapp"
-                element={<WhatsAppConnectionScreen />}
-              />
-
-              {/* Keyword Automation Rules */}
+              <Route path="/whatsapp" element={<WhatsAppConnectionScreen />} />
               <Route path="/automation" element={<AutomationRulesScreen />} />
-
-              {/* FAQ Matching Bot */}
               <Route path="/faq" element={<FaqScreen />} />
-
-              {/* Templates */}
               <Route path="/templates" element={<TemplatesScreen />} />
-
-              {/* Scheduled Messages */}
               <Route path="/scheduled" element={<ScheduledMessagesScreen />} />
-
-              {/* Unmatched Messages */}
               <Route path="/unmatched" element={<UnmatchedMessagesScreen />} />
-
-              {/* Settings */}
               <Route path="/settings" element={<SettingsScreen />} />
             </Route>
 
