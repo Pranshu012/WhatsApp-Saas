@@ -6,7 +6,10 @@ import { AlertBanner } from '../../components/AlertBanner';
 import { ProductIntro } from './ProductIntro';
 
 export const LoginScreen: React.FC = () => {
-  const [email, setEmail] = useState('');
+  const location = useLocation();
+  const registeredEmail = (location.state as { registeredEmail?: string } | null)?.registeredEmail || '';
+  const registrationComplete = Boolean((location.state as { registrationComplete?: boolean } | null)?.registrationComplete);
+  const [email, setEmail] = useState(registeredEmail);
   const [password, setPassword] = useState('');
   const [tenantSlug, setTenantSlug] = useState('');
   const [loading, setLoading] = useState(false);
@@ -14,8 +17,6 @@ export const LoginScreen: React.FC = () => {
 
   const { login } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation();
-
   const from = (location.state as any)?.from?.pathname || '/';
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -64,6 +65,7 @@ export const LoginScreen: React.FC = () => {
 
       <div className="mt-7 w-full">
         <div className="bg-white p-6 sm:p-8 shadow-xl shadow-slate-200/60 border border-slate-200 rounded-2xl">
+          {registrationComplete && <AlertBanner type="success" message="Your account is ready. Sign in with the email and password you just created." className="mb-6" />}
           {error && (
             <AlertBanner
               type="error"

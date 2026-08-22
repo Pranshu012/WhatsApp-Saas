@@ -56,12 +56,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       method: 'POST',
       body: JSON.stringify(req),
     });
-    // Auto-login after successful registration
-      await login({
-        email: req.email,
-        password: req.password,
-        tenantSlug: response.slug,
-      });
     return response;
   };
 

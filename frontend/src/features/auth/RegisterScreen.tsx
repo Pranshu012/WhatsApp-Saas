@@ -34,11 +34,12 @@ export const RegisterScreen: React.FC = () => {
     try {
       await register({
         businessName: businessName.trim(),
+        slug: createWorkspaceId(businessName),
         fullName: fullName.trim(),
         email: email.trim(),
         password,
       });
-      navigate('/', { replace: true });
+      navigate('/login', { replace: true, state: { registeredEmail: email.trim(), registrationComplete: true } });
     } catch (err: any) {
       setError(err.message || 'Registration failed. Please check your details.');
     } finally {
@@ -199,4 +200,9 @@ export const RegisterScreen: React.FC = () => {
       </div>
     </div>
   );
+};
+
+const createWorkspaceId = (businessName: string) => {
+  const normalized = businessName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+  return normalized || 'business';
 };

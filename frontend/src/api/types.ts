@@ -22,6 +22,8 @@ export interface CsrfTokenResponse {
 
 export interface RegistrationRequest {
   businessName: string;
+  /** Internal workspace ID; generated from the business name and never shown in the form. */
+  slug: string;
   fullName: string;
   email: string;
   password: string;
