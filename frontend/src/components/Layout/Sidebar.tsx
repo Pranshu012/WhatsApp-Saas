@@ -27,14 +27,14 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { label: 'Dashboard', href: '/', icon: LayoutDashboard },
+  { label: 'Home', href: '/', icon: LayoutDashboard },
   { label: 'Inbox', href: '/inbox', icon: MessageCircle },
-  { label: 'WhatsApp', href: '/whatsapp', icon: Smartphone },
-  { label: 'Automation Rules', href: '/automation', icon: Zap },
-  { label: 'FAQ Bot', href: '/faq', icon: HelpCircle },
+  { label: 'Connect WhatsApp', href: '/whatsapp', icon: Smartphone },
+  { label: 'Auto Replies', href: '/automation', icon: Zap },
+  { label: 'Common Questions', href: '/faq', icon: HelpCircle },
   { label: 'Templates', href: '/templates', icon: FileText },
-  { label: 'Scheduled', href: '/scheduled', icon: Calendar },
-  { label: 'Unmatched', href: '/unmatched', icon: Inbox },
+  { label: 'Scheduled Messages', href: '/scheduled', icon: Calendar },
+  { label: 'Needs Your Reply', href: '/unmatched', icon: Inbox },
   { label: 'Settings', href: '/settings', icon: Settings },
 ];
 

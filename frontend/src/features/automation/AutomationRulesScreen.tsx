@@ -143,10 +143,7 @@ export const AutomationRulesScreen: React.FC = () => {
       const res = await apiClient<TestRuleResponse>('/api/automation-rules/test', {
         method: 'POST',
         body: JSON.stringify({
-          matchType,
-          matchValue: matchValue.trim(),
-          caseSensitive,
-          message: testMessage.trim(),
+          messageText: testMessage.trim(),
         }),
       });
       setTestResult(res);

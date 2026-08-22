@@ -2,7 +2,7 @@ import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { apiClient } from '../../api/client';
-import { DashboardStatsResponse } from '../../api/types';
+import { DashboardStatsResponse, FaqResponse, WhatsAppAccountResponse } from '../../api/types';
 import { ErrorState } from '../../components/ErrorState';
 import { Skeleton } from '../../components/Skeleton';
 import {
@@ -16,6 +16,7 @@ import {
   Eye,
   Info,
   HelpCircle,
+  ArrowRight,
 } from 'lucide-react';
 
 export const DashboardScreen: React.FC = () => {
@@ -31,6 +32,16 @@ export const DashboardScreen: React.FC = () => {
     queryKey: ['dashboard-stats'],
     queryFn: () => apiClient<DashboardStatsResponse>('/api/dashboard/stats'),
     refetchInterval: 15000, // Refresh every 15s
+  });
+
+  const { data: account } = useQuery<WhatsAppAccountResponse>({
+    queryKey: ['whatsapp-account'],
+    queryFn: () => apiClient<WhatsAppAccountResponse>('/api/whatsapp/account'),
+    retry: false,
+  });
+  const { data: faqs } = useQuery<FaqResponse[]>({
+    queryKey: ['faqs'],
+    queryFn: () => apiClient<FaqResponse[]>('/api/faqs'),
   });
 
   if (isLoading) {
@@ -79,6 +90,8 @@ export const DashboardScreen: React.FC = () => {
     READ: 0,
     FAILED: 0,
   };
+  const connected = account?.status === 'CONNECTED';
+  const faqCount = faqs?.filter((faq) => faq.enabled).length || 0;
 
   return (
     <div className="space-y-6">
@@ -86,13 +99,13 @@ export const DashboardScreen: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-5 border-b border-gray-200">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Workspace Dashboard</h1>
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Your WhatsApp Business Home</h1>
             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-brand-100 text-brand-800">
               {stats?.currentMonth || 'Current Month'}
             </span>
           </div>
           <p className="text-sm text-gray-500">
-            Real-time monthly WhatsApp message volume, category usage, and delivery analytics.
+            See your customer messages and set up automatic replies in one place.
           </p>
         </div>
 
@@ -106,6 +119,22 @@ export const DashboardScreen: React.FC = () => {
         </button>
       </div>
 
+      {(!connected || faqCount < 3) && (
+        <section className="bg-brand-50 border border-brand-200 rounded-2xl p-5 sm:p-6">
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+            <div>
+              <h2 className="font-bold text-gray-900">Start here: set up your automatic replies</h2>
+              <p className="text-sm text-gray-600 mt-1">Complete these small steps so customers can get help even when you are busy.</p>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-4">
+            <SetupStep done={connected} number="1" title="Connect WhatsApp" description="Link your business number through Meta." onClick={() => navigate('/whatsapp')} />
+            <SetupStep done={faqCount >= 3} number="2" title="Add 3 common questions" description={`${faqCount}/3 added — start with price, timings and location.`} onClick={() => navigate('/faq')} />
+            <SetupStep done={false} number="3" title="Test an auto reply" description="Send a test message after the first two steps." onClick={() => navigate('/automation')} />
+          </div>
+        </section>
+      )}
+
       {/* Top Metric Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Total Volume */}
@@ -117,7 +146,7 @@ export const DashboardScreen: React.FC = () => {
             </div>
           </div>
           <div className="text-2xl font-black text-gray-900">{stats?.totalMessages || 0}</div>
-          <p className="text-xs text-gray-400">All inbound & outbound events</p>
+          <p className="text-xs text-gray-400">Customer messages and your replies</p>
         </div>
 
         {/* Delivery Rate */}
@@ -135,13 +164,13 @@ export const DashboardScreen: React.FC = () => {
         {/* Inbound Inquiries */}
         <div className="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm space-y-2">
           <div className="flex items-center justify-between text-gray-500 text-xs font-semibold uppercase tracking-wider">
-            <span>Free Inbound</span>
+            <span>Customer Messages</span>
             <div className="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
               <MessageSquare className="w-4 h-4" />
             </div>
           </div>
           <div className="text-2xl font-black text-emerald-700">{categoryCounts.INBOUND_FREE || 0}</div>
-          <p className="text-xs text-emerald-600/80">₹0 Meta charge on customer initiated</p>
+          <p className="text-xs text-emerald-600/80">Messages started by customers</p>
         </div>
 
         {/* Marketing Sends */}
@@ -153,7 +182,7 @@ export const DashboardScreen: React.FC = () => {
             </div>
           </div>
           <div className="text-2xl font-black text-purple-700">{categoryCounts.MARKETING || 0}</div>
-          <p className="text-xs text-purple-600/80">~₹0.86 / msg tier</p>
+          <p className="text-xs text-purple-600/80">Promotional messages sent</p>
         </div>
       </div>
 
@@ -162,7 +191,7 @@ export const DashboardScreen: React.FC = () => {
         {/* Category Breakdown */}
         <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm space-y-5">
           <div className="flex items-center justify-between pb-3 border-b border-gray-100">
-            <h2 className="font-bold text-gray-900 text-base">Meta Billing Category Breakdown</h2>
+            <h2 className="font-bold text-gray-900 text-base">Message types this month</h2>
             <span className="text-xs text-gray-400 font-medium">{stats?.currentMonth}</span>
           </div>
 
@@ -170,7 +199,7 @@ export const DashboardScreen: React.FC = () => {
             <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-100">
               <div className="flex items-center gap-2.5">
                 <span className="w-3 h-3 rounded-full bg-emerald-500" />
-                <span className="font-semibold text-gray-800">Inbound Messages (Customer Initiated)</span>
+                <span className="font-semibold text-gray-800">Customer started the conversation</span>
               </div>
               <div className="font-bold text-gray-900 text-sm">{categoryCounts.INBOUND_FREE || 0}</div>
             </div>
@@ -178,7 +207,7 @@ export const DashboardScreen: React.FC = () => {
             <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-100">
               <div className="flex items-center gap-2.5">
                 <span className="w-3 h-3 rounded-full bg-blue-500" />
-                <span className="font-semibold text-gray-800">Utility Messages (~₹0.115/msg)</span>
+                <span className="font-semibold text-gray-800">Useful updates (for example, order updates)</span>
               </div>
               <div className="font-bold text-gray-900 text-sm">{categoryCounts.UTILITY || 0}</div>
             </div>
@@ -186,7 +215,7 @@ export const DashboardScreen: React.FC = () => {
             <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-100">
               <div className="flex items-center gap-2.5">
                 <span className="w-3 h-3 rounded-full bg-purple-500" />
-                <span className="font-semibold text-gray-800">Marketing Messages (~₹0.86/msg)</span>
+                <span className="font-semibold text-gray-800">Promotional messages</span>
               </div>
               <div className="font-bold text-gray-900 text-sm">{categoryCounts.MARKETING || 0}</div>
             </div>
@@ -194,7 +223,7 @@ export const DashboardScreen: React.FC = () => {
             <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-100">
               <div className="flex items-center gap-2.5">
                 <span className="w-3 h-3 rounded-full bg-indigo-500" />
-                <span className="font-semibold text-gray-800">Service Free-Text Replies (24h Window)</span>
+                <span className="font-semibold text-gray-800">Your replies within 24 hours</span>
               </div>
               <div className="font-bold text-gray-900 text-sm">{categoryCounts.SERVICE || 0}</div>
             </div>
@@ -202,7 +231,7 @@ export const DashboardScreen: React.FC = () => {
             <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-100">
               <div className="flex items-center gap-2.5">
                 <span className="w-3 h-3 rounded-full bg-amber-500" />
-                <span className="font-semibold text-gray-800">Authentication / OTP Messages</span>
+                <span className="font-semibold text-gray-800">Login and verification messages</span>
               </div>
               <div className="font-bold text-gray-900 text-sm">{categoryCounts.AUTHENTICATION || 0}</div>
             </div>
@@ -212,8 +241,8 @@ export const DashboardScreen: React.FC = () => {
         {/* Delivery Outcomes */}
         <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm space-y-5">
           <div className="flex items-center justify-between pb-3 border-b border-gray-100">
-            <h2 className="font-bold text-gray-900 text-base">Delivery Outcome Status</h2>
-            <span className="text-xs text-gray-400 font-medium">Outbound Journey</span>
+            <h2 className="font-bold text-gray-900 text-base">Did customers receive your messages?</h2>
+            <span className="text-xs text-gray-400 font-medium">This month</span>
           </div>
 
           <div className="grid grid-cols-2 gap-3 text-xs">
@@ -254,7 +283,7 @@ export const DashboardScreen: React.FC = () => {
           <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 flex items-start gap-2.5 text-xs text-slate-600">
             <Info className="w-4 h-4 text-slate-500 shrink-0 mt-0.5" />
             <p className="leading-relaxed">
-              {stats?.note || 'These counts reflect our immutable ledger records. Meta invoices you directly in WhatsApp Manager.'}
+              {stats?.note || 'These are the messages recorded in this app. Check WhatsApp Manager for Meta’s official bill.'}
             </p>
           </div>
         </div>
@@ -268,8 +297,8 @@ export const DashboardScreen: React.FC = () => {
           className="p-5 rounded-2xl bg-white border border-gray-200 hover:border-brand-300 hover:shadow-sm transition-all text-left group"
         >
           <Zap className="w-6 h-6 text-brand-600 mb-2 group-hover:scale-110 transition-transform" />
-          <h3 className="font-bold text-gray-900 text-sm">Configure Automation</h3>
-          <p className="text-xs text-gray-500 mt-1">Set 24/7 instant replies for keywords</p>
+          <h3 className="font-bold text-gray-900 text-sm">Set up auto replies</h3>
+          <p className="text-xs text-gray-500 mt-1">Reply instantly when customers use words you choose</p>
         </button>
 
         <button
@@ -278,8 +307,8 @@ export const DashboardScreen: React.FC = () => {
           className="p-5 rounded-2xl bg-white border border-gray-200 hover:border-brand-300 hover:shadow-sm transition-all text-left group"
         >
           <HelpCircle className="w-6 h-6 text-blue-600 mb-2 group-hover:scale-110 transition-transform" />
-          <h3 className="font-bold text-gray-900 text-sm">FAQ Knowledge Base</h3>
-          <p className="text-xs text-gray-500 mt-1">Typo-tolerant automated question answering</p>
+          <h3 className="font-bold text-gray-900 text-sm">Add common questions</h3>
+          <p className="text-xs text-gray-500 mt-1">Save answers for price, timings, address and more</p>
         </button>
 
         <button
@@ -288,11 +317,22 @@ export const DashboardScreen: React.FC = () => {
           className="p-5 rounded-2xl bg-white border border-gray-200 hover:border-brand-300 hover:shadow-sm transition-all text-left group"
         >
           <ShieldCheck className="w-6 h-6 text-green-600 mb-2 group-hover:scale-110 transition-transform" />
-          <h3 className="font-bold text-gray-900 text-sm">WhatsApp Account Health</h3>
-          <p className="text-xs text-gray-500 mt-1">Check quality score & messaging limits</p>
+          <h3 className="font-bold text-gray-900 text-sm">Connect WhatsApp</h3>
+          <p className="text-xs text-gray-500 mt-1">Check your number, message limit and connection status</p>
         </button>
       </div>
     </div>
   );
 };
+
+const SetupStep: React.FC<{ done: boolean; number: string; title: string; description: string; onClick: () => void }> = ({ done, number, title, description, onClick }) => (
+  <button type="button" onClick={onClick} className="text-left bg-white rounded-xl border border-brand-100 p-4 hover:border-brand-300 hover:shadow-sm transition-all">
+    <div className="flex items-center gap-2">
+      <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${done ? 'bg-green-500 text-white' : 'bg-brand-100 text-brand-700'}`}>{done ? '✓' : number}</span>
+      <span className="font-semibold text-sm text-gray-900">{title}</span>
+      {!done && <ArrowRight className="w-4 h-4 ml-auto text-brand-600" />}
+    </div>
+    <p className="text-xs text-gray-500 mt-2 leading-relaxed">{description}</p>
+  </button>
+);
 export default DashboardScreen;

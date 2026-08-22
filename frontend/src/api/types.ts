@@ -90,48 +90,38 @@ export interface CreateAutomationRuleRequest {
 }
 
 export interface TestRuleRequest {
-  ruleId?: string;
-  matchType?: MatchType;
-  matchValue?: string;
-  caseSensitive?: boolean;
-  message: string;
+  messageText: string;
 }
 
 export interface TestRuleResponse {
   matched: boolean;
-  matchedRuleId?: string;
-  matchedRuleName?: string;
-  actionType?: ActionType;
-  actionPayload?: string;
+  ruleId?: string;
+  ruleName?: string;
 }
 
 export interface FaqResponse {
   id: string;
   question: string;
   answer: string;
-  category?: string;
-  active: boolean;
+  enabled: boolean;
   createdAt: string;
 }
 
 export interface CreateFaqRequest {
   question: string;
   answer: string;
-  category?: string;
-  active?: boolean;
 }
 
 export interface TestFaqRequest {
-  query: string;
+  question: string;
 }
 
 export interface TestFaqResponse {
-  matched: boolean;
-  faqId?: string;
+  id?: string;
   question?: string;
   answer?: string;
-  score?: number;
-  confident?: boolean;
+  confidenceScore: number;
+  isConfident: boolean;
 }
 
 export interface WhatsAppTemplateResponse {

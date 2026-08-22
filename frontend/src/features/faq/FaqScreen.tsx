@@ -31,7 +31,6 @@ export const FaqScreen: React.FC = () => {
   // Form State
   const [question, setQuestion] = useState('');
   const [answer, setAnswer] = useState('');
-  const [category, setCategory] = useState('');
 
   // Live Tester State
   const [testQuery, setTestQuery] = useState('');
@@ -82,7 +81,7 @@ export const FaqScreen: React.FC = () => {
       apiClient<FaqResponse>(`/api/faqs/${id}/toggle`, { method: 'PATCH' }),
     onSuccess: (updated) => {
       queryClient.invalidateQueries({ queryKey: ['faqs'] });
-      setSuccessMsg(`FAQ is now ${updated.active ? 'active' : 'disabled'}.`);
+      setSuccessMsg(`FAQ is now ${updated.enabled ? 'active' : 'disabled'}.`);
     },
     onError: (err: any) => {
       setErrorMsg(err.message || 'Failed to update FAQ status.');
@@ -105,7 +104,6 @@ export const FaqScreen: React.FC = () => {
     setEditingFaqId(faq.id);
     setQuestion(faq.question);
     setAnswer(faq.answer);
-    setCategory(faq.category || '');
     setShowModal(true);
   };
 
@@ -113,7 +111,6 @@ export const FaqScreen: React.FC = () => {
     setEditingFaqId(null);
     setQuestion('');
     setAnswer('');
-    setCategory('');
   };
 
   const handleTestFaq = async (e: React.FormEvent) => {
@@ -129,7 +126,7 @@ export const FaqScreen: React.FC = () => {
       });
       setTestResult(res);
     } catch (err: any) {
-      setTestResult({ matched: false });
+      setTestResult({ confidenceScore: 0, isConfident: false });
     } finally {
       setIsTesting(false);
     }
@@ -142,8 +139,6 @@ export const FaqScreen: React.FC = () => {
     saveFaqMutation.mutate({
       question: question.trim(),
       answer: answer.trim(),
-      category: category.trim() || undefined,
-      active: true,
     });
   };
 
@@ -214,7 +209,7 @@ export const FaqScreen: React.FC = () => {
         {/* Tester Result Box */}
         {testResult && (
           <div className="pt-2">
-            {testResult.matched && testResult.confident ? (
+            {testResult.id && testResult.isConfident ? (
               <div className="p-4 rounded-xl bg-green-950/80 border border-green-500/30 text-green-200 space-y-2">
                 <div className="flex items-center justify-between text-xs font-semibold">
                   <span className="flex items-center gap-1.5 text-green-400">
@@ -222,7 +217,7 @@ export const FaqScreen: React.FC = () => {
                     Confident Match Found
                   </span>
                   <span className="bg-green-500/20 text-green-300 px-2 py-0.5 rounded text-[11px]">
-                    {Math.round((testResult.score || 1) * 100)}% Confidence
+                    {Math.round(testResult.confidenceScore * 100)}% Confidence
                   </span>
                 </div>
                 <div className="text-sm font-bold text-white">Q: {testResult.question}</div>
@@ -237,9 +232,9 @@ export const FaqScreen: React.FC = () => {
                     <AlertTriangle className="w-4 h-4" />
                     No Confident Match
                   </span>
-                  {testResult.score && (
+                  {testResult.confidenceScore > 0 && (
                     <span className="bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded text-[11px]">
-                      {Math.round(testResult.score * 100)}% Score (Below 35% Threshold)
+                      {Math.round(testResult.confidenceScore * 100)}% Score (Below the confidence threshold)
                     </span>
                   )}
                 </div>
@@ -282,18 +277,13 @@ export const FaqScreen: React.FC = () => {
             <div
               key={faq.id}
               className={`bg-white p-5 rounded-2xl border transition-all ${
-                faq.active ? 'border-gray-200 shadow-sm' : 'border-gray-200/60 bg-gray-50/50 opacity-75'
+                faq.enabled ? 'border-gray-200 shadow-sm' : 'border-gray-200/60 bg-gray-50/50 opacity-75'
               } flex flex-col sm:flex-row sm:items-start justify-between gap-4`}
             >
               <div className="space-y-2 flex-1">
                 <div className="flex items-center gap-2">
                   <h3 className="font-bold text-gray-900 text-sm sm:text-base">{faq.question}</h3>
-                  {faq.category && (
-                    <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-gray-100 text-gray-600 uppercase">
-                      {faq.category}
-                    </span>
-                  )}
-                  {!faq.active && (
+                  {!faq.enabled && (
                     <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-gray-100 text-gray-500">
                       Inactive
                     </span>
@@ -311,13 +301,13 @@ export const FaqScreen: React.FC = () => {
                   onClick={() => toggleFaqMutation.mutate(faq.id)}
                   disabled={toggleFaqMutation.isPending}
                   className={`p-2 rounded-lg min-h-[44px] min-w-[44px] flex items-center justify-center transition-colors ${
-                    faq.active
+                    faq.enabled
                       ? 'text-emerald-600 hover:bg-emerald-50'
                       : 'text-gray-400 hover:bg-gray-100'
                   }`}
-                  title={faq.active ? 'Disable FAQ' : 'Enable FAQ'}
+                  title={faq.enabled ? 'Disable FAQ' : 'Enable FAQ'}
                 >
-                  {faq.active ? <ToggleRight className="w-6 h-6" /> : <ToggleLeft className="w-6 h-6" />}
+                  {faq.enabled ? <ToggleRight className="w-6 h-6" /> : <ToggleLeft className="w-6 h-6" />}
                 </button>
 
                 {/* Edit Button */}
@@ -388,19 +378,6 @@ export const FaqScreen: React.FC = () => {
                   onChange={(e) => setAnswer(e.target.value)}
                   className="block w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none"
                   placeholder="We are open Monday to Saturday from 10:00 AM to 8:00 PM."
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">
-                  Category <span className="text-gray-400 font-normal">(optional)</span>
-                </label>
-                <input
-                  type="text"
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                  className="block w-full px-3 py-2 border border-gray-300 rounded-lg text-sm min-h-[44px] focus:ring-2 focus:ring-brand-500 focus:outline-none"
-                  placeholder="e.g. General, Pricing, Delivery"
                 />
               </div>
 

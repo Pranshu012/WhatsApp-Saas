@@ -145,7 +145,7 @@ export const WhatsAppConnectionScreen: React.FC = () => {
               <p className="text-sm text-amber-800 mb-3 leading-relaxed">
                 Meta bills you directly for outbound and template messages. If your WhatsApp Business
                 Account has no valid card on file with Meta, outbound messages will fail with billing errors.
-                This is separate from your ₹1,999/month platform subscription.
+                Add the payment method directly in Meta WhatsApp Manager before you start sending messages.
               </p>
               <a
                 href="https://business.facebook.com/wa/manage/phone-numbers/"
