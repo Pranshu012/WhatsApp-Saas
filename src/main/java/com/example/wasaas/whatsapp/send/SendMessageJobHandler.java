@@ -33,6 +33,7 @@ public class SendMessageJobHandler implements JobHandler {
     private final WhatsAppCloudClient whatsAppCloudClient;
     private final LedgerService ledgerService;
     private final com.example.wasaas.template.TemplateService templateService;
+    private final com.example.wasaas.subscription.SubscriptionService subscriptionService;
     private final AccountRateLimiter rateLimiter;
     private final ObjectMapper objectMapper;
 
@@ -41,6 +42,7 @@ public class SendMessageJobHandler implements JobHandler {
                                  WhatsAppCloudClient whatsAppCloudClient,
                                  LedgerService ledgerService,
                                  com.example.wasaas.template.TemplateService templateService,
+                                 com.example.wasaas.subscription.SubscriptionService subscriptionService,
                                  AccountRateLimiter rateLimiter,
                                  ObjectMapper objectMapper) {
         this.accountService = accountService;
@@ -48,6 +50,7 @@ public class SendMessageJobHandler implements JobHandler {
         this.whatsAppCloudClient = whatsAppCloudClient;
         this.ledgerService = ledgerService;
         this.templateService = templateService;
+        this.subscriptionService = subscriptionService;
         this.rateLimiter = rateLimiter;
         this.objectMapper = objectMapper;
     }
@@ -64,6 +67,10 @@ public class SendMessageJobHandler implements JobHandler {
         WhatsAppAccount account = accountService.getAccount(payload.accountId());
         if (account.getStatus() == WhatsAppAccountStatus.DEAUTHORIZED || account.getStatus() == WhatsAppAccountStatus.DISCONNECTED) {
             throw new PermanentJobException("WhatsApp account [" + account.getId() + "] is not connected (status: " + account.getStatus() + ")");
+        }
+
+        if (!subscriptionService.isSubscriptionValid(account.getTenantId())) {
+            throw new PermanentJobException("Outbound message blocked: Tenant [" + account.getTenantId() + "] subscription/trial is expired or suspended.");
         }
 
         BillingCategory billingCategory;

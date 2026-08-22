@@ -338,7 +338,7 @@ export const WhatsAppConnectionScreen: React.FC = () => {
                 <div className="p-3 rounded-lg bg-white/10 border border-white/10">
                   <div className="font-semibold text-white mb-0.5">1. Our Software Platform</div>
                   <div className="text-slate-300">
-                    ₹1,999 / month flat for automation rules, FAQ bot, inbox, and campaign scheduler.
+                    ₹499 / month flat for automation rules, FAQ bot, inbox, and campaign scheduler.
                   </div>
                 </div>
 

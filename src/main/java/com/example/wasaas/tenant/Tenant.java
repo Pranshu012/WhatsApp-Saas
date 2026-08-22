@@ -42,6 +42,7 @@ public class Tenant {
     public void setBusinessName(String businessName) { this.businessName = businessName; }
     public String getSlug() { return slug; }
     public TenantStatus getStatus() { return status; }
+    public void setStatus(TenantStatus status) { this.status = status; }
     public String getTimezone() { return timezone; }
     public void setTimezone(String timezone) { this.timezone = timezone != null ? timezone : "Asia/Kolkata"; }
     public String getGstin() { return gstin; }
@@ -50,4 +51,6 @@ public class Tenant {
     public void setLegalName(String legalName) { this.legalName = legalName; }
     public String getBillingAddress() { return billingAddress; }
     public void setBillingAddress(String billingAddress) { this.billingAddress = billingAddress; }
+    public Instant getCreatedAt() { return createdAt; }
+    public Instant getUpdatedAt() { return updatedAt; }
 }

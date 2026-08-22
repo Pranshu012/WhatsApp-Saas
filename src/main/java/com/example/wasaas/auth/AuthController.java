@@ -57,7 +57,8 @@ public class AuthController {
                 principal.getTenantId(),
                 principal.getUsername(),
                 principal.getFullName(),
-                principal.getRole().name()
+                principal.getRole().name(),
+                principal.isSuperAdmin()
         );
     }
 

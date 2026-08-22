@@ -78,7 +78,7 @@ public class AutomationEngineTest {
     void cleanup() {
         TenantContext.clear();
         rateLimiter.reset();
-        jdbcTemplate.execute("TRUNCATE TABLE unmatched_messages, automation_rules, whatsapp_templates, message_ledger_status_events, message_ledger, conversations, contacts, webhook_events, jobs, whatsapp_accounts, spring_session_attributes, spring_session, password_reset_tokens, login_attempts, tenant_users, users, tenants CASCADE");
+        jdbcTemplate.execute("TRUNCATE TABLE subscriptions, unmatched_messages, automation_rules, whatsapp_templates, message_ledger_status_events, message_ledger, conversations, contacts, webhook_events, jobs, whatsapp_accounts, spring_session_attributes, spring_session, password_reset_tokens, login_attempts, tenant_users, users, tenants CASCADE");
     }
 
     @Test
@@ -240,7 +240,9 @@ public class AutomationEngineTest {
         ));
 
         // No reply jobs enqueued
-        assertThat(jobRepository.findAll()).isEmpty();
+        assertThat(jobRepository.findAll().stream()
+                .filter(j -> "SEND_WHATSAPP_MESSAGE".equals(j.getJobType()))
+                .toList()).isEmpty();
 
         // Recorded in unmatched_messages dataset (ADR-007)
         TenantContext.set(tenantAId);

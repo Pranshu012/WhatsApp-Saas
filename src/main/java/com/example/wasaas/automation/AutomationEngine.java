@@ -30,6 +30,7 @@ public class AutomationEngine {
     private final AutoReplyRateLimiter rateLimiter;
     private final com.example.wasaas.automation.faq.FaqMatchService faqMatchService;
     private final MessagingService messagingService;
+    private final com.example.wasaas.subscription.SubscriptionService subscriptionService;
     private final ApplicationEventPublisher eventPublisher;
     private final ObjectMapper objectMapper;
 
@@ -39,6 +40,7 @@ public class AutomationEngine {
                             AutoReplyRateLimiter rateLimiter,
                             com.example.wasaas.automation.faq.FaqMatchService faqMatchService,
                             MessagingService messagingService,
+                            com.example.wasaas.subscription.SubscriptionService subscriptionService,
                             ApplicationEventPublisher eventPublisher,
                             ObjectMapper objectMapper) {
         this.ruleRepository = ruleRepository;
@@ -47,6 +49,7 @@ public class AutomationEngine {
         this.rateLimiter = rateLimiter;
         this.faqMatchService = faqMatchService;
         this.messagingService = messagingService;
+        this.subscriptionService = subscriptionService;
         this.eventPublisher = eventPublisher;
         this.objectMapper = objectMapper;
     }
@@ -62,6 +65,12 @@ public class AutomationEngine {
         TenantContext.set(tenantId);
 
         try {
+            // Check if tenant's subscription/trial is valid before sending automated replies
+            if (!subscriptionService.isSubscriptionValid(tenantId)) {
+                log.warn("Auto-reply suppressed: Tenant [{}] subscription/trial is not valid or suspended", tenantId);
+                return;
+            }
+
             List<AutomationRule> rules = ruleRepository.findAllByTenantIdAndEnabledTrueOrderByPriorityAsc(tenantId);
             boolean matched = false;
 

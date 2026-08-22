@@ -24,24 +24,38 @@ public class TenantPrincipal implements UserDetails, Serializable {
     private final String fullName;
     private final String passwordHash;
     private final TenantRole role;
+    private final boolean isSuperAdmin;
 
     public TenantPrincipal(UUID userId, UUID tenantId, String email, String fullName,
                            String passwordHash, TenantRole role) {
+        this(userId, tenantId, email, fullName, passwordHash, role, false);
+    }
+
+    public TenantPrincipal(UUID userId, UUID tenantId, String email, String fullName,
+                           String passwordHash, TenantRole role, boolean isSuperAdmin) {
         this.userId = userId;
         this.tenantId = tenantId;
         this.email = email;
         this.fullName = fullName;
         this.passwordHash = passwordHash;
         this.role = role;
+        this.isSuperAdmin = isSuperAdmin;
     }
 
     public UUID getUserId() { return userId; }
     public UUID getTenantId() { return tenantId; }
     public String getFullName() { return fullName; }
     public TenantRole getRole() { return role; }
+    public boolean isSuperAdmin() { return isSuperAdmin; }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
+        if (isSuperAdmin) {
+            return List.of(
+                    new SimpleGrantedAuthority("ROLE_" + role.name()),
+                    new SimpleGrantedAuthority("ROLE_SUPER_ADMIN")
+            );
+        }
         return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
     }
 

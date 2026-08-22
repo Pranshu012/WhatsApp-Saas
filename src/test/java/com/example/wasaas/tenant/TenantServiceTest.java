@@ -23,12 +23,13 @@ class TenantServiceTest {
     @Mock private TenantRepository tenantRepository;
     @Mock private UserRepository userRepository;
     @Mock private TenantUserRepository tenantUserRepository;
+    @Mock private com.example.wasaas.subscription.SubscriptionService subscriptionService;
     private TenantService service;
     private PasswordEncoder passwordEncoder;
 
     @BeforeEach void setUp() {
         passwordEncoder = Argon2PasswordEncoder.defaultsForSpringSecurity_v5_8();
-        service = new TenantService(tenantRepository, userRepository, tenantUserRepository, passwordEncoder);
+        service = new TenantService(tenantRepository, userRepository, tenantUserRepository, passwordEncoder, subscriptionService);
     }
 
     @Test void registersOwnerWithHashedPasswordAndNormalizedIdentifiers() {

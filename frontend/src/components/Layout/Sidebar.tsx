@@ -13,8 +13,10 @@ import {
   X,
   MessageSquare,
   Sparkles,
+  Shield,
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
+import { useAuth } from '../../context/AuthContext';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -41,6 +43,8 @@ const navItems: NavItem[] = [
 ];
 
 export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
+  const { user } = useAuth();
+
   return (
     <>
       {/* Mobile Backdrop */}
@@ -104,6 +108,30 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
               </NavLink>
             );
           })}
+
+          {/* Super Admin Nav Item */}
+          {user?.isSuperAdmin && (
+            <div className="pt-4 mt-4 border-t border-slate-800">
+              <div className="px-3 mb-2 text-[10px] font-bold uppercase tracking-wider text-amber-400">
+                Administration
+              </div>
+              <NavLink
+                to="/admin"
+                onClick={onClose}
+                className={({ isActive }) =>
+                  cn(
+                    'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-bold transition-colors min-h-[44px]',
+                    isActive
+                      ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+                      : 'text-amber-400 hover:bg-amber-500/10 hover:text-amber-300'
+                  )
+                }
+              >
+                <Shield className="w-5 h-5 shrink-0 text-amber-400" />
+                <span>Super Admin</span>
+              </NavLink>
+            </div>
+          )}
         </nav>
 
         {/* Bottom Help / Tech Provider Badge */}

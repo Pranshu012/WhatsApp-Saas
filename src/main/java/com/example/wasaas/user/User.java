@@ -22,9 +22,17 @@ public class User {
     @Column(name = "created_at", nullable = false) private Instant createdAt;
     @Column(name = "updated_at", nullable = false) private Instant updatedAt;
     @Column(name = "last_login_at") private Instant lastLoginAt;
+    @Column(name = "is_super_admin", nullable = false) private boolean isSuperAdmin = false;
 
     protected User() { }
-    private User(String email, String passwordHash, String fullName) { this.id = UUID.randomUUID(); this.email = email; this.passwordHash = passwordHash; this.fullName = fullName; this.status = UserStatus.ACTIVE; }
+    private User(String email, String passwordHash, String fullName) { 
+        this.id = UUID.randomUUID(); 
+        this.email = email; 
+        this.passwordHash = passwordHash; 
+        this.fullName = fullName; 
+        this.status = UserStatus.ACTIVE;
+        this.isSuperAdmin = false;
+    }
     public static User active(String email, String passwordHash, String fullName) { return new User(email, passwordHash, fullName); }
     @PrePersist void onCreate() { Instant now = Instant.now(); createdAt = now; updatedAt = now; }
     @PreUpdate void onUpdate() { updatedAt = Instant.now(); }
@@ -34,6 +42,8 @@ public class User {
     public String getFullName() { return fullName; }
     public UserStatus getStatus() { return status; }
     public Instant getLastLoginAt() { return lastLoginAt; }
+    public boolean isSuperAdmin() { return isSuperAdmin; }
+    public void setSuperAdmin(boolean superAdmin) { this.isSuperAdmin = superAdmin; }
     public void recordLogin() { this.lastLoginAt = Instant.now(); }
     public void disable() { this.status = UserStatus.DISABLED; }
     public void activate() { this.status = UserStatus.ACTIVE; }

@@ -101,7 +101,8 @@ public class AuthService {
                 user.getEmail(),
                 user.getFullName(),
                 user.getPasswordHash(),
-                membership.getRole()
+                membership.getRole(),
+                user.isSuperAdmin()
         );
 
         Authentication auth = new UsernamePasswordAuthenticationToken(
@@ -120,7 +121,8 @@ public class AuthService {
                 principal.getTenantId(),
                 principal.getUsername(),
                 principal.getFullName(),
-                principal.getRole().name()
+                principal.getRole().name(),
+                principal.isSuperAdmin()
         );
     }
 

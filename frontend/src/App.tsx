@@ -19,6 +19,7 @@ import { InboxScreen } from './features/inbox/InboxScreen';
 import { ScheduledMessagesScreen } from './features/scheduled/ScheduledMessagesScreen';
 import { SettingsScreen } from './features/settings/SettingsScreen';
 import { GuideScreen } from './features/guide/GuideScreen';
+import { AdminDashboardScreen } from './features/admin/AdminDashboardScreen';
 import { MessageSquare } from 'lucide-react';
 
 const queryClient = new QueryClient({
@@ -90,6 +91,7 @@ export const App: React.FC = () => {
               <Route path="/scheduled" element={<ScheduledMessagesScreen />} />
               <Route path="/unmatched" element={<UnmatchedMessagesScreen />} />
               <Route path="/settings" element={<SettingsScreen />} />
+              <Route path="/admin" element={<AdminDashboardScreen />} />
             </Route>
 
             {/* Fallback */}

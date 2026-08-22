@@ -12,6 +12,7 @@ export interface UserSession {
   email: string;
   fullName: string;
   role: 'OWNER' | 'ADMIN' | 'MEMBER';
+  isSuperAdmin?: boolean;
 }
 
 export interface CsrfTokenResponse {
@@ -242,4 +243,80 @@ export interface UpdateBusinessSettingsRequest {
   gstin?: string;
   legalName?: string;
   billingAddress?: string;
+}
+
+export interface SubscriptionDto {
+  id: string;
+  tenantId: string;
+  planType: 'FREE_TRIAL' | 'BUSINESS_499' | 'CUSTOM';
+  status: 'TRIALING' | 'ACTIVE' | 'PAST_DUE' | 'EXPIRED' | 'SUSPENDED' | 'CANCELLED';
+  trialStartDate?: string;
+  trialExpiresAt?: string;
+  currentPeriodStart?: string;
+  currentPeriodEnd?: string;
+  monthlyPricePaise: number;
+  currency: string;
+  daysRemaining: number;
+  isCurrentlyValid: boolean;
+  notes?: string;
+}
+
+export interface AdminTenantDto {
+  tenantId: string;
+  businessName: string;
+  slug: string;
+  status: 'ACTIVE' | 'SUSPENDED';
+  timezone: string;
+  gstin?: string;
+  legalName?: string;
+  billingAddress?: string;
+  createdAt: string;
+  ownerId?: string;
+  ownerName?: string;
+  ownerEmail?: string;
+  whatsAppConnected: boolean;
+  displayPhoneNumber?: string;
+  qualityRating?: string;
+  messagingLimitTier?: string;
+  subscriptionId?: string;
+  planType: 'FREE_TRIAL' | 'BUSINESS_499' | 'CUSTOM';
+  subscriptionStatus: 'TRIALING' | 'ACTIVE' | 'PAST_DUE' | 'EXPIRED' | 'SUSPENDED' | 'CANCELLED';
+  trialStartDate?: string;
+  trialExpiresAt?: string;
+  currentPeriodStart?: string;
+  currentPeriodEnd?: string;
+  daysRemaining: number;
+  isSubscriptionValid: boolean;
+  monthlyPricePaise: number;
+  notes?: string;
+  totalMessagesThisMonth: number;
+  totalFaqs: number;
+  totalAutomationRules: number;
+}
+
+export interface AdminPlatformStatsDto {
+  totalTenants: number;
+  activeTenants: number;
+  trialingTenants: number;
+  suspendedTenants: number;
+  totalUsers: number;
+  totalMessagesThisMonth: number;
+  totalActiveWhatsAppAccounts: number;
+  estimatedMonthlyRevenueInr: number;
+  planDistribution: Record<string, number>;
+}
+
+export interface ActivateTenantRequest {
+  planType: string;
+  durationDays: number;
+  notes?: string;
+}
+
+export interface ExtendSubscriptionRequest {
+  extraDays: number;
+  notes?: string;
+}
+
+export interface SuspendTenantRequest {
+  reason?: string;
 }

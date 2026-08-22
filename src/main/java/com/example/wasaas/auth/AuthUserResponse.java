@@ -7,5 +7,6 @@ public record AuthUserResponse(
     UUID tenantId,
     String email,
     String fullName,
-    String role
+    String role,
+    boolean isSuperAdmin
 ) {}

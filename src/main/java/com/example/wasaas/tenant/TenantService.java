@@ -15,13 +15,16 @@ public class TenantService {
     private final UserRepository userRepository;
     private final TenantUserRepository tenantUserRepository;
     private final PasswordEncoder passwordEncoder;
+    private final com.example.wasaas.subscription.SubscriptionService subscriptionService;
 
     public TenantService(TenantRepository tenantRepository, UserRepository userRepository,
-            TenantUserRepository tenantUserRepository, PasswordEncoder passwordEncoder) {
+            TenantUserRepository tenantUserRepository, PasswordEncoder passwordEncoder,
+            com.example.wasaas.subscription.SubscriptionService subscriptionService) {
         this.tenantRepository = tenantRepository;
         this.userRepository = userRepository;
         this.tenantUserRepository = tenantUserRepository;
         this.passwordEncoder = passwordEncoder;
+        this.subscriptionService = subscriptionService;
     }
 
     @Transactional
@@ -36,6 +39,7 @@ public class TenantService {
         try {
             com.example.wasaas.tenant.context.TenantContext.set(tenant.getId());
             tenantUserRepository.save(TenantUser.owner(tenant, user));
+            subscriptionService.createTrial(tenant.getId());
         } finally {
             com.example.wasaas.tenant.context.TenantContext.clear();
         }

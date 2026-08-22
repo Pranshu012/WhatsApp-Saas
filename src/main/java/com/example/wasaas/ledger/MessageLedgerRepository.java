@@ -46,4 +46,10 @@ public interface MessageLedgerRepository extends JpaRepository<MessageLedger, UU
             @Param("start") Instant start,
             @Param("end") Instant end
     );
+
+    @Query("SELECT COUNT(l) FROM MessageLedger l WHERE l.tenantId = :tenantId AND l.createdAt >= :start AND l.createdAt < :end")
+    long countByTenantIdAndDateRange(@Param("tenantId") UUID tenantId, @Param("start") Instant start, @Param("end") Instant end);
+
+    @Query(value = "SELECT COUNT(*) FROM message_ledger WHERE created_at >= :start AND created_at < :end", nativeQuery = true)
+    long countAllForDateRange(@Param("start") Instant start, @Param("end") Instant end);
 }

@@ -60,6 +60,11 @@ export const DashboardScreen: React.FC = () => {
     queryFn: () => apiClient<FaqResponse[]>('/api/faqs'),
   });
 
+  const { data: subscription } = useQuery<any>({
+    queryKey: ['subscription'],
+    queryFn: () => apiClient<any>('/api/subscription'),
+  });
+
   const { data: rules } = useQuery<AutomationRuleResponse[]>({
     queryKey: ['automation-rules'],
     queryFn: () => apiClient<AutomationRuleResponse[]>('/api/automation-rules'),
@@ -123,7 +128,7 @@ export const DashboardScreen: React.FC = () => {
       {/* 1. Welcome & Status Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-slate-200">
         <div>
-          <div className="flex items-center gap-2.5">
+          <div className="flex flex-wrap items-center gap-2.5">
             <h1 className="text-2xl font-black text-slate-900 tracking-tight">
               Business Control Center
             </h1>
@@ -131,6 +136,23 @@ export const DashboardScreen: React.FC = () => {
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
               Bot Active 24/7
             </span>
+
+            {subscription && (
+              <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border ${
+                subscription.status === 'TRIALING'
+                  ? 'bg-amber-50 text-amber-900 border-amber-200'
+                  : subscription.status === 'ACTIVE'
+                  ? 'bg-blue-50 text-blue-900 border-blue-200'
+                  : 'bg-rose-50 text-rose-900 border-rose-200'
+              }`}>
+                <Clock className="w-3.5 h-3.5" />
+                {subscription.status === 'TRIALING'
+                  ? `Free Trial: ${subscription.daysRemaining} Days Left`
+                  : subscription.status === 'ACTIVE'
+                  ? 'All-in-One Plan Active (₹499/mo)'
+                  : 'Subscription Inactive'}
+              </span>
+            )}
           </div>
           <p className="text-sm text-slate-600 mt-1">
             Manage your automatic replies, customer chats, and broadcast campaigns in one place.
