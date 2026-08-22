@@ -5,17 +5,7 @@ import { apiClient } from '../../api/client';
 import { WhatsAppAccountResponse, FaqResponse, AutomationRuleResponse } from '../../api/types';
 import {
   Sparkles,
-  Smartphone,
-  HelpCircle,
-  Zap,
-  MessageSquare,
-  FileText,
-  Calendar,
-  Inbox,
-  Settings,
-  LayoutDashboard,
   ArrowRight,
-  Bot,
   PlayCircle,
   HelpCircle as QuestionIcon,
 } from 'lucide-react';
@@ -43,92 +33,8 @@ export const GuideScreen: React.FC = () => {
   const faqCount = faqs?.filter((f) => f.enabled).length || 0;
   const ruleCount = rules?.filter((r) => r.enabled).length || 0;
 
-  const appSections = [
-    {
-      icon: LayoutDashboard,
-      title: 'Home (Business Control Center)',
-      route: '/',
-      tag: 'Daily Dashboard',
-      tagColor: 'bg-emerald-100 text-emerald-800',
-      description:
-        'Your daily cockpit. Shows whether your WhatsApp bot is active, how many hours and ₹ you have saved, and lets you test bot replies directly on the screen.',
-    },
-    {
-      icon: Smartphone,
-      title: 'Connect WhatsApp',
-      route: '/whatsapp',
-      tag: 'Step 1 • Setup',
-      tagColor: 'bg-blue-100 text-blue-800',
-      description:
-        'Connect your official WhatsApp Business number in 2 clicks. Powered by official Meta Cloud API with 0% risk of account bans.',
-    },
-    {
-      icon: HelpCircle,
-      title: 'Common Questions (FAQ Brain)',
-      route: '/faq',
-      tag: 'Step 2 • Bot Brain',
-      tagColor: 'bg-teal-100 text-teal-800',
-      description:
-        'Teach your bot how to answer frequently asked customer questions about shop timings, prices, address, and returns — even if customers make spelling mistakes.',
-    },
-    {
-      icon: Zap,
-      title: 'Auto Replies (Keyword Rules)',
-      route: '/automation',
-      tag: 'Step 3 • Instant Triggers',
-      tagColor: 'bg-amber-100 text-amber-800',
-      description:
-        'Set instant automated responses triggered when a customer sends specific trigger words like "MENU", "PRICE", "OFFER", or "LOCATION".',
-    },
-    {
-      icon: MessageSquare,
-      title: 'Live Inbox',
-      route: '/inbox',
-      tag: '1-on-1 Chats',
-      tagColor: 'bg-brand-100 text-brand-800',
-      description:
-        'View live customer conversations and chat manually within the free 24-hour service window. Live timer prevents extra messaging costs.',
-    },
-    {
-      icon: FileText,
-      title: 'Message Templates',
-      route: '/templates',
-      tag: 'Approved Messages',
-      tagColor: 'bg-purple-100 text-purple-800',
-      description:
-        'Pre-approved message formats required by WhatsApp to send bulk festival offers, discount coupons, and automated order confirmations.',
-    },
-    {
-      icon: Calendar,
-      title: 'Scheduled Messages',
-      route: '/scheduled',
-      tag: 'Timed Campaigns',
-      tagColor: 'bg-indigo-100 text-indigo-800',
-      description:
-        'Schedule marketing announcements and festive greetings for a future date and time (e.g. Diwali offer on Sunday at 10 AM).',
-    },
-    {
-      icon: Inbox,
-      title: 'Needs Your Reply (Unanswered)',
-      route: '/unmatched',
-      tag: 'Safety Net',
-      tagColor: 'bg-rose-100 text-rose-800',
-      description:
-        'Customer inquiries that your bot was not 100% sure about. You can reply manually with 1 click or turn them into new automated FAQ answers.',
-    },
-    {
-      icon: Settings,
-      title: 'Settings & Business Profile',
-      route: '/settings',
-      tag: 'Account & Billing',
-      tagColor: 'bg-slate-100 text-slate-800',
-      description:
-        'Update your business legal name, GSTIN number for tax invoices, and default time zone.',
-    },
-  ];
-
   return (
-    <div className="space-y-10 max-w-6xl mx-auto pb-12">
+    <div className="space-y-10 max-w-5xl mx-auto pb-12">
       {/* 1. Header & Introduction */}
       <div className="bg-gradient-to-r from-brand-700 via-brand-600 to-emerald-600 rounded-3xl p-6 sm:p-10 text-white shadow-xl space-y-4">
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/15 backdrop-blur-md text-emerald-100 text-xs font-bold border border-white/20">
@@ -157,7 +63,7 @@ export const GuideScreen: React.FC = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {/* Step 1 */}
           <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex flex-col justify-between space-y-4 hover:border-brand-300 transition-all">
             <div className="space-y-2">
@@ -276,54 +182,7 @@ export const GuideScreen: React.FC = () => {
         </div>
       </div>
 
-      {/* 3. Visual Sidebar Page Guide */}
-      <div className="space-y-4">
-        <div>
-          <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
-            <Bot className="w-6 h-6 text-brand-600" />
-            What Every Screen in the App Does
-          </h2>
-          <p className="text-xs text-slate-500 mt-0.5">
-            Click on any section to jump directly to that tool.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {appSections.map((sec, idx) => {
-            const Icon = sec.icon;
-            return (
-              <div
-                key={idx}
-                onClick={() => navigate(sec.route)}
-                className="bg-white p-5 rounded-3xl border border-slate-200 hover:border-brand-400 hover:shadow-lg transition-all cursor-pointer flex flex-col justify-between space-y-3 group"
-              >
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <div className="w-10 h-10 rounded-2xl bg-slate-50 group-hover:bg-brand-50 text-slate-700 group-hover:text-brand-600 flex items-center justify-center transition-colors">
-                      <Icon className="w-5 h-5" />
-                    </div>
-                    <span
-                      className={`text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full ${sec.tagColor}`}
-                    >
-                      {sec.tag}
-                    </span>
-                  </div>
-                  <h3 className="font-bold text-sm text-slate-900 group-hover:text-brand-600 transition-colors">
-                    {sec.title}
-                  </h3>
-                  <p className="text-xs text-slate-600 leading-relaxed">{sec.description}</p>
-                </div>
-                <div className="flex items-center gap-1 text-xs font-bold text-brand-600 pt-2 border-t border-slate-100 group-hover:translate-x-1 transition-transform">
-                  <span>Open {sec.title.split(' ')[0]}</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* 4. Non-Tech Frequently Asked Questions */}
+      {/* 3. Non-Tech Frequently Asked Questions */}
       <div className="bg-slate-900 text-white p-6 sm:p-8 rounded-3xl shadow-xl space-y-6">
         <div className="flex items-center gap-2">
           <QuestionIcon className="w-6 h-6 text-emerald-400" />
