@@ -374,13 +374,13 @@ export const LandingPage: React.FC = () => {
           <div className="text-center max-w-3xl mx-auto space-y-4 mb-16">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-50 text-brand-700 text-xs font-bold border border-brand-200">
               <Zap className="w-3.5 h-3.5 text-brand-600" />
-              Engineered For Modern Business
+              Simple Tools Built For Your Business
             </div>
             <h2 className="text-3xl sm:text-4xl font-black tracking-tight text-slate-900">
-              Everything you need to automate WhatsApp
+              Everything you need to grow on WhatsApp
             </h2>
             <p className="text-slate-600 text-sm sm:text-base">
-              Say goodbye to messy personal WhatsApp numbers and unorganized customer chats.
+              No more missed customer leads, slow manual replies, or unorganized chat history.
             </p>
           </div>
 
@@ -390,9 +390,9 @@ export const LandingPage: React.FC = () => {
               <div className="w-12 h-12 rounded-2xl bg-brand-600 text-white flex items-center justify-center shadow-md shadow-brand-500/25">
                 <Zap className="w-6 h-6" />
               </div>
-              <h3 className="text-lg font-bold text-slate-900">Instant Keyword Auto-Replies</h3>
+              <h3 className="text-lg font-bold text-slate-900">Auto-Reply to Common Questions</h3>
               <p className="text-sm text-slate-600 leading-relaxed">
-                Trigger instant answers for pricing, menu, branch addresses, or support using exact, contains, or regex match conditions.
+                Set instant replies for your price list, menu, store address, or catalog. Your customers get answers in seconds — 24 hours a day, even while you sleep.
               </p>
             </div>
 
@@ -401,9 +401,9 @@ export const LandingPage: React.FC = () => {
               <div className="w-12 h-12 rounded-2xl bg-teal-600 text-white flex items-center justify-center shadow-md shadow-teal-500/25">
                 <HelpCircle className="w-6 h-6" />
               </div>
-              <h3 className="text-lg font-bold text-slate-900">Typo-Tolerant FAQ Bot</h3>
+              <h3 className="text-lg font-bold text-slate-900">Smart AI Answers (Even with Typos)</h3>
               <p className="text-sm text-slate-600 leading-relaxed">
-                PostgreSQL Trigram & Full-Text AI understands customer typos (&ldquo;wat r ur timngs&rdquo;) and returns accurate answers without confusing hallucinations.
+                Customers often make spelling mistakes or write in Hinglish like <em>&ldquo;timings kya hai&rdquo;</em>. Our smart AI understands their question and sends the right answer every time.
               </p>
             </div>
 
@@ -412,9 +412,9 @@ export const LandingPage: React.FC = () => {
               <div className="w-12 h-12 rounded-2xl bg-amber-600 text-white flex items-center justify-center shadow-md shadow-amber-500/25">
                 <Clock className="w-6 h-6" />
               </div>
-              <h3 className="text-lg font-bold text-slate-900">24-Hour Free Service Guard</h3>
+              <h3 className="text-lg font-bold text-slate-900">Free 24-Hour Reply Tracker</h3>
               <p className="text-sm text-slate-600 leading-relaxed">
-                Live countdown timer per contact tracks Meta&apos;s 24h customer window so you reply for free and never trigger accidental marketing charges.
+                WhatsApp allows free replies within 24 hours of a customer message. Our live countdown timer ensures you reply on time and save extra messaging costs.
               </p>
             </div>
 
@@ -423,9 +423,9 @@ export const LandingPage: React.FC = () => {
               <div className="w-12 h-12 rounded-2xl bg-indigo-600 text-white flex items-center justify-center shadow-md shadow-indigo-500/25">
                 <Send className="w-6 h-6" />
               </div>
-              <h3 className="text-lg font-bold text-slate-900">Scheduled Broadcast Campaigns</h3>
+              <h3 className="text-lg font-bold text-slate-900">Send Bulk Offers & Updates in 1-Click</h3>
               <p className="text-sm text-slate-600 leading-relaxed">
-                Send approved Meta templates to 10,000+ opted-in customers with personalized variable placeholders without risking number blocks.
+                Send festival greetings, discount offers, and payment reminders to thousands of customers at once — safely and legally without risking number bans.
               </p>
             </div>
 
@@ -434,9 +434,9 @@ export const LandingPage: React.FC = () => {
               <div className="w-12 h-12 rounded-2xl bg-emerald-600 text-white flex items-center justify-center shadow-md shadow-emerald-500/25">
                 <ShieldCheck className="w-6 h-6" />
               </div>
-              <h3 className="text-lg font-bold text-slate-900">Meta Embedded Onboarding</h3>
+              <h3 className="text-lg font-bold text-slate-900">Quick 2-Minute WhatsApp Setup</h3>
               <p className="text-sm text-slate-600 leading-relaxed">
-                Connect your WhatsApp Business Account in under 2 minutes with official Meta OAuth dialogs. Token AES-256-GCM encrypted in database.
+                Connect your existing WhatsApp Business number directly in 2 clicks. No technical knowledge, complex coding, or server management required.
               </p>
             </div>
 
@@ -445,9 +445,9 @@ export const LandingPage: React.FC = () => {
               <div className="w-12 h-12 rounded-2xl bg-purple-600 text-white flex items-center justify-center shadow-md shadow-purple-500/25">
                 <BarChart3 className="w-6 h-6" />
               </div>
-              <h3 className="text-lg font-bold text-slate-900">Real-Time Cost & Delivery Ledger</h3>
+              <h3 className="text-lg font-bold text-slate-900">Clear & Honest Billing (No Hidden Fees)</h3>
               <p className="text-sm text-slate-600 leading-relaxed">
-                Category-wise consumption tracking (Marketing, Utility, Service). You pay exact Meta rates directly with zero hidden markups.
+                Track every message sent, delivered, and read in real time. You pay standard WhatsApp charges directly with zero middleman markups.
               </p>
             </div>
           </div>
