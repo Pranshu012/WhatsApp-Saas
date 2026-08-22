@@ -18,3 +18,5 @@ app:
     webhook-verify-token: test-verify-token-secret-12345
     graph-base-url: https://graph.facebook.com
     graph-version: v21.0
+  cors:
+    allowed-origins: http://localhost:5173,http://localhost:3000

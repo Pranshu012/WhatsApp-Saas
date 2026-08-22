@@ -7,7 +7,7 @@ spring:
   datasource:
     url: ${DB_URL:jdbc:postgresql://localhost:5432/wasaas}
     username: ${DB_USER:wasaas_app}
-    password: ${DB_PASSWORD:wasaas_app_password}
+    password: ${DB_PASSWORD:}
     hikari.maximum-pool-size: ${DB_POOL_MAX:10}
   jpa:
     hibernate.ddl-auto: validate
@@ -18,7 +18,7 @@ spring:
     validate-on-migrate: true
     url: ${DB_URL:jdbc:postgresql://localhost:5432/wasaas}
     user: ${FLYWAY_USER:wasaas}
-    password: ${FLYWAY_PASSWORD:localdev}
+    password: ${FLYWAY_PASSWORD:}
 server:
   port: ${SERVER_PORT:8080}
   forward-headers-strategy: framework

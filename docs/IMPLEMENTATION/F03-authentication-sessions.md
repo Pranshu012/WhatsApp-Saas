@@ -21,3 +21,10 @@ Implemented stateless server-side authentication using Spring Session JDBC backe
 - `V4__spring_session.sql`: Official Spring Session JDBC PostgreSQL schema.
 - `V5__login_attempts.sql`: Rate limiting attempts table and indexes.
 - `AuthenticationTest.java`: 7 integration tests asserting security and isolation behavior.
+
+## Configuration hardening (2026-08-22)
+
+- Production configuration no longer supplies a fallback database or Flyway password. Deployments
+  must inject their credentials through environment variables.
+- Production CORS has no allowed origins by default. The local profile explicitly permits the
+  Vite development origins; production must set `APP_CORS_ALLOWED_ORIGINS` to its real frontend URL.
