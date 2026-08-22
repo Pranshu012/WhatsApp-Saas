@@ -17,6 +17,7 @@ import {
   Flame,
   Award,
   Compass,
+  Clock,
 } from 'lucide-react';
 
 interface ChatMessage {
@@ -821,6 +822,65 @@ export const LandingPage: React.FC = () => {
               >
                 Get Started for ₹499/mo
               </Link>
+            </div>
+          </div>
+
+          {/* 100% Honest Pricing Notice: How WhatsApp Official Meta Charges Work */}
+          <div className="mt-10 p-6 sm:p-8 rounded-3xl bg-slate-900 text-white border border-slate-800 shadow-xl space-y-5">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-xl bg-brand-500/20 text-brand-400 flex items-center justify-center font-black">
+                  ℹ️
+                </div>
+                <div>
+                  <h4 className="text-base font-bold text-white">
+                    100% Honest Pricing: How Official WhatsApp (Meta) Charges Work
+                  </h4>
+                  <p className="text-xs text-slate-400">
+                    We charge zero per-message commission. Here is the exact Meta pricing policy:
+                  </p>
+                </div>
+              </div>
+              <span className="text-[11px] font-bold px-3 py-1 bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 rounded-full self-start sm:self-auto">
+                Official Meta Cloud API
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+              <div className="p-4 rounded-2xl bg-emerald-950/40 border border-emerald-800/40 space-y-2">
+                <div className="flex items-center gap-2 text-emerald-400 font-bold text-sm">
+                  <Check className="w-4 h-4" />
+                  <span>Inside 24-Hour Customer Window (100% Free)</span>
+                </div>
+                <p className="text-slate-300 leading-relaxed">
+                  When a customer sends you a message, a <strong>24-hour free service window</strong> opens. All automated bot replies, FAQ answers, and manual replies sent within these 24 hours are <strong>completely FREE</strong> with zero Meta charges.
+                </p>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-amber-950/40 border border-amber-800/40 space-y-2">
+                <div className="flex items-center gap-2 text-amber-400 font-bold text-sm">
+                  <Clock className="w-4 h-4" />
+                  <span>After 24 Hours / Bulk Broadcasts (Meta Direct Rates)</span>
+                </div>
+                <p className="text-slate-300 leading-relaxed">
+                  If 24 hours have passed since the customer last messaged you, or if you initiate a promotional broadcast, Meta requires an <strong>Approved Template Message</strong>. Meta bills this directly to your card at official base rates:
+                </p>
+                <div className="flex flex-wrap gap-2 pt-1">
+                  <span className="px-2.5 py-1 rounded-lg bg-white/10 text-slate-200 font-mono text-[11px]">
+                    Utility / Alerts: ~₹0.115 / msg
+                  </span>
+                  <span className="px-2.5 py-1 rounded-lg bg-white/10 text-slate-200 font-mono text-[11px]">
+                    Marketing / Offers: ~₹0.86 / msg
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div className="text-[11px] text-slate-400 pt-1 flex items-center gap-2">
+              <span>💡</span>
+              <span>
+                You pay <strong>₹499/month flat</strong> to us for software automation. You pay Meta directly only if you send outbound marketing messages outside the 24h window. Zero middleman markup.
+              </span>
             </div>
           </div>
         </div>

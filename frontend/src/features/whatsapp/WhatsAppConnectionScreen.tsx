@@ -335,24 +335,40 @@ export const WhatsAppConnectionScreen: React.FC = () => {
               </p>
 
               <div className="space-y-3 pt-2 text-xs">
-                <div className="p-3 rounded-lg bg-white/10 border border-white/10">
-                  <div className="font-semibold text-white mb-0.5">1. Our Software Platform</div>
-                  <div className="text-slate-300">
-                    ₹499 / month flat for automation rules, FAQ bot, inbox, and campaign scheduler.
+                <div className="p-3.5 rounded-xl bg-white/10 border border-white/10 space-y-1">
+                  <div className="font-bold text-white flex items-center justify-between">
+                    <span>1. Our Software Platform</span>
+                    <span className="text-emerald-400 font-mono">₹499 / mo</span>
+                  </div>
+                  <div className="text-slate-300 leading-relaxed">
+                    Flat ₹499/month for unlimited auto-reply rules, typo-tolerant FAQ bot, live agent inbox, and campaign scheduler.
                   </div>
                 </div>
 
-                <div className="p-3 rounded-lg bg-white/10 border border-white/10">
-                  <div className="font-semibold text-white mb-0.5">2. Meta Direct Messaging Charges</div>
-                  <div className="text-slate-300">
-                    Billed directly to your card by Meta (~₹0.115/utility message, ~₹0.86/marketing message in India + GST).
+                <div className="p-3.5 rounded-xl bg-white/10 border border-white/10 space-y-2">
+                  <div className="font-bold text-white flex items-center justify-between">
+                    <span>2. Meta Direct Messaging Charges</span>
+                    <span className="text-amber-400 font-mono">Paid to Meta</span>
                   </div>
+                  <div className="text-slate-300 leading-relaxed">
+                    Billed directly to your credit/debit card by Meta. We do not add any hidden middleman margin:
+                  </div>
+                  <ul className="space-y-1.5 pl-2 text-slate-300">
+                    <li className="flex items-start gap-1.5">
+                      <span className="text-emerald-400 font-bold">✓</span>
+                      <span><strong>Inside 24-hour Customer Window:</strong> 100% FREE unlimited replies.</span>
+                    </li>
+                    <li className="flex items-start gap-1.5">
+                      <span className="text-amber-400 font-bold">ℹ</span>
+                      <span><strong>After 24 hours / Bulk Outbound:</strong> Meta requires template messages (~₹0.115/utility, ~₹0.86/marketing in India).</span>
+                    </li>
+                  </ul>
                 </div>
               </div>
 
               <div className="text-[11px] text-slate-400 pt-2 flex items-center gap-1.5">
                 <Info className="w-3.5 h-3.5 shrink-0" />
-                You own 100% of your Meta WABA assets and can manage cards in WhatsApp Manager.
+                You own 100% of your Meta WABA assets. Card details are entered directly on official Facebook/WhatsApp Manager.
               </div>
             </div>
           </div>

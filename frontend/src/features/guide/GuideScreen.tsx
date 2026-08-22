@@ -189,23 +189,30 @@ export const GuideScreen: React.FC = () => {
           <h2 className="text-lg font-bold text-white">Common Questions by Business Owners</h2>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
           <div className="bg-slate-800/80 p-4 rounded-2xl border border-slate-700/80 space-y-2">
-            <h4 className="font-bold text-sm text-white">Do I need to keep my laptop open 24/7?</h4>
+            <h4 className="font-bold text-sm text-white">Do I need my laptop on 24/7?</h4>
             <p className="text-slate-300 leading-relaxed">
-              No! WhatsApp SaaS runs 24/7 on our cloud servers. It will answer your customer inquiries automatically even when your laptop and phone are switched off.
+              No! WhatsApp SaaS runs 24/7 on our cloud servers. It answers your customer inquiries automatically even when your devices are off.
             </p>
           </div>
 
           <div className="bg-slate-800/80 p-4 rounded-2xl border border-slate-700/80 space-y-2">
-            <h4 className="font-bold text-sm text-white">Will my WhatsApp number get banned?</h4>
+            <h4 className="font-bold text-sm text-white">Will my number get banned?</h4>
             <p className="text-slate-300 leading-relaxed">
-              Never. We use the Official Meta Cloud API. Unlike third-party unauthorized QR code web scrapers, Meta officially approves your account with 0% ban risk.
+              Never. We use the Official Meta Cloud API. Unlike risky unofficial QR-code tools, Meta officially approves your account with 0% ban risk.
             </p>
           </div>
 
           <div className="bg-slate-800/80 p-4 rounded-2xl border border-slate-700/80 space-y-2">
-            <h4 className="font-bold text-sm text-white">Can I still reply manually to customers?</h4>
+            <h4 className="font-bold text-sm text-white">How do WhatsApp message charges work?</h4>
+            <p className="text-slate-300 leading-relaxed">
+              All replies within <strong>24 hours</strong> of customer inquiry are <strong>100% FREE</strong>. If you send marketing broadcasts after 24h, Meta charges ~₹0.11-₹0.86 directly to your card.
+            </p>
+          </div>
+
+          <div className="bg-slate-800/80 p-4 rounded-2xl border border-slate-700/80 space-y-2">
+            <h4 className="font-bold text-sm text-white">Can I still reply manually?</h4>
             <p className="text-slate-300 leading-relaxed">
               Yes! You can view and reply to any customer conversation anytime from the <strong>Inbox</strong> tab. The bot never blocks your human agents.
             </p>
