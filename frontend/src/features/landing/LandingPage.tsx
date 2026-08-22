@@ -55,7 +55,7 @@ export const LandingPage: React.FC = () => {
   ];
 
   const botResponses: Record<string, string> = {
-    pricing: 'Our Starter plan is ₹999/mo and Growth is ₹1,999/mo with unlimited auto-replies and Meta Cloud API integration. Click here to view details: https://wasaas.app/pricing',
+    pricing: 'Our all-in-one Business plan is just ₹499/month (~₹16/day) with unlimited auto-replies, smart FAQ bot, and official Meta Cloud API integration. Start your 14-day free trial here: https://wasaas.app/register',
     timing: 'We are open Monday to Saturday from 9:30 AM to 8:30 PM! Sunday closed.',
     timings: 'We are open Monday to Saturday from 9:30 AM to 8:30 PM! Sunday closed.',
     order: 'Your order #4589 has been dispatched via BlueDart! Live tracking: https://track.example.com/4589 (Estimated delivery: Tomorrow by 4 PM)',
@@ -545,112 +545,102 @@ export const LandingPage: React.FC = () => {
           <div className="text-center max-w-3xl mx-auto space-y-4 mb-16">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-50 text-brand-700 text-xs font-bold border border-brand-200">
               <Percent className="w-3.5 h-3.5 text-brand-600" />
-              Honest & Transparent
+              Affordable & Transparent
             </div>
             <h2 className="text-3xl sm:text-4xl font-black tracking-tight text-slate-900">
-              Simple pricing. No hidden message markups.
+              Simple, affordable pricing for every business
             </h2>
             <p className="text-slate-600 text-sm sm:text-base">
-              You connect your own Meta Cloud account. You pay exact official Meta rates without 2x-3x platform surcharges.
+              Start with a 14-day free trial. Upgrade anytime for just ₹499/month (~₹16/day) with zero hidden platform charges.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-3xl mx-auto items-stretch">
             {/* Free Trial */}
             <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm flex flex-col justify-between space-y-6">
               <div className="space-y-4">
                 <h3 className="text-lg font-bold text-slate-900">14-Day Free Trial</h3>
-                <p className="text-xs text-slate-500">Test every feature with your live WhatsApp number.</p>
+                <p className="text-xs text-slate-500">Test every feature with your live WhatsApp business number.</p>
                 <div className="text-3xl font-black text-slate-900 font-mono">₹0</div>
                 <ul className="space-y-3 text-xs text-slate-600 pt-4 border-t border-slate-100">
-                  <li className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-emerald-600" /> 1 WhatsApp Number
+                  <li className="flex items-center gap-2.5">
+                    <Check className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>1 WhatsApp Business Number</span>
                   </li>
-                  <li className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-emerald-600" /> Keyword Auto-Replies
+                  <li className="flex items-center gap-2.5">
+                    <Check className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>Keyword Auto-Replies</span>
                   </li>
-                  <li className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-emerald-600" /> Full-Text FAQ Bot
+                  <li className="flex items-center gap-2.5">
+                    <Check className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>Typo-Tolerant FAQ Knowledge Base</span>
                   </li>
-                  <li className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-emerald-600" /> 24h Window Inbox
+                  <li className="flex items-center gap-2.5">
+                    <Check className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>24-Hour Free Service Window Inbox</span>
+                  </li>
+                  <li className="flex items-center gap-2.5">
+                    <Check className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>No Credit Card Required to Start</span>
                   </li>
                 </ul>
               </div>
               <Link
                 to="/register"
-                className="w-full py-3 px-4 rounded-xl border border-slate-300 hover:bg-slate-50 text-slate-800 font-bold text-sm text-center block transition-colors"
+                className="w-full py-3.5 px-4 rounded-2xl border border-slate-300 hover:bg-slate-50 text-slate-800 font-bold text-sm text-center block transition-colors shadow-sm"
               >
                 Start Free Trial
               </Link>
             </div>
 
-            {/* Growth Plan (Popular) */}
-            <div className="bg-gradient-to-b from-slate-900 to-slate-950 text-white p-8 rounded-3xl border-2 border-brand-500 shadow-2xl shadow-brand-900/30 flex flex-col justify-between space-y-6 relative">
-              <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-brand-500 text-white text-[11px] font-black uppercase tracking-wider px-3.5 py-1 rounded-full shadow-md">
-                Most Popular for SMBs
+            {/* All-in-One Business Plan (₹499/mo) */}
+            <div className="bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 text-white p-8 rounded-3xl border-2 border-brand-500 shadow-2xl shadow-brand-900/30 flex flex-col justify-between space-y-6 relative">
+              <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-brand-500 text-white text-[11px] font-black uppercase tracking-wider px-4 py-1 rounded-full shadow-md whitespace-nowrap">
+                ⭐ Best Value for SMBs
               </div>
 
               <div className="space-y-4">
-                <h3 className="text-lg font-bold text-white">Growth Plan</h3>
-                <p className="text-xs text-slate-400">Complete automation engine for growing brands.</p>
+                <h3 className="text-lg font-bold text-white">All-in-One Business Plan</h3>
+                <p className="text-xs text-slate-300">Complete 24/7 WhatsApp automation engine for your brand.</p>
                 <div className="text-3xl font-black text-white font-mono">
-                  ₹1,999 <span className="text-xs font-normal text-slate-400">/ month</span>
+                  ₹499 <span className="text-xs font-normal text-slate-400">/ month (~₹16 / day)</span>
                 </div>
-                <ul className="space-y-3 text-xs text-slate-300 pt-4 border-t border-slate-800">
-                  <li className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-brand-400" /> Unlimited Auto-Replies
+                <ul className="space-y-3 text-xs text-slate-200 pt-4 border-t border-slate-800">
+                  <li className="flex items-center gap-2.5">
+                    <Check className="w-4 h-4 text-brand-400 shrink-0" />
+                    <span><strong>Unlimited</strong> Automated Bot Replies</span>
                   </li>
-                  <li className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-brand-400" /> Unlimited Semantic FAQs
+                  <li className="flex items-center gap-2.5">
+                    <Check className="w-4 h-4 text-brand-400 shrink-0" />
+                    <span><strong>Unlimited</strong> Typo-Tolerant FAQs</span>
                   </li>
-                  <li className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-brand-400" /> Scheduled Broadcasts
+                  <li className="flex items-center gap-2.5">
+                    <Check className="w-4 h-4 text-brand-400 shrink-0" />
+                    <span>Official Meta Cloud API (<strong>0% Ban Risk</strong>)</span>
                   </li>
-                  <li className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-brand-400" /> 24h Countdown Guard
+                  <li className="flex items-center gap-2.5">
+                    <Check className="w-4 h-4 text-brand-400 shrink-0" />
+                    <span>1-Click Bulk Broadcast Campaigns</span>
                   </li>
-                  <li className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-brand-400" /> Indian GST Tax Invoicing
+                  <li className="flex items-center gap-2.5">
+                    <Check className="w-4 h-4 text-brand-400 shrink-0" />
+                    <span>Live 24h Service Window Tracker</span>
+                  </li>
+                  <li className="flex items-center gap-2.5">
+                    <Check className="w-4 h-4 text-brand-400 shrink-0" />
+                    <span>Indian GST Tax Invoices & Input Credit</span>
+                  </li>
+                  <li className="flex items-center gap-2.5">
+                    <Check className="w-4 h-4 text-brand-400 shrink-0" />
+                    <span>Zero Per-Message Middleman Surcharges</span>
                   </li>
                 </ul>
               </div>
               <Link
                 to="/register"
-                className="w-full py-3 px-4 rounded-xl bg-brand-500 hover:bg-brand-600 text-white font-black text-sm text-center block shadow-lg transition-all"
+                className="w-full py-3.5 px-4 rounded-2xl bg-brand-500 hover:bg-brand-600 text-white font-black text-sm text-center block shadow-lg transition-all hover:scale-[1.02]"
               >
-                Get Started with Growth
-              </Link>
-            </div>
-
-            {/* Pro / Agency */}
-            <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm flex flex-col justify-between space-y-6">
-              <div className="space-y-4">
-                <h3 className="text-lg font-bold text-slate-900">Pro / Multi-Branch</h3>
-                <p className="text-xs text-slate-500">For high-volume retail chains & franchises.</p>
-                <div className="text-3xl font-black text-slate-900 font-mono">
-                  ₹4,999 <span className="text-xs font-normal text-slate-500">/ month</span>
-                </div>
-                <ul className="space-y-3 text-xs text-slate-600 pt-4 border-t border-slate-100">
-                  <li className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-emerald-600" /> Up to 5 WhatsApp Numbers
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-emerald-600" /> High-Throughput Queue
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-emerald-600" /> Dedicated Account Manager
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-emerald-600" /> 99.9% Uptime SLA
-                  </li>
-                </ul>
-              </div>
-              <Link
-                to="/register"
-                className="w-full py-3 px-4 rounded-xl border border-slate-300 hover:bg-slate-50 text-slate-800 font-bold text-sm text-center block transition-colors"
-              >
-                Contact for Pro
+                Get Started for ₹499/mo
               </Link>
             </div>
           </div>
