@@ -356,11 +356,11 @@ export const WhatsAppConnectionScreen: React.FC = () => {
                   <ul className="space-y-1.5 pl-2 text-slate-300">
                     <li className="flex items-start gap-1.5">
                       <span className="text-emerald-400 font-bold">✓</span>
-                      <span><strong>Inside 24-hour Customer Window:</strong> 100% FREE unlimited replies.</span>
+                      <span><strong>Inside 24-hour Customer Window:</strong> Unlimited bot replies (currently free, moving to Meta base ~₹0.115 on Oct 1).</span>
                     </li>
                     <li className="flex items-start gap-1.5">
                       <span className="text-amber-400 font-bold">ℹ</span>
-                      <span><strong>After 24 hours / Bulk Outbound:</strong> Meta requires template messages (~₹0.115/utility, ~₹0.86/marketing in India).</span>
+                      <span><strong>After 24 hours / Bulk Outbound:</strong> Meta requires approved templates (~₹0.115/utility, ~₹0.86/marketing in India).</span>
                     </li>
                   </ul>
                 </div>

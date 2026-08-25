@@ -60,6 +60,7 @@ export interface WhatsAppAccountResponse {
   verifiedName: string;
   qualityRating: string;
   messagingLimitTier: string;
+  paymentMethodAttached?: boolean;
   status: string;
   connectedAt?: string;
 }

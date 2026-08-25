@@ -3,6 +3,7 @@ package com.example.wasaas.contact;
 import com.example.wasaas.common.exception.DomainException;
 import com.example.wasaas.ledger.MessageLedger;
 import com.example.wasaas.ledger.MessageLedgerRepository;
+import com.example.wasaas.ledger.PhonePrivacyUtils;
 import com.example.wasaas.tenant.context.TenantContext;
 import com.example.wasaas.whatsapp.send.MessagingService;
 import jakarta.validation.Valid;
@@ -98,7 +99,14 @@ public class ConversationController {
                     "This conversation's 24-hour service window has closed. Send an approved WhatsApp template instead.");
         }
 
-        String idempotencyKey = "manual-reply:" + conv.getId() + ":" + System.currentTimeMillis();
+        long windowBucket = conv.getServiceWindowExpiresAt().toEpochMilli();
+        String stableContent = conv.getId() + ":" + request.text().trim() + ":" + windowBucket;
+        String contentHash = PhonePrivacyUtils.hashPhoneNumber(stableContent).substring(0, 16);
+        
+        String idempotencyKey = (request.clientRequestId() != null && !request.clientRequestId().isBlank())
+                ? "manual-reply:" + conv.getId() + ":" + request.clientRequestId().trim()
+                : "manual-reply:" + conv.getId() + ":" + contentHash;
+
         messagingService.sendText(
                 conv.getWhatsappAccountId(),
                 contact.getPhoneE164(),
@@ -122,6 +130,7 @@ public class ConversationController {
     ) {}
 
     public record ReplyRequest(
-            @NotBlank String text
+            @NotBlank String text,
+            String clientRequestId
     ) {}
 }

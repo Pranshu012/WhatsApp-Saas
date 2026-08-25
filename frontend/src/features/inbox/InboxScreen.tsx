@@ -70,10 +70,10 @@ export const InboxScreen: React.FC = () => {
 
   // 3. Manual Free-Text Reply Mutation
   const replyMutation = useMutation({
-    mutationFn: ({ convId, text }: { convId: string; text: string }) =>
+    mutationFn: ({ convId, text, clientRequestId }: { convId: string; text: string; clientRequestId?: string }) =>
       apiClient(`/api/conversations/${convId}/reply`, {
         method: 'POST',
-        body: JSON.stringify({ text }),
+        body: JSON.stringify({ text, clientRequestId }),
       }),
     onSuccess: () => {
       setReplyText('');
@@ -89,7 +89,8 @@ export const InboxScreen: React.FC = () => {
     e.preventDefault();
     if (!selectedConvId || !replyText.trim()) return;
     setErrorMsg(null);
-    replyMutation.mutate({ convId: selectedConvId, text: replyText.trim() });
+    const clientRequestId = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : undefined;
+    replyMutation.mutate({ convId: selectedConvId, text: replyText.trim(), clientRequestId });
   };
 
   const calculateWindowRemaining = (expiresAt?: string) => {

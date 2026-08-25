@@ -17,6 +17,7 @@ import {
   Zap,
   CheckCircle2,
   AlertCircle,
+  AlertTriangle,
   HelpCircle,
   ArrowRight,
   Sparkles,
@@ -178,6 +179,34 @@ export const DashboardScreen: React.FC = () => {
           </button>
         </div>
       </div>
+
+      {/* Payment Method Missing Warning on Dashboard (Blocker for outbound sends) */}
+      {isConnected && account && account.paymentMethodAttached === false && (
+        <div className="bg-rose-50 border-2 border-rose-300 rounded-3xl p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm animate-in fade-in">
+          <div className="flex items-start gap-3.5">
+            <div className="w-10 h-10 rounded-2xl bg-rose-600 text-white flex items-center justify-center shrink-0 shadow-md shadow-rose-600/20 mt-0.5">
+              <AlertTriangle className="w-5 h-5" />
+            </div>
+            <div>
+              <h3 className="text-base font-bold text-rose-950">
+                Action Required: Add Payment Card to Meta WhatsApp Manager
+              </h3>
+              <p className="text-xs text-rose-800 mt-0.5 leading-relaxed">
+                Meta requires a payment card attached to your WhatsApp Business Account. Without this, Meta will reject your customer replies and marketing broadcasts.
+              </p>
+            </div>
+          </div>
+          <a
+            href="https://business.facebook.com/wa/manage/phone-numbers/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 rounded-xl min-h-[44px] shadow-sm shrink-0 transition-all"
+          >
+            Attach Card in Meta
+            <ArrowRight className="w-3.5 h-3.5" />
+          </a>
+        </div>
+      )}
 
       {/* Non-Tech Setup Banner */}
       {(!isConnected || totalAutomations < 3) && (

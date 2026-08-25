@@ -850,20 +850,20 @@ export const LandingPage: React.FC = () => {
               <div className="p-4 rounded-2xl bg-emerald-950/40 border border-emerald-800/40 space-y-2">
                 <div className="flex items-center gap-2 text-emerald-400 font-bold text-sm">
                   <Check className="w-4 h-4" />
-                  <span>Inside 24-Hour Customer Window (100% Free)</span>
+                  <span>Inside 24-Hour Customer Window</span>
                 </div>
                 <p className="text-slate-300 leading-relaxed">
-                  When a customer sends you a message, a <strong>24-hour free service window</strong> opens. All automated bot replies, FAQ answers, and manual replies sent within these 24 hours are <strong>completely FREE</strong> with zero Meta charges.
+                  When a customer messages you, a <strong>24-hour service window</strong> opens. Automated bot replies and FAQ answers are currently <strong>free</strong> (transitioning to Meta's low-cost base rate of ~₹0.115 from 1 Oct 2026). Zero platform commissions.
                 </p>
               </div>
 
               <div className="p-4 rounded-2xl bg-amber-950/40 border border-amber-800/40 space-y-2">
                 <div className="flex items-center gap-2 text-amber-400 font-bold text-sm">
                   <Clock className="w-4 h-4" />
-                  <span>After 24 Hours / Bulk Broadcasts (Meta Direct Rates)</span>
+                  <span>After 24 Hours / Promotional Broadcasts</span>
                 </div>
                 <p className="text-slate-300 leading-relaxed">
-                  If 24 hours have passed since the customer last messaged you, or if you initiate a promotional broadcast, Meta requires an <strong>Approved Template Message</strong>. Meta bills this directly to your card at official base rates:
+                  Outside the 24-hour window, outbound messages require an <strong>Approved Template Message</strong>. Meta bills your card directly at base rates:
                 </p>
                 <div className="flex flex-wrap gap-2 pt-1">
                   <span className="px-2.5 py-1 rounded-lg bg-white/10 text-slate-200 font-mono text-[11px]">

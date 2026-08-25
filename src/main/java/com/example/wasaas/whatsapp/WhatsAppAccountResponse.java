@@ -11,6 +11,7 @@ public record WhatsAppAccountResponse(
     String verifiedName,
     String qualityRating,
     String messagingLimitTier,
+    boolean paymentMethodAttached,
     String status,
     Instant connectedAt
 ) {
@@ -23,6 +24,7 @@ public record WhatsAppAccountResponse(
                 account.getVerifiedName(),
                 account.getQualityRating(),
                 account.getMessagingLimitTier(),
+                account.isPaymentMethodAttached(),
                 account.getStatus().name(),
                 account.getConnectedAt()
         );

@@ -10,16 +10,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.jdbc.Sql;
 
-import java.util.UUID;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
-@ActiveProfiles("local") // Or whatever they use, we can leave it default
+@ActiveProfiles({"local", "worker"})
 public class TenantIsolationTest {
 
     @Autowired private TenantRepository tenantRepository;
@@ -33,12 +31,6 @@ public class TenantIsolationTest {
     @BeforeEach
     void setup() {
         cleanup();
-
-        try {
-            jdbcTemplate.execute("DROP POLICY IF EXISTS tenant_users_tenant_isolation ON tenant_users");
-            jdbcTemplate.execute("CREATE POLICY tenant_users_tenant_isolation ON tenant_users USING (tenant_id = NULLIF(current_setting('app.tenant_id', true), '')::uuid OR NULLIF(current_setting('app.tenant_id', true), '') IS NULL) WITH CHECK (tenant_id = NULLIF(current_setting('app.tenant_id', true), '')::uuid)");
-        } catch (Exception ignored) {
-        }
         
         tenantA = tenantRepository.save(Tenant.active("Tenant A", "tenant-a"));
         tenantB = tenantRepository.save(Tenant.active("Tenant B", "tenant-b"));
@@ -83,6 +75,14 @@ public class TenantIsolationTest {
         // Raw query without tenant_id filter
         Integer count = jdbcTemplate.queryForObject("SELECT count(*) FROM tenant_users", Integer.class);
         assertThat(count).isEqualTo(1);
+    }
+
+    @Test
+    void testUnsetContextSeesZeroRowsInTenantUsers() {
+        // Critical: with tightened policy (V19), when no tenant is set, count must be 0, NOT all rows
+        TenantContext.clear();
+        Integer count = jdbcTemplate.queryForObject("SELECT count(*) FROM tenant_users", Integer.class);
+        assertThat(count).isEqualTo(0);
     }
 
     @Test

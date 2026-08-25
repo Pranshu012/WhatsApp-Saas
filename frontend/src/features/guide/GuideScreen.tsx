@@ -207,7 +207,7 @@ export const GuideScreen: React.FC = () => {
           <div className="bg-slate-800/80 p-4 rounded-2xl border border-slate-700/80 space-y-2">
             <h4 className="font-bold text-sm text-white">How do WhatsApp message charges work?</h4>
             <p className="text-slate-300 leading-relaxed">
-              All replies within <strong>24 hours</strong> of customer inquiry are <strong>100% FREE</strong>. If you send marketing broadcasts after 24h, Meta charges ~₹0.11-₹0.86 directly to your card.
+              Replies within <strong>24 hours</strong> are currently free (moving to Meta base ~₹0.115 on Oct 1). Marketing broadcasts outside 24h are billed directly by Meta (~₹0.86/msg). Zero platform commission.
             </p>
           </div>
 

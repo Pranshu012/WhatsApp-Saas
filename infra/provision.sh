@@ -81,13 +81,28 @@ sudo -u postgres psql -d wasaas -c "CREATE EXTENSION IF NOT EXISTS pgcrypto;"
 sudo -u postgres psql -d wasaas -c "CREATE EXTENSION IF NOT EXISTS pg_trgm;"
 sudo -u postgres psql -d wasaas -c "CREATE EXTENSION IF NOT EXISTS pg_stat_statements;"
 
+# Validate required passwords from environment
+if [ -z "${DB_APP_PASSWORD:-}" ] || [ "${DB_APP_PASSWORD}" = "change_in_production" ]; then
+    echo "ERROR: DB_APP_PASSWORD environment variable must be set to a secure production password." >&2
+    exit 1
+fi
+
+if [ -z "${DB_MIGRATOR_PASSWORD:-}" ] || [ "${DB_MIGRATOR_PASSWORD}" = "change_in_production" ]; then
+    echo "ERROR: DB_MIGRATOR_PASSWORD environment variable must be set to a secure production password." >&2
+    exit 1
+fi
+
 # Create migrator & application roles if not exist
 sudo -u postgres psql -c "DO \$\$ BEGIN
     IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'wasaas_app') THEN
-        CREATE ROLE wasaas_app WITH LOGIN PASSWORD 'change_in_production';
+        CREATE ROLE wasaas_app WITH LOGIN PASSWORD '${DB_APP_PASSWORD}' NOSUPERUSER NOBYPASSRLS;
+    ELSE
+        ALTER ROLE wasaas_app WITH PASSWORD '${DB_APP_PASSWORD}';
     END IF;
     IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'wasaas_migrator') THEN
-        CREATE ROLE wasaas_migrator WITH LOGIN CREATEDB PASSWORD 'change_in_production';
+        CREATE ROLE wasaas_migrator WITH LOGIN CREATEDB PASSWORD '${DB_MIGRATOR_PASSWORD}';
+    ELSE
+        ALTER ROLE wasaas_migrator WITH PASSWORD '${DB_MIGRATOR_PASSWORD}';
     END IF;
 END \$\$;"
 
