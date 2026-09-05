@@ -21,7 +21,7 @@ public class AutoReplyRateLimiter {
     private final int maxRepliesPerHour;
     private final Map<String, Deque<Instant>> replyHistory = new ConcurrentHashMap<>();
 
-    public AutoReplyRateLimiter(@Value("${app.automation.max-replies-per-contact-per-hour:5}") int maxRepliesPerHour) {
+    public AutoReplyRateLimiter(@Value("${app.automation.max-replies-per-contact-per-hour:100}") int maxRepliesPerHour) {
         this.maxRepliesPerHour = maxRepliesPerHour;
     }
 

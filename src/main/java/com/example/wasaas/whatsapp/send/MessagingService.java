@@ -70,6 +70,27 @@ public class MessagingService {
         enqueueJob(tenantId, payload, accountId, toE164, callerIdempotencyKey);
     }
 
+    public void sendInteractiveButtons(UUID accountId, String toE164, String bodyText,
+                                       List<com.example.wasaas.whatsapp.client.ReplyButton> buttons,
+                                       String callerIdempotencyKey) {
+        UUID tenantId = TenantContext.require();
+
+        SendMessageJobPayload payload = new SendMessageJobPayload(
+                accountId,
+                toE164,
+                "INTERACTIVE",
+                bodyText,
+                null,
+                null,
+                null,
+                BillingCategory.SERVICE,
+                callerIdempotencyKey,
+                buttons
+        );
+
+        enqueueJob(tenantId, payload, accountId, toE164, callerIdempotencyKey);
+    }
+
     private void enqueueJob(UUID tenantId, SendMessageJobPayload payload,
                             UUID accountId, String toE164, String callerIdempotencyKey) {
         String jobKey = null;

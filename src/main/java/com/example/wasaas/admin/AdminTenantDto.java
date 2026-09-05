@@ -37,5 +37,8 @@ public record AdminTenantDto(
         // Usage stats
         long totalMessagesThisMonth,
         long totalFaqs,
-        long totalAutomationRules
+        long totalAutomationRules,
+        // AI Receptionist limits & usage
+        int aiMonthlyLimit,
+        int aiUsedThisMonth
 ) {}

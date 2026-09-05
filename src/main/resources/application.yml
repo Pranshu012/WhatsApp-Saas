@@ -44,3 +44,6 @@ app:
     poll-interval-ms: 1000
     batch-size: 10
     lock-timeout-secs: 300
+  gemini:
+    api-key: ${GEMINI_API_KEY:}
+    default-model: ${GEMINI_DEFAULT_MODEL:gemini-1.5-flash}

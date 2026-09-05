@@ -41,6 +41,8 @@ public class ProcessWebhookEventHandler implements JobHandler {
     private final WhatsAppTemplateRepository templateRepository;
     private final ApplicationEventPublisher eventPublisher;
     private final ObjectMapper objectMapper;
+    private final com.example.wasaas.contact.ConversationMessageRepository conversationMessageRepository;
+    private final com.example.wasaas.lead.LeadService leadService;
 
     public ProcessWebhookEventHandler(WebhookEventRepository webhookEventRepository,
                                       WhatsAppAccountRepository accountRepository,
@@ -49,7 +51,9 @@ public class ProcessWebhookEventHandler implements JobHandler {
                                       LedgerService ledgerService,
                                       WhatsAppTemplateRepository templateRepository,
                                       ApplicationEventPublisher eventPublisher,
-                                      ObjectMapper objectMapper) {
+                                      ObjectMapper objectMapper,
+                                      com.example.wasaas.contact.ConversationMessageRepository conversationMessageRepository,
+                                      com.example.wasaas.lead.LeadService leadService) {
         this.webhookEventRepository = webhookEventRepository;
         this.accountRepository = accountRepository;
         this.contactRepository = contactRepository;
@@ -58,6 +62,8 @@ public class ProcessWebhookEventHandler implements JobHandler {
         this.templateRepository = templateRepository;
         this.eventPublisher = eventPublisher;
         this.objectMapper = objectMapper;
+        this.conversationMessageRepository = conversationMessageRepository;
+        this.leadService = leadService;
     }
 
     @Override
@@ -213,6 +219,24 @@ public class ProcessWebhookEventHandler implements JobHandler {
             // 3. Record INBOUND_FREE on Message Ledger (stores only hash + last4)
             if (wamid != null) {
                 ledgerService.recordInboundMessage(account.getId(), fromE164, wamid, timestamp);
+            }
+
+            // 3.5 Persist Conversation Message for Multi-Turn AI Context & Update Lead CRM
+            if (text != null && !text.isBlank()) {
+                try {
+                    com.example.wasaas.contact.ConversationMessage custMsg = new com.example.wasaas.contact.ConversationMessage(
+                            account.getTenantId(),
+                            savedConversation.getId(),
+                            savedContact.getId(),
+                            "CUSTOMER",
+                            text.trim(),
+                            wamid
+                    );
+                    conversationMessageRepository.save(custMsg);
+                    leadService.processCustomerMessage(account.getTenantId(), savedContact.getId(), text.trim());
+                } catch (Exception e) {
+                    log.warn("Failed to persist conversation message/lead for tenant [{}]: {}", account.getTenantId(), e.getMessage());
+                }
             }
 
             // 4. Publish Spring Domain Event

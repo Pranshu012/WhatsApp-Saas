@@ -66,7 +66,7 @@ export interface WhatsAppAccountResponse {
 }
 
 export type MatchType = 'EXACT' | 'CONTAINS' | 'STARTS_WITH' | 'REGEX';
-export type ActionType = 'REPLY_TEXT' | 'HANDOVER' | 'SEND_TEMPLATE' | 'SEND_BUTTONS';
+export type ActionType = 'SEND_TEXT' | 'SEND_TEMPLATE' | 'SEND_INTERACTIVE' | 'ESCALATE';
 
 export interface AutomationRuleResponse {
   id: string;
@@ -189,6 +189,58 @@ export interface ConversationSummaryDto {
   status: string;
   serviceWindowActive: boolean;
   serviceWindowExpiresAt?: string;
+  lastMessageText?: string;
+  lastMessageSender?: string;
+  lastMessageAt?: string;
+}
+
+export interface ChatMessageDto {
+  id: string;
+  senderType: 'CUSTOMER' | 'AI_BOT' | 'AGENT';
+  textContent: string;
+  wamid?: string;
+  createdAt: string;
+  status?: string;
+}
+
+export type LeadStage = 'NEW' | 'IN_DISCUSSION' | 'PROPOSAL_SENT' | 'WON' | 'LOST';
+export type LeadTemperature = 'HOT' | 'WARM' | 'COLD';
+
+export interface LeadDto {
+  id: string;
+  contactId: string;
+  contactName?: string;
+  phoneE164: string;
+  stage: LeadStage;
+  temperature: LeadTemperature;
+  score: number;
+  dealValue: number;
+  requirementSummary?: string;
+  notes?: string;
+  lastInteractionAt: string;
+  createdAt: string;
+}
+
+export interface LeadAnalyticsDto {
+  totalLeads: number;
+  newLeads: number;
+  inDiscussion: number;
+  proposalSent: number;
+  won: number;
+  lost: number;
+  hotLeads: number;
+  totalPipelineValue: number;
+  wonValue: number;
+  conversionRatePercent: number;
+}
+
+export interface LeadQualificationRuleDto {
+  id: string;
+  tenantId: string;
+  ruleName: string;
+  matchKeywords: string;
+  scoreBoost: number;
+  active: boolean;
 }
 
 export interface MessageLedgerDto {
@@ -293,6 +345,8 @@ export interface AdminTenantDto {
   totalMessagesThisMonth: number;
   totalFaqs: number;
   totalAutomationRules: number;
+  aiMonthlyLimit: number;
+  aiUsedThisMonth: number;
 }
 
 export interface AdminPlatformStatsDto {
@@ -320,4 +374,8 @@ export interface ExtendSubscriptionRequest {
 
 export interface SuspendTenantRequest {
   reason?: string;
+}
+
+export interface UpdateTenantAiLimitRequest {
+  monthlyLimit: number;
 }

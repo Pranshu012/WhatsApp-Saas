@@ -7,6 +7,7 @@ import {
   ActivateTenantRequest,
   ExtendSubscriptionRequest,
   SuspendTenantRequest,
+  UpdateTenantAiLimitRequest,
 } from '../../api/types';
 import {
   Building2,
@@ -23,6 +24,7 @@ import {
   TrendingUp,
   RefreshCw,
   X,
+  Sparkles,
 } from 'lucide-react';
 import { Skeleton } from '../../components/Skeleton';
 import { ErrorState } from '../../components/ErrorState';
@@ -34,7 +36,7 @@ export const AdminDashboardScreen: React.FC = () => {
   
   // Selected tenant for detail modal
   const [selectedTenant, setSelectedTenant] = useState<AdminTenantDto | null>(null);
-  const [actionType, setActionType] = useState<'ACTIVATE' | 'EXTEND' | 'SUSPEND' | null>(null);
+  const [actionType, setActionType] = useState<'ACTIVATE' | 'EXTEND' | 'SUSPEND' | 'AI_LIMIT' | null>(null);
 
   // Form states for modal
   const [planType, setPlanType] = useState<string>('BUSINESS_499');
@@ -42,6 +44,8 @@ export const AdminDashboardScreen: React.FC = () => {
   const [extraDays, setExtraDays] = useState<number>(30);
   const [notes, setNotes] = useState<string>('');
   const [suspendReason, setSuspendReason] = useState<string>('Payment past due');
+  const [newAiLimit, setNewAiLimit] = useState<string>('500');
+  const [modalError, setModalError] = useState<string | null>(null);
 
   // 1. Platform Metrics Query
   const {
@@ -107,10 +111,27 @@ export const AdminDashboardScreen: React.FC = () => {
     },
   });
 
+  const updateAiLimitMutation = useMutation({
+    mutationFn: ({ tenantId, req }: { tenantId: string; req: UpdateTenantAiLimitRequest }) =>
+      apiClient<AdminTenantDto>(`/api/admin/tenants/${tenantId}/ai-limit`, {
+        method: 'POST',
+        body: JSON.stringify(req),
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-tenants'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-stats'] });
+      closeModal();
+    },
+    onError: (err: any) => {
+      setModalError(err?.message || 'Failed to update AI limit.');
+    },
+  });
+
   const closeModal = () => {
     setActionType(null);
     setSelectedTenant(null);
     setNotes('');
+    setModalError(null);
   };
 
   const filteredTenants = (tenants || []).filter((t) => {
@@ -275,6 +296,7 @@ export const AdminDashboardScreen: React.FC = () => {
                 <th className="py-3.5 px-4">WhatsApp Status</th>
                 <th className="py-3.5 px-4">Subscription Plan</th>
                 <th className="py-3.5 px-4">Usage This Month</th>
+                <th className="py-3.5 px-4">AI Quota</th>
                 <th className="py-3.5 px-4 text-right">Admin Actions</th>
               </tr>
             </thead>
@@ -282,14 +304,14 @@ export const AdminDashboardScreen: React.FC = () => {
               {tenantsLoading ? (
                 Array.from({ length: 5 }).map((_, i) => (
                   <tr key={i}>
-                    <td colSpan={6} className="py-4 px-4">
+                    <td colSpan={7} className="py-4 px-4">
                       <Skeleton className="h-6 w-full" />
                     </td>
                   </tr>
                 ))
               ) : filteredTenants.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="py-12 text-center text-slate-500">
+                  <td colSpan={7} className="py-12 text-center text-slate-500">
                     No businesses found matching your filters.
                   </td>
                 </tr>
@@ -356,9 +378,48 @@ export const AdminDashboardScreen: React.FC = () => {
                       </div>
                     </td>
 
+                    {/* AI Quota */}
+                    <td className="py-3.5 px-4 text-slate-700 font-medium">
+                      <div className="flex items-center gap-1.5 font-bold text-slate-900">
+                        <Sparkles className="w-3.5 h-3.5 text-purple-600" />
+                        <span>{t.aiUsedThisMonth || 0} / {t.aiMonthlyLimit || 500}</span>
+                      </div>
+                      <div className="w-24 bg-slate-100 rounded-full h-1.5 mt-1.5 overflow-hidden">
+                        <div
+                          className={`h-full rounded-full transition-all ${
+                            ((t.aiUsedThisMonth || 0) / (t.aiMonthlyLimit || 500)) >= 0.9
+                              ? 'bg-rose-500'
+                              : ((t.aiUsedThisMonth || 0) / (t.aiMonthlyLimit || 500)) >= 0.7
+                              ? 'bg-amber-500'
+                              : 'bg-purple-600'
+                          }`}
+                          style={{
+                            width: `${Math.min(100, Math.round(((t.aiUsedThisMonth || 0) / (t.aiMonthlyLimit || 500)) * 100))}%`,
+                          }}
+                        />
+                      </div>
+                      <div className="text-[10px] text-slate-400 mt-0.5">
+                        {Math.max(0, (t.aiMonthlyLimit || 500) - (t.aiUsedThisMonth || 0))} msgs left
+                      </div>
+                    </td>
+
                     {/* Actions */}
                     <td className="py-3.5 px-4 text-right">
                       <div className="flex items-center justify-end gap-1.5">
+                        <button
+                          onClick={() => {
+                            setSelectedTenant(t);
+                            setNewAiLimit(String(t.aiMonthlyLimit || 500));
+                            setModalError(null);
+                            setActionType('AI_LIMIT');
+                          }}
+                          className="px-2.5 py-1.5 text-xs font-bold text-purple-800 bg-purple-50 hover:bg-purple-100 border border-purple-200 rounded-lg min-h-[32px] transition-all flex items-center gap-1"
+                          title="Manage AI Quota Limit"
+                        >
+                          <Sparkles className="w-3.5 h-3.5 text-purple-600" />
+                          <span>AI Limit</span>
+                        </button>
+
                         {t.subscriptionStatus !== 'ACTIVE' ? (
                           <button
                             onClick={() => {
@@ -417,6 +478,7 @@ export const AdminDashboardScreen: React.FC = () => {
                   {actionType === 'ACTIVATE' && 'Activate Business Plan'}
                   {actionType === 'EXTEND' && 'Extend Subscription Days'}
                   {actionType === 'SUSPEND' && 'Suspend Business Account'}
+                  {actionType === 'AI_LIMIT' && 'Configure AI Monthly Limit'}
                 </h3>
                 <p className="text-xs text-slate-500 font-medium">
                   {selectedTenant.businessName} (/{selectedTenant.slug})
@@ -515,6 +577,68 @@ export const AdminDashboardScreen: React.FC = () => {
               </div>
             )}
 
+            {modalError && (
+              <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-xs font-semibold flex items-center gap-1.5">
+                <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0" />
+                <span>{modalError}</span>
+              </div>
+            )}
+
+            {actionType === 'AI_LIMIT' && (
+              <div className="space-y-4 text-xs">
+                <div className="p-3.5 bg-purple-50 border border-purple-200 rounded-2xl text-purple-900 leading-relaxed">
+                  <div className="font-bold flex items-center gap-1.5 mb-1 text-purple-950">
+                    <Sparkles className="w-4 h-4 text-purple-600" />
+                    Monthly AI Quota Limit
+                  </div>
+                  Set the maximum number of AI Receptionist auto-replies this business can use per month. Default is 500 messages/mo. Tenants cannot edit this limit.
+                </div>
+
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1.5">Quick Select Presets</label>
+                  <div className="grid grid-cols-4 gap-2">
+                    {[100, 500, 1000, 2000].map((preset) => (
+                      <button
+                        key={preset}
+                        type="button"
+                        onClick={() => {
+                          setNewAiLimit(String(preset));
+                          if (modalError) setModalError(null);
+                        }}
+                        className={`py-2 px-1 text-center font-bold rounded-xl border text-xs transition-all ${
+                          Number(newAiLimit) === preset
+                            ? 'bg-purple-600 text-white border-purple-600 shadow-sm'
+                            : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
+                        }`}
+                      >
+                        {preset}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">Limit (Messages / Month)</label>
+                  <input
+                    type="number"
+                    value={newAiLimit}
+                    onChange={(e) => {
+                      setNewAiLimit(e.target.value);
+                      if (modalError) setModalError(null);
+                    }}
+                    min={10}
+                    step={50}
+                    placeholder="e.g. 500"
+                    className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none font-bold text-sm text-slate-900 focus:ring-2 focus:ring-purple-500 focus:bg-white transition-all"
+                  />
+                  <div className="flex items-center justify-between text-[11px] text-slate-400 mt-1">
+                    <span>Used this month: <strong className="text-slate-700">{selectedTenant.aiUsedThisMonth || 0}</strong></span>
+                    <span>Remaining: <strong className="text-purple-700">{Math.max(0, (parseInt(newAiLimit, 10) || 0) - (selectedTenant.aiUsedThisMonth || 0))}</strong></span>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Modal Actions */}
             <div className="flex items-center justify-end gap-3 pt-2">
               <button
@@ -570,6 +694,28 @@ export const AdminDashboardScreen: React.FC = () => {
                   className="px-5 py-2.5 text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 rounded-xl shadow-md shadow-rose-600/20 disabled:opacity-50"
                 >
                   {suspendMutation.isPending ? 'Suspending...' : 'Confirm Suspension'}
+                </button>
+              )}
+
+              {actionType === 'AI_LIMIT' && (
+                <button
+                  type="button"
+                  disabled={updateAiLimitMutation.isPending}
+                  onClick={() => {
+                    const parsed = parseInt(newAiLimit, 10);
+                    if (isNaN(parsed) || parsed < 10) {
+                      setModalError('Please enter a valid monthly limit of at least 10 messages.');
+                      return;
+                    }
+                    updateAiLimitMutation.mutate({
+                      tenantId: selectedTenant.tenantId,
+                      req: { monthlyLimit: parsed },
+                    });
+                  }}
+                  className="px-5 py-2.5 text-xs font-bold text-white bg-purple-600 hover:bg-purple-700 rounded-xl shadow-md shadow-purple-600/20 disabled:opacity-50 transition-all flex items-center gap-1.5 cursor-pointer"
+                >
+                  <Sparkles className="w-3.5 h-3.5" />
+                  {updateAiLimitMutation.isPending ? 'Saving Limit...' : 'Save AI Limit'}
                 </button>
               )}
             </div>

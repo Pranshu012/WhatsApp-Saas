@@ -31,8 +31,10 @@ public class AutomationEngine {
     private final com.example.wasaas.automation.faq.FaqMatchService faqMatchService;
     private final MessagingService messagingService;
     private final com.example.wasaas.subscription.SubscriptionService subscriptionService;
+    private final com.example.wasaas.ai.AiAssistantService aiAssistantService;
     private final ApplicationEventPublisher eventPublisher;
     private final ObjectMapper objectMapper;
+    private final com.example.wasaas.contact.ConversationMessageRepository conversationMessageRepository;
 
     public AutomationEngine(AutomationRuleRepository ruleRepository,
                             UnmatchedMessageRepository unmatchedMessageRepository,
@@ -41,8 +43,10 @@ public class AutomationEngine {
                             com.example.wasaas.automation.faq.FaqMatchService faqMatchService,
                             MessagingService messagingService,
                             com.example.wasaas.subscription.SubscriptionService subscriptionService,
+                            com.example.wasaas.ai.AiAssistantService aiAssistantService,
                             ApplicationEventPublisher eventPublisher,
-                            ObjectMapper objectMapper) {
+                            ObjectMapper objectMapper,
+                            com.example.wasaas.contact.ConversationMessageRepository conversationMessageRepository) {
         this.ruleRepository = ruleRepository;
         this.unmatchedMessageRepository = unmatchedMessageRepository;
         this.ruleMatcher = ruleMatcher;
@@ -50,8 +54,10 @@ public class AutomationEngine {
         this.faqMatchService = faqMatchService;
         this.messagingService = messagingService;
         this.subscriptionService = subscriptionService;
+        this.aiAssistantService = aiAssistantService;
         this.eventPublisher = eventPublisher;
         this.objectMapper = objectMapper;
+        this.conversationMessageRepository = conversationMessageRepository;
     }
 
     @EventListener
@@ -108,6 +114,20 @@ public class AutomationEngine {
                                 faqResult.answer(),
                                 idempotencyKey
                         );
+                        try {
+                            com.example.wasaas.contact.ConversationMessage faqMsg =
+                                    new com.example.wasaas.contact.ConversationMessage(
+                                            tenantId,
+                                            event.conversationId(),
+                                            event.contactId(),
+                                            "AI_BOT",
+                                            faqResult.answer().trim(),
+                                            null
+                                    );
+                            conversationMessageRepository.save(faqMsg);
+                        } catch (Exception e) {
+                            log.warn("Failed to persist FAQ conversation message: {}", e.getMessage());
+                        }
                     } else {
                         log.warn("FAQ auto-reply suppressed for contact [{}] due to rate limit under tenant [{}]",
                                 event.fromE164(), tenantId);
@@ -115,9 +135,49 @@ public class AutomationEngine {
                     return;
                 }
 
-                // Fallback 2: Unmatched / Escalation (ADR-007 dataset)
-                log.info("No rule or confident FAQ match for message [{}] from [{}] (bestScore={}), escalating",
-                        event.wamid(), event.fromE164(), faqResult.confidenceScore());
+                // Fallback 2: Smart Gemini AI Assistant (with multi-turn conversation memory)
+                try {
+                    java.util.Optional<String> aiReplyOpt = aiAssistantService.generateReply(tenantId, event.conversationId(), event.text());
+                    if (aiReplyOpt.isPresent()) {
+                        String aiReply = aiReplyOpt.get();
+                        log.info("Gemini AI generated reply for contact [{}] under tenant [{}]: {}", event.fromE164(), tenantId, aiReply);
+
+                        if (rateLimiter.tryAcquire(tenantId, event.fromE164())) {
+                            String idempotencyKey = "ai:" + event.wamid();
+                            messagingService.sendText(
+                                    event.whatsappAccountId(),
+                                    event.fromE164(),
+                                    aiReply,
+                                    idempotencyKey
+                            );
+                            try {
+                                com.example.wasaas.contact.ConversationMessage botMsg =
+                                        new com.example.wasaas.contact.ConversationMessage(
+                                                tenantId,
+                                                event.conversationId(),
+                                                event.contactId(),
+                                                "AI_BOT",
+                                                aiReply.trim(),
+                                                null
+                                        );
+                                conversationMessageRepository.save(botMsg);
+                            } catch (Exception e) {
+                                log.warn("Failed to persist AI conversation message: {}", e.getMessage());
+                            }
+                            return;
+                        } else {
+                            log.warn("AI auto-reply suppressed for contact [{}] due to rate limit under tenant [{}]",
+                                    event.fromE164(), tenantId);
+                            return;
+                        }
+                    }
+                } catch (Exception e) {
+                    log.error("AI assistant processing error for tenant [{}]: {}", tenantId, e.getMessage());
+                }
+
+                // Fallback 3: Unmatched / Escalation for human review
+                log.info("No rule, FAQ, or AI match for message [{}] from [{}], logging as Unmatched",
+                        event.wamid(), event.fromE164());
 
                 UnmatchedMessage unmatched = new UnmatchedMessage(
                         tenantId,
@@ -178,9 +238,28 @@ public class AutomationEngine {
                             idempotencyKey
                     );
                 }
-                case ESCALATE, SEND_INTERACTIVE -> {
-                    log.info("Action type [{}] recorded for rule [{}] on message [{}]",
-                            rule.getActionType(), rule.getName(), event.wamid());
+                case SEND_INTERACTIVE -> {
+                    String bodyText = payloadNode.has("text") ? payloadNode.get("text").asText() : "";
+                    List<com.example.wasaas.whatsapp.client.ReplyButton> buttons = new java.util.ArrayList<>();
+                    if (payloadNode.has("buttons") && payloadNode.get("buttons").isArray()) {
+                        for (JsonNode btnNode : payloadNode.get("buttons")) {
+                            String id = btnNode.has("id") ? btnNode.get("id").asText() : "btn_" + System.currentTimeMillis();
+                            String title = btnNode.has("title") ? btnNode.get("title").asText() : "Option";
+                            buttons.add(new com.example.wasaas.whatsapp.client.ReplyButton(id, title));
+                        }
+                    }
+                    String idempotencyKey = "auto:" + event.wamid() + ":" + rule.getId();
+                    messagingService.sendInteractiveButtons(
+                            event.whatsappAccountId(),
+                            event.fromE164(),
+                            bodyText,
+                            buttons,
+                            idempotencyKey
+                    );
+                }
+                case ESCALATE -> {
+                    log.info("Action type ESCALATE recorded for rule [{}] on message [{}]",
+                            rule.getName(), event.wamid());
                 }
             }
         } catch (Exception e) {

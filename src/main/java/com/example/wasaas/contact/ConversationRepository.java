@@ -12,6 +12,8 @@ public interface ConversationRepository extends JpaRepository<Conversation, UUID
 
     List<Conversation> findAllByTenantId(UUID tenantId);
 
+    List<Conversation> findAllByTenantIdAndContactId(UUID tenantId, UUID contactId);
+
     Optional<Conversation> findByTenantIdAndId(UUID tenantId, UUID id);
 
     Optional<Conversation> findByTenantIdAndContactIdAndWhatsappAccountId(

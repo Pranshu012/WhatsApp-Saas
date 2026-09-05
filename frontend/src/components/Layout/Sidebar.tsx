@@ -3,17 +3,12 @@ import { NavLink } from 'react-router-dom';
 import {
   LayoutDashboard,
   MessageCircle,
-  Smartphone,
   Zap,
-  HelpCircle,
-  FileText,
-  Calendar,
-  Inbox,
   Settings,
   X,
   MessageSquare,
-  Sparkles,
   Shield,
+  Target,
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { useAuth } from '../../context/AuthContext';
@@ -31,15 +26,10 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { label: 'Home', href: '/', icon: LayoutDashboard },
-  { label: '🚀 Quick Setup Guide', href: '/guide', icon: Sparkles },
-  { label: 'Inbox', href: '/inbox', icon: MessageCircle },
-  { label: 'Connect WhatsApp', href: '/whatsapp', icon: Smartphone },
-  { label: 'Auto Replies', href: '/automation', icon: Zap },
-  { label: 'Common Questions', href: '/faq', icon: HelpCircle },
-  { label: 'Templates', href: '/templates', icon: FileText },
-  { label: 'Scheduled Messages', href: '/scheduled', icon: Calendar },
-  { label: 'Needs Your Reply', href: '/unmatched', icon: Inbox },
-  { label: 'Settings', href: '/settings', icon: Settings },
+  { label: 'Customer Chats', href: '/inbox', icon: MessageCircle },
+  { label: 'Leads CRM', href: '/leads', icon: Target },
+  { label: 'Bot Auto-Replies', href: '/automation', icon: Zap },
+  { label: 'WhatsApp & Settings', href: '/settings', icon: Settings },
 ];
 
 export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {

@@ -10,16 +10,14 @@ import { RegisterScreen } from './features/auth/RegisterScreen';
 import { ForgotPasswordScreen } from './features/auth/ForgotPasswordScreen';
 import { ResetPasswordScreen } from './features/auth/ResetPasswordScreen';
 import { WhatsAppConnectionScreen } from './features/whatsapp/WhatsAppConnectionScreen';
-import { AutomationRulesScreen } from './features/automation/AutomationRulesScreen';
-import { FaqScreen } from './features/faq/FaqScreen';
+import { BotRepliesHub } from './features/automation/BotRepliesHub';
 import { TemplatesScreen } from './features/templates/TemplatesScreen';
-import { UnmatchedMessagesScreen } from './features/unmatched/UnmatchedMessagesScreen';
 import { DashboardScreen } from './features/dashboard/DashboardScreen';
 import { InboxScreen } from './features/inbox/InboxScreen';
 import { ScheduledMessagesScreen } from './features/scheduled/ScheduledMessagesScreen';
 import { SettingsScreen } from './features/settings/SettingsScreen';
-import { GuideScreen } from './features/guide/GuideScreen';
 import { AdminDashboardScreen } from './features/admin/AdminDashboardScreen';
+import { LeadsScreen } from './features/leads/LeadsScreen';
 import { MessageSquare } from 'lucide-react';
 
 const queryClient = new QueryClient({
@@ -82,14 +80,15 @@ export const App: React.FC = () => {
               }
             >
               <Route path="/dashboard" element={<DashboardScreen />} />
-              <Route path="/guide" element={<GuideScreen />} />
+              <Route path="/guide" element={<Navigate to="/" replace />} />
               <Route path="/inbox" element={<InboxScreen />} />
+              <Route path="/leads" element={<LeadsScreen />} />
               <Route path="/whatsapp" element={<WhatsAppConnectionScreen />} />
-              <Route path="/automation" element={<AutomationRulesScreen />} />
-              <Route path="/faq" element={<FaqScreen />} />
+              <Route path="/automation" element={<BotRepliesHub />} />
+              <Route path="/faq" element={<Navigate to="/automation" replace />} />
+              <Route path="/unmatched" element={<Navigate to="/automation" replace />} />
               <Route path="/templates" element={<TemplatesScreen />} />
               <Route path="/scheduled" element={<ScheduledMessagesScreen />} />
-              <Route path="/unmatched" element={<UnmatchedMessagesScreen />} />
               <Route path="/settings" element={<SettingsScreen />} />
               <Route path="/admin" element={<AdminDashboardScreen />} />
             </Route>

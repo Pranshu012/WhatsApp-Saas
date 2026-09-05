@@ -47,7 +47,7 @@ public class WhatsAppCloudClient {
         requestFactory.setReadTimeout(metaProperties.getReadTimeoutMs());
 
         return builder
-                .requestFactory(requestFactory)
+                .requestFactory(new org.springframework.http.client.BufferingClientHttpRequestFactory(requestFactory))
                 .defaultStatusHandler(HttpStatusCode::isError, (req, resp) -> handleMetaErrorResponse(resp));
     }
 

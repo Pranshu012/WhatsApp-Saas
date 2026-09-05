@@ -119,6 +119,14 @@ public class SendMessageJobHandler implements JobHandler {
                         payload.languageCode(),
                         payload.components()
                 );
+            } else if ("INTERACTIVE".equalsIgnoreCase(payload.type())) {
+                sendResult = whatsAppCloudClient.sendInteractiveButtons(
+                        account.getPhoneNumberId(),
+                        decryptedToken,
+                        payload.toE164(),
+                        payload.text(),
+                        payload.buttons()
+                );
             } else {
                 sendResult = whatsAppCloudClient.sendText(
                         account.getPhoneNumberId(),

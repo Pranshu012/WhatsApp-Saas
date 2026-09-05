@@ -59,4 +59,10 @@ public class AdminController {
                                         @RequestBody(required = false) SuspendTenantRequest request) {
         return adminService.suspendTenant(id, request);
     }
+
+    @PostMapping("/tenants/{id}/ai-limit")
+    public AdminTenantDto updateAiLimit(@PathVariable("id") UUID id,
+                                        @Valid @RequestBody UpdateTenantAiLimitRequest request) {
+        return adminService.updateTenantAiLimit(id, request.monthlyLimit());
+    }
 }

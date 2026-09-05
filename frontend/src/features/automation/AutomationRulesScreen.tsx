@@ -5,7 +5,6 @@ import {
   AutomationRuleResponse,
   CreateAutomationRuleRequest,
   MatchType,
-  ActionType,
   TestRuleResponse,
 } from '../../api/types';
 import { EmptyState } from '../../components/EmptyState';
@@ -40,7 +39,6 @@ export const AutomationRulesScreen: React.FC = () => {
   const [matchValue, setMatchValue] = useState('');
   const [caseSensitive, setCaseSensitive] = useState(false);
   const [showRegexOption, setShowRegexOption] = useState(false);
-  const [actionType, setActionType] = useState<ActionType>('REPLY_TEXT');
   const [actionPayload, setActionPayload] = useState('');
 
   // Live Tester State
@@ -119,8 +117,14 @@ export const AutomationRulesScreen: React.FC = () => {
     setMatchType(rule.matchType);
     setMatchValue(rule.matchValue);
     setCaseSensitive(rule.caseSensitive);
-    setActionType(rule.actionType);
-    setActionPayload(rule.actionPayload || '');
+    let displayText = rule.actionPayload || '';
+    try {
+      const parsed = JSON.parse(rule.actionPayload);
+      if (parsed && parsed.text) displayText = parsed.text;
+    } catch {
+      // already plain text
+    }
+    setActionPayload(displayText);
     if (rule.matchType === 'REGEX') setShowRegexOption(true);
     setShowModal(true);
   };
@@ -131,7 +135,6 @@ export const AutomationRulesScreen: React.FC = () => {
     setMatchType('CONTAINS');
     setMatchValue('');
     setCaseSensitive(false);
-    setActionType('REPLY_TEXT');
     setActionPayload('');
     setTestMessage('');
     setTestResult(null);
@@ -165,13 +168,16 @@ export const AutomationRulesScreen: React.FC = () => {
     e.preventDefault();
     if (!name.trim() || !matchValue.trim()) return;
 
+    // Standardize JSON payload for SEND_TEXT action
+    const formattedPayload = JSON.stringify({ text: actionPayload.trim() });
+
     saveRuleMutation.mutate({
       name: name.trim(),
       matchType,
       matchValue: matchValue.trim(),
       caseSensitive,
-      actionType,
-      actionPayload: actionPayload.trim(),
+      actionType: 'SEND_TEXT',
+      actionPayload: formattedPayload,
       priority: (rules?.length || 0) + 1,
       enabled: true,
     });

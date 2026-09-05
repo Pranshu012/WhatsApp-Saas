@@ -30,15 +30,18 @@ public class ConversationController {
     private final ContactRepository contactRepository;
     private final MessageLedgerRepository ledgerRepository;
     private final MessagingService messagingService;
+    private final ConversationMessageRepository conversationMessageRepository;
 
     public ConversationController(ConversationRepository conversationRepository,
                                   ContactRepository contactRepository,
                                   MessageLedgerRepository ledgerRepository,
-                                  MessagingService messagingService) {
+                                  MessagingService messagingService,
+                                  ConversationMessageRepository conversationMessageRepository) {
         this.conversationRepository = conversationRepository;
         this.contactRepository = contactRepository;
         this.ledgerRepository = ledgerRepository;
         this.messagingService = messagingService;
+        this.conversationMessageRepository = conversationMessageRepository;
     }
 
     @GetMapping
@@ -53,6 +56,17 @@ public class ConversationController {
             boolean windowActive = conv.getServiceWindowExpiresAt() != null &&
                     conv.getServiceWindowExpiresAt().isAfter(Instant.now());
 
+            List<ConversationMessage> recentMsgs = conversationMessageRepository.findTop8ByConversationIdOrderByCreatedAtDesc(conv.getId());
+            String lastMessageText = null;
+            String lastMessageSender = null;
+            Instant lastMessageAt = null;
+            if (recentMsgs != null && !recentMsgs.isEmpty()) {
+                ConversationMessage latest = recentMsgs.get(0);
+                lastMessageText = latest.getTextContent();
+                lastMessageSender = latest.getSenderType();
+                lastMessageAt = latest.getCreatedAt();
+            }
+
             dtos.add(new ConversationSummaryDto(
                     conv.getId(),
                     conv.getContactId(),
@@ -62,7 +76,10 @@ public class ConversationController {
                     conv.getLastOutboundAt(),
                     conv.getStatus(),
                     windowActive,
-                    conv.getServiceWindowExpiresAt()
+                    conv.getServiceWindowExpiresAt(),
+                    lastMessageText,
+                    lastMessageSender,
+                    lastMessageAt
             ));
         }
 
@@ -70,19 +87,46 @@ public class ConversationController {
     }
 
     @GetMapping("/{id}/messages")
-    public ResponseEntity<List<MessageLedger>> getConversationMessages(@PathVariable UUID id) {
+    public ResponseEntity<List<ChatMessageDto>> getConversationMessages(@PathVariable UUID id) {
         UUID tenantId = TenantContext.require();
         Conversation conv = conversationRepository.findByTenantIdAndId(tenantId, id)
                 .orElseThrow(() -> new DomainException(HttpStatus.NOT_FOUND, "Conversation not found: " + id));
 
-        Contact contact = contactRepository.findById(conv.getContactId())
-                .orElseThrow(() -> new DomainException(HttpStatus.NOT_FOUND, "Contact not found for conversation"));
+        List<ConversationMessage> convMsgs = conversationMessageRepository.findAllByConversationIdOrderByCreatedAtAsc(id);
+        if (convMsgs != null && !convMsgs.isEmpty()) {
+            List<ChatMessageDto> dtos = convMsgs.stream()
+                    .map(m -> new ChatMessageDto(
+                            m.getId(),
+                            m.getSenderType(),
+                            m.getTextContent(),
+                            m.getWamid(),
+                            m.getCreatedAt(),
+                            "DELIVERED"
+                    ))
+                    .toList();
+            return ResponseEntity.ok(dtos);
+        }
 
-        List<MessageLedger> messages = ledgerRepository.findAllByTenantIdAndRecipientPhoneHashOrderByCreatedAtAsc(
-                tenantId, contact.getPhoneHash()
-        );
+        // Fallback for legacy messages without text
+        Contact contact = contactRepository.findById(conv.getContactId()).orElse(null);
+        if (contact != null) {
+            List<MessageLedger> legacyLedger = ledgerRepository.findAllByTenantIdAndRecipientPhoneHashOrderByCreatedAtAsc(
+                    tenantId, contact.getPhoneHash()
+            );
+            List<ChatMessageDto> legacyDtos = legacyLedger.stream()
+                    .map(l -> new ChatMessageDto(
+                            l.getId(),
+                            l.getDirection() == com.example.wasaas.ledger.MessageDirection.INBOUND ? "CUSTOMER" : "AI_BOT",
+                            l.getTemplateName() != null ? "[Template: " + l.getTemplateName() + "]" : "WhatsApp Message",
+                            l.getWamid(),
+                            l.getCreatedAt(),
+                            l.getStatus() != null ? l.getStatus().name() : "SENT"
+                    ))
+                    .toList();
+            return ResponseEntity.ok(legacyDtos);
+        }
 
-        return ResponseEntity.ok(messages);
+        return ResponseEntity.ok(List.of());
     }
 
     @PostMapping("/{id}/reply")
@@ -114,6 +158,20 @@ public class ConversationController {
                 idempotencyKey
         );
 
+        try {
+            ConversationMessage agentMsg = new ConversationMessage(
+                    tenantId,
+                    conv.getId(),
+                    contact.getId(),
+                    "AGENT",
+                    request.text().trim(),
+                    null
+            );
+            conversationMessageRepository.save(agentMsg);
+        } catch (Exception e) {
+            // Non-blocking log
+        }
+
         return ResponseEntity.accepted().build();
     }
 
@@ -126,7 +184,19 @@ public class ConversationController {
             Instant lastOutboundAt,
             ConversationStatus status,
             boolean serviceWindowActive,
-            Instant serviceWindowExpiresAt
+            Instant serviceWindowExpiresAt,
+            String lastMessageText,
+            String lastMessageSender,
+            Instant lastMessageAt
+    ) {}
+
+    public record ChatMessageDto(
+            UUID id,
+            String senderType,
+            String textContent,
+            String wamid,
+            Instant createdAt,
+            String status
     ) {}
 
     public record ReplyRequest(

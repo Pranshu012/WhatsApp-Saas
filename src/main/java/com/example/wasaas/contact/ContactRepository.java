@@ -10,4 +10,6 @@ import java.util.UUID;
 public interface ContactRepository extends JpaRepository<Contact, UUID> {
 
     Optional<Contact> findByTenantIdAndPhoneE164(UUID tenantId, String phoneE164);
+
+    java.util.List<Contact> findAllByTenantId(UUID tenantId);
 }

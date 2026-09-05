@@ -352,10 +352,10 @@ export const DashboardScreen: React.FC = () => {
             </div>
           </div>
           <Link
-            to="/faq"
+            to="/automation"
             className="text-xs text-emerald-400 hover:text-emerald-300 font-bold flex items-center gap-1 self-start sm:self-auto"
           >
-            Manage Knowledge Base
+            Manage Bot Brain
             <ExternalLink className="w-3.5 h-3.5" />
           </Link>
         </div>
@@ -412,8 +412,8 @@ export const DashboardScreen: React.FC = () => {
                 </div>
                 <p className="text-xs text-amber-200/90 leading-relaxed">
                   This question will appear in your <strong>&ldquo;Needs Your Reply&rdquo;</strong> inbox for human handover, or you can add it now in{' '}
-                  <Link to="/faq" className="underline font-bold text-amber-300">
-                    Common Questions
+                  <Link to="/automation" className="underline font-bold text-amber-300">
+                    Bot Auto-Replies
                   </Link>
                   .
                 </p>

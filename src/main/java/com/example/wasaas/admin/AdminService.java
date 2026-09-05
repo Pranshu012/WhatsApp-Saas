@@ -1,5 +1,7 @@
 package com.example.wasaas.admin;
 
+import com.example.wasaas.ai.TenantAiConfig;
+import com.example.wasaas.ai.TenantAiConfigRepository;
 import com.example.wasaas.automation.AutomationRuleRepository;
 import com.example.wasaas.automation.faq.FaqRepository;
 import com.example.wasaas.common.exception.DomainException;
@@ -47,6 +49,7 @@ public class AdminService {
     private final FaqRepository faqRepository;
     private final AutomationRuleRepository automationRuleRepository;
     private final MessageLedgerRepository messageLedgerRepository;
+    private final TenantAiConfigRepository tenantAiConfigRepository;
 
     public AdminService(TenantRepository tenantRepository,
                         UserRepository userRepository,
@@ -56,7 +59,8 @@ public class AdminService {
                         WhatsAppAccountRepository whatsAppAccountRepository,
                         FaqRepository faqRepository,
                         AutomationRuleRepository automationRuleRepository,
-                        MessageLedgerRepository messageLedgerRepository) {
+                        MessageLedgerRepository messageLedgerRepository,
+                        TenantAiConfigRepository tenantAiConfigRepository) {
         this.tenantRepository = tenantRepository;
         this.userRepository = userRepository;
         this.tenantUserRepository = tenantUserRepository;
@@ -66,6 +70,7 @@ public class AdminService {
         this.faqRepository = faqRepository;
         this.automationRuleRepository = automationRuleRepository;
         this.messageLedgerRepository = messageLedgerRepository;
+        this.tenantAiConfigRepository = tenantAiConfigRepository;
     }
 
     @Transactional(readOnly = true)
@@ -237,6 +242,17 @@ public class AdminService {
             TenantContext.clear();
         }
 
+        // AI Receptionist limits & usage
+        int aiMonthlyLimit = 500;
+        int aiUsedThisMonth = 0;
+        try {
+            Optional<TenantAiConfig> aiOpt = tenantAiConfigRepository.findById(tId);
+            if (aiOpt.isPresent()) {
+                aiMonthlyLimit = aiOpt.get().getMonthlyLimit();
+                aiUsedThisMonth = aiOpt.get().getUsedThisMonth();
+            }
+        } catch (Exception ignored) {}
+
         // Subscription details
         Subscription sub = subscriptionService.getOrCreateSubscription(tId);
 
@@ -270,7 +286,25 @@ public class AdminService {
                 sub.getNotes(),
                 msgCount,
                 faqCount,
-                ruleCount
+                ruleCount,
+                aiMonthlyLimit,
+                aiUsedThisMonth
         );
+    }
+
+    @Transactional
+    public AdminTenantDto updateTenantAiLimit(UUID tenantId, int monthlyLimit) {
+        if (monthlyLimit < 10) {
+            throw new DomainException(HttpStatus.BAD_REQUEST, "Monthly AI limit must be at least 10");
+        }
+        Tenant tenant = tenantRepository.findById(tenantId)
+                .orElseThrow(() -> new DomainException(HttpStatus.NOT_FOUND, "Tenant not found"));
+
+        TenantAiConfig config = tenantAiConfigRepository.findById(tenantId)
+                .orElseGet(() -> new TenantAiConfig(tenantId));
+        config.setMonthlyLimit(monthlyLimit);
+        tenantAiConfigRepository.save(config);
+
+        return buildTenantDto(tenant);
     }
 }
