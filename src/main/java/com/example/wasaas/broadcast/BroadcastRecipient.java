@@ -1,6 +1,8 @@
 package com.example.wasaas.broadcast;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import java.time.Instant;
 import java.util.UUID;
 
@@ -27,7 +29,8 @@ public class BroadcastRecipient {
     @Column(name = "contact_name")
     private String contactName;
 
-    @Column(name = "custom_params", columnDefinition = "JSONB")
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "custom_params", columnDefinition = "jsonb")
     private String customParams;
 
     @Enumerated(EnumType.STRING)

@@ -1,6 +1,8 @@
 package com.example.wasaas.broadcast;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import java.time.Instant;
 import java.util.UUID;
 
@@ -37,7 +39,8 @@ public class BroadcastCampaign {
     @Column(name = "template_id")
     private UUID templateId;
 
-    @Column(name = "template_params", columnDefinition = "JSONB")
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "template_params", columnDefinition = "jsonb")
     private String templateParams;
 
     @Column(name = "message_preview", columnDefinition = "TEXT")
