@@ -283,7 +283,11 @@ public class BroadcastService {
             case ALL_CONTACTS -> {
                 List<Contact> contacts = contactRepository.findAllByTenantId(tenantId);
                 for (Contact c : contacts) {
-                    list.add(new ResolvedRecipient(c.getPhoneE164(), c.getDisplayName(), c.getId()));
+                    if (c.getOptInStatus() == null || !"OPTED_OUT".equalsIgnoreCase(c.getOptInStatus())) {
+                        list.add(new ResolvedRecipient(c.getPhoneE164(), c.getDisplayName(), c.getId()));
+                    } else {
+                        log.debug("Excluding opted-out contact [{}] from broadcast", c.getPhoneE164());
+                    }
                 }
             }
             case LEADS_BY_STAGE -> {
@@ -292,7 +296,7 @@ public class BroadcastService {
                 for (Lead l : leads) {
                     if (targetStage == null || targetStage.equalsIgnoreCase("ALL") || l.getStage().name().equalsIgnoreCase(targetStage)) {
                         Contact c = contactRepository.findById(l.getContactId()).orElse(null);
-                        if (c != null) {
+                        if (c != null && (c.getOptInStatus() == null || !"OPTED_OUT".equalsIgnoreCase(c.getOptInStatus()))) {
                             list.add(new ResolvedRecipient(c.getPhoneE164(), c.getDisplayName(), c.getId()));
                         }
                     }
@@ -302,6 +306,14 @@ public class BroadcastService {
                 if (request.customRecipients() != null) {
                     for (CustomRecipientInput input : request.customRecipients()) {
                         if (input.phoneE164() != null && !input.phoneE164().isBlank()) {
+                            String norm = normalizePhone(input.phoneE164());
+                            if (norm != null) {
+                                Optional<Contact> existing = contactRepository.findByTenantIdAndPhoneE164(tenantId, norm);
+                                if (existing.isPresent() && "OPTED_OUT".equalsIgnoreCase(existing.get().getOptInStatus())) {
+                                    log.info("Excluding opted-out phone [{}] from broadcast under tenant [{}]", norm, tenantId);
+                                    continue;
+                                }
+                            }
                             list.add(new ResolvedRecipient(input.phoneE164().trim(), input.name(), null));
                         }
                     }

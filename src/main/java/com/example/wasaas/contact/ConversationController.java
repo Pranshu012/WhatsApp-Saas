@@ -11,6 +11,7 @@ import jakarta.validation.constraints.NotBlank;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -79,7 +80,8 @@ public class ConversationController {
                     conv.getServiceWindowExpiresAt(),
                     lastMessageText,
                     lastMessageSender,
-                    lastMessageAt
+                    lastMessageAt,
+                    contact != null ? contact.getOptInStatus() : "OPTED_IN"
             ));
         }
 
@@ -175,6 +177,27 @@ public class ConversationController {
         return ResponseEntity.accepted().build();
     }
 
+    @PatchMapping("/contacts/{contactId}/opt-status")
+    public ResponseEntity<Void> updateContactOptStatus(
+            @PathVariable UUID contactId,
+            @RequestBody UpdateOptStatusRequest req
+    ) {
+        UUID tenantId = TenantContext.require();
+        Contact contact = contactRepository.findById(contactId)
+                .filter(c -> c.getTenantId().equals(tenantId))
+                .orElseThrow(() -> new DomainException(HttpStatus.NOT_FOUND, "Contact not found: " + contactId));
+
+        String status = (req.optInStatus() != null && req.optInStatus().equalsIgnoreCase("OPTED_OUT"))
+                ? "OPTED_OUT"
+                : "OPTED_IN";
+
+        contact.setOptInStatus(status);
+        contactRepository.save(contact);
+        return ResponseEntity.noContent().build();
+    }
+
+    public record UpdateOptStatusRequest(String optInStatus) {}
+
     public record ConversationSummaryDto(
             UUID id,
             UUID contactId,
@@ -187,7 +210,8 @@ public class ConversationController {
             Instant serviceWindowExpiresAt,
             String lastMessageText,
             String lastMessageSender,
-            Instant lastMessageAt
+            Instant lastMessageAt,
+            String optInStatus
     ) {}
 
     public record ChatMessageDto(

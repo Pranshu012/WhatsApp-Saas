@@ -78,6 +78,7 @@ public class Contact extends BaseTenantEntity {
     public String getDisplayName() { return displayName; }
     public Instant getLastSeenAt() { return lastSeenAt; }
     public String getOptInStatus() { return optInStatus; }
+    public void setOptInStatus(String optInStatus) { this.optInStatus = optInStatus; }
     public Instant getCreatedAt() { return createdAt; }
     public Instant getUpdatedAt() { return updatedAt; }
 

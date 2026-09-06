@@ -798,7 +798,10 @@ export const BroadcastScreen: React.FC = () => {
 
                 {/* Estimate Pill */}
                 <div className="p-3 bg-blue-50/70 border border-blue-200 rounded-xl flex items-center justify-between text-xs">
-                  <span className="text-blue-800 font-medium">Estimated Audience Size:</span>
+                  <div>
+                    <span className="text-blue-800 font-medium">Eligible Audience Size:</span>
+                    <p className="text-[11px] text-blue-600 mt-0.5">Contacts who texted STOP are excluded automatically.</p>
+                  </div>
                   <span className="font-bold text-blue-900 bg-white px-2.5 py-0.5 rounded-lg border border-blue-200 shadow-2xs">
                     {estimatedAudienceCount} recipients
                   </span>
@@ -1200,12 +1203,20 @@ export const BroadcastScreen: React.FC = () => {
                   </div>
                 )}
 
-                {/* Safety & Compliance Badge */}
-                <div className="p-3 bg-emerald-50/70 border border-emerald-200 rounded-xl flex items-center gap-2.5 text-xs text-emerald-900">
-                  <ShieldCheck className="w-5 h-5 text-emerald-600 shrink-0" />
-                  <span>
-                    <strong>Meta Anti-Ban Throttling Active:</strong> Messages are safely spaced in the background to protect your WhatsApp account from rate limit blocks.
-                  </span>
+                {/* Safety & Compliance Badges */}
+                <div className="space-y-2">
+                  <div className="p-3 bg-emerald-50/70 border border-emerald-200 rounded-xl flex items-center gap-2.5 text-xs text-emerald-900">
+                    <ShieldCheck className="w-5 h-5 text-emerald-600 shrink-0" />
+                    <span>
+                      <strong>Meta Anti-Ban Throttling Active:</strong> Messages are safely spaced in the background to protect your WhatsApp account from rate limit blocks.
+                    </span>
+                  </div>
+                  <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl flex items-center gap-2.5 text-xs text-slate-700">
+                    <CheckCircle2 className="w-5 h-5 text-brand-600 shrink-0" />
+                    <span>
+                      <strong>Opt-Out Compliance:</strong> Any contact who texted STOP or unsubscribed is protected and excluded to keep your WhatsApp Quality Rating High.
+                    </span>
+                  </div>
                 </div>
               </div>
             )}

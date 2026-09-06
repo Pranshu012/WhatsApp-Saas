@@ -28,6 +28,7 @@ import {
   ExternalLink,
   Sparkles,
   ShieldCheck,
+  ShieldAlert,
   Users,
   Target,
   Flame,
@@ -140,6 +141,21 @@ export const InboxScreen: React.FC = () => {
     },
     onError: (err: any) => {
       setErrorMsg(err.message || 'Failed to send reply.');
+    },
+  });
+
+  const toggleOptMutation = useMutation({
+    mutationFn: async ({ contactId, optInStatus }: { contactId: string; optInStatus: string }) => {
+      await apiClient(`/api/conversations/contacts/${contactId}/opt-status`, {
+        method: 'PATCH',
+        body: JSON.stringify({ optInStatus }),
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['conversations'] });
+    },
+    onError: (err: any) => {
+      setErrorMsg(err.message || 'Failed to update opt-in status.');
     },
   });
 
@@ -709,6 +725,57 @@ export const InboxScreen: React.FC = () => {
                         </span>
                       </div>
                     )}
+                  </div>
+                </div>
+
+                {/* Marketing & Broadcast Consent */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <label className="text-[11px] font-bold uppercase tracking-wider text-gray-400">
+                      Broadcast Consent
+                    </label>
+                    <span
+                      className={`font-semibold px-2 py-0.5 rounded text-[10px] ${
+                        selectedConversation.optInStatus === 'OPTED_OUT'
+                          ? 'bg-rose-100 text-rose-800'
+                          : 'bg-emerald-100 text-emerald-800'
+                      }`}
+                    >
+                      {selectedConversation.optInStatus === 'OPTED_OUT' ? 'Opted Out (STOP)' : 'Subscribed'}
+                    </span>
+                  </div>
+                  <div className="p-3 rounded-xl bg-gray-50 border border-gray-200 space-y-2">
+                    <p className="text-[11px] text-gray-500 leading-relaxed">
+                      {selectedConversation.optInStatus === 'OPTED_OUT'
+                        ? 'Customer unsubscribed via STOP. Bulk marketing broadcasts are blocked.'
+                        : 'Customer is active and receives bulk promotional broadcasts.'}
+                    </p>
+                    <button
+                      type="button"
+                      disabled={toggleOptMutation.isPending}
+                      onClick={() =>
+                        toggleOptMutation.mutate({
+                          contactId: selectedConversation.contactId,
+                          optInStatus:
+                            selectedConversation.optInStatus === 'OPTED_OUT'
+                              ? 'OPTED_IN'
+                              : 'OPTED_OUT',
+                        })
+                      }
+                      className="w-full py-1.5 px-2 text-xs font-semibold rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-100 transition-colors flex items-center justify-center gap-1.5 shadow-2xs"
+                    >
+                      {selectedConversation.optInStatus === 'OPTED_OUT' ? (
+                        <>
+                          <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                          Re-Subscribe Contact
+                        </>
+                      ) : (
+                        <>
+                          <ShieldAlert className="w-3.5 h-3.5 text-rose-600" />
+                          Mark as Opted Out
+                        </>
+                      )}
+                    </button>
                   </div>
                 </div>
 

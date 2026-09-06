@@ -43,6 +43,7 @@ public class ProcessWebhookEventHandler implements JobHandler {
     private final ObjectMapper objectMapper;
     private final com.example.wasaas.contact.ConversationMessageRepository conversationMessageRepository;
     private final com.example.wasaas.lead.LeadService leadService;
+    private final com.example.wasaas.whatsapp.send.MessagingService messagingService;
 
     public ProcessWebhookEventHandler(WebhookEventRepository webhookEventRepository,
                                       WhatsAppAccountRepository accountRepository,
@@ -53,7 +54,8 @@ public class ProcessWebhookEventHandler implements JobHandler {
                                       ApplicationEventPublisher eventPublisher,
                                       ObjectMapper objectMapper,
                                       com.example.wasaas.contact.ConversationMessageRepository conversationMessageRepository,
-                                      com.example.wasaas.lead.LeadService leadService) {
+                                      com.example.wasaas.lead.LeadService leadService,
+                                      com.example.wasaas.whatsapp.send.MessagingService messagingService) {
         this.webhookEventRepository = webhookEventRepository;
         this.accountRepository = accountRepository;
         this.contactRepository = contactRepository;
@@ -64,6 +66,7 @@ public class ProcessWebhookEventHandler implements JobHandler {
         this.objectMapper = objectMapper;
         this.conversationMessageRepository = conversationMessageRepository;
         this.leadService = leadService;
+        this.messagingService = messagingService;
     }
 
     @Override
@@ -239,6 +242,53 @@ public class ProcessWebhookEventHandler implements JobHandler {
                 }
             }
 
+            // 3.6 Automated Compliance: Keyword-based Opt-Out (STOP) and Opt-In (START)
+            if (isOptOutKeyword(text)) {
+                savedContact.setOptInStatus("OPTED_OUT");
+                contactRepository.save(savedContact);
+                log.info("Contact [{}] opted OUT under tenant [{}] via keyword [{}]",
+                        PhonePrivacyUtils.extractLast4(fromE164), account.getTenantId(), text);
+
+                String ackText = "You have been successfully unsubscribed from promotional messages. Reply START anytime to subscribe again.";
+                try {
+                    messagingService.sendText(account.getId(), fromE164, ackText, "optout:" + (wamid != null ? wamid : System.currentTimeMillis()));
+                    com.example.wasaas.contact.ConversationMessage ackMsg = new com.example.wasaas.contact.ConversationMessage(
+                            account.getTenantId(),
+                            savedConversation.getId(),
+                            savedContact.getId(),
+                            "AI_BOT",
+                            ackText,
+                            null
+                    );
+                    conversationMessageRepository.save(ackMsg);
+                } catch (Exception e) {
+                    log.warn("Failed to send opt-out confirmation to [{}]: {}", PhonePrivacyUtils.extractLast4(fromE164), e.getMessage());
+                }
+                continue; // Suppress further bot/rule automation
+            } else if (isOptInKeyword(text)) {
+                savedContact.setOptInStatus("OPTED_IN");
+                contactRepository.save(savedContact);
+                log.info("Contact [{}] opted IN under tenant [{}] via keyword [{}]",
+                        PhonePrivacyUtils.extractLast4(fromE164), account.getTenantId(), text);
+
+                String ackText = "Welcome back! You have successfully resubscribed to receive promotional updates.";
+                try {
+                    messagingService.sendText(account.getId(), fromE164, ackText, "optin:" + (wamid != null ? wamid : System.currentTimeMillis()));
+                    com.example.wasaas.contact.ConversationMessage ackMsg = new com.example.wasaas.contact.ConversationMessage(
+                            account.getTenantId(),
+                            savedConversation.getId(),
+                            savedContact.getId(),
+                            "AI_BOT",
+                            ackText,
+                            null
+                    );
+                    conversationMessageRepository.save(ackMsg);
+                } catch (Exception e) {
+                    log.warn("Failed to send opt-in confirmation to [{}]: {}", PhonePrivacyUtils.extractLast4(fromE164), e.getMessage());
+                }
+                continue; // Suppress further bot/rule automation
+            }
+
             // 4. Publish Spring Domain Event
             eventPublisher.publishEvent(new InboundMessageReceivedEvent(
                     account.getTenantId(),
@@ -284,5 +334,31 @@ public class ProcessWebhookEventHandler implements JobHandler {
             }
         }
         return null;
+    }
+
+    private boolean isOptOutKeyword(String text) {
+        if (text == null) return false;
+        String clean = text.trim().toLowerCase();
+        return clean.equals("stop")
+                || clean.equals("unsubscribe")
+                || clean.equals("cancel")
+                || clean.equals("opt out")
+                || clean.equals("optout")
+                || clean.equals("opt-out")
+                || clean.equals("stop promotions")
+                || clean.equals("stop promo")
+                || clean.equals("roko")
+                || clean.equals("band karo")
+                || clean.equals("halt")
+                || clean.equals("quit");
+    }
+
+    private boolean isOptInKeyword(String text) {
+        if (text == null) return false;
+        String clean = text.trim().toLowerCase();
+        return clean.equals("start")
+                || clean.equals("subscribe")
+                || clean.equals("unstop")
+                || clean.equals("shuru karo");
     }
 }

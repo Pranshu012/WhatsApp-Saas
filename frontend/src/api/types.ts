@@ -192,6 +192,7 @@ export interface ConversationSummaryDto {
   lastMessageText?: string;
   lastMessageSender?: string;
   lastMessageAt?: string;
+  optInStatus?: 'OPTED_IN' | 'OPTED_OUT' | string;
 }
 
 export interface ChatMessageDto {
