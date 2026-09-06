@@ -201,18 +201,42 @@ public class BroadcastService {
                         break;
                     }
 
-                    List<TemplateComponent> components = buildComponents(paramTemplate, recipient.getContactName());
-
                     String idempotencyKey = "bcast:" + campaign.getId() + ":" + recipient.getId();
-                    messagingService.sendTemplate(
-                            campaign.getWhatsappAccountId(),
-                            recipient.getPhoneE164(),
-                            campaign.getTemplateName(),
-                            campaign.getTemplateLanguage(),
-                            components,
-                            BillingCategory.MARKETING,
-                            idempotencyKey
-                    );
+                    boolean hasMetaTemplate = campaign.getTemplateId() != null
+                            && campaign.getTemplateName() != null
+                            && !campaign.getTemplateName().isBlank()
+                            && !campaign.getTemplateName().startsWith("custom_")
+                            && !campaign.getTemplateName().startsWith("ai_")
+                            && !campaign.getTemplateName().equalsIgnoreCase("DIRECT_TEXT");
+
+                    if (hasMetaTemplate) {
+                        List<TemplateComponent> components = buildComponents(paramTemplate, recipient.getContactName());
+                        messagingService.sendTemplate(
+                                campaign.getWhatsappAccountId(),
+                                recipient.getPhoneE164(),
+                                campaign.getTemplateName(),
+                                campaign.getTemplateLanguage(),
+                                components,
+                                BillingCategory.MARKETING,
+                                idempotencyKey
+                        );
+                    } else {
+                        // Direct / AI / Custom broadcast text message
+                        String rawText = campaign.getMessagePreview();
+                        if (rawText == null || rawText.isBlank()) {
+                            rawText = "Hello {{name}}! We have a special update for you.";
+                        }
+                        String nameReplacement = (recipient.getContactName() != null && !recipient.getContactName().isBlank())
+                                ? recipient.getContactName()
+                                : "Customer";
+                        String finalText = rawText.replace("{{name}}", nameReplacement);
+                        messagingService.sendText(
+                                campaign.getWhatsappAccountId(),
+                                recipient.getPhoneE164(),
+                                finalText,
+                                idempotencyKey
+                        );
+                    }
 
                     recipient.setStatus(RecipientStatus.SENT);
                     recipient.setSentAt(Instant.now());

@@ -168,4 +168,36 @@ public class AiAssistantService {
 
         return replyOpt;
     }
+
+    @Transactional
+    public String generateBroadcastMessage(UUID tenantId, String prompt, String tone) {
+        TenantAiConfig config = getConfig(tenantId);
+        String systemInstruction = """
+            You are an elite WhatsApp marketing copywriter for small and medium business broadcasts.
+            Write an engaging, high-converting, professional WhatsApp broadcast message based on the prompt.
+            Rules:
+            1. Keep it concise (under 90 words), highly readable on mobile screens.
+            2. Personalize with {{name}} (e.g. 'Hello {{name}}!').
+            3. Use 2-4 tasteful, relevant emojis suitable for WhatsApp.
+            4. Include a clear, compelling Call-To-Action (e.g. 'Reply to this message to claim your discount').
+            5. Include a brief opt-out line at the bottom: 'Reply STOP to unsubscribe'.
+            6. Do not include markdown hashes (#), use *bold* or _italic_ for emphasis.
+            7. Return ONLY the final WhatsApp message body directly. Do not include introductory notes, explanations, or quotes.
+            """;
+
+        String userQuery = "Campaign request: " + prompt + (tone != null && !tone.isBlank() ? " | Tone: " + tone : "");
+
+        try {
+            Optional<String> aiText = geminiClient.generateReply(config.getApiKey(), config.getModel(), systemInstruction, userQuery);
+            if (aiText.isPresent() && !aiText.get().isBlank()) {
+                config.incrementUsage();
+                aiConfigRepository.save(config);
+                return aiText.get().trim();
+            }
+        } catch (Exception e) {
+            log.warn("Gemini template generation fallback due to: {}", e.getMessage());
+        }
+
+        return "Hello {{name}}! 👋\n\nWe have an exclusive special update for you regarding *" + prompt.trim() + "*.\n\nTake advantage of this limited-time opportunity today!\n\n👉 Reply directly to this message to get started or learn more.\n\n_Reply STOP to unsubscribe._";
+    }
 }

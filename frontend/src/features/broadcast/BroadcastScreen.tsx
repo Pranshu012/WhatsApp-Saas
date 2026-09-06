@@ -29,7 +29,46 @@ import {
   RefreshCw,
   Search,
   ShieldCheck,
+  Sparkles,
+  Layers,
+  Building2,
+  Wand2,
+  Edit3,
+  Loader2,
 } from 'lucide-react';
+
+const PRESET_TEMPLATES = [
+  {
+    id: 'festive_sale',
+    title: 'Festive & Special Sale',
+    tag: 'Marketing',
+    text: '🪔 Hello {{name}}!\n\nCelebrate this festive season with our Exclusive 25% Discount on all orders. Use promo code *FESTIVE25* at checkout.\n\nValid till this Sunday only! Reply directly to this message to claim.\n\n_Reply STOP to unsubscribe._',
+  },
+  {
+    id: 'product_launch',
+    title: 'New Product / Collection Launch',
+    tag: 'Marketing',
+    text: '🎉 Big news {{name}}!\n\nWe are thrilled to announce that our brand new collection is officially live. As our valued client, enjoy priority VIP access and free delivery on your first order.\n\nReply *EXPLORE* to see the catalog!\n\n_Reply STOP to unsubscribe._',
+  },
+  {
+    id: 'appointment_reminder',
+    title: 'Appointment & Meeting Reminder',
+    tag: 'Utility',
+    text: '📅 Hi {{name}},\n\nThis is a friendly reminder regarding your upcoming consultation with our team. Please reply *YES* to confirm your slot or reply with your preferred time if you need to reschedule.\n\nWe look forward to seeing you!\n\n_Reply STOP to unsubscribe._',
+  },
+  {
+    id: 'loyalty_reward',
+    title: 'VIP Customer Loyalty Reward',
+    tag: 'Loyalty',
+    text: '⭐ Special gift for you, {{name}}!\n\nThank you for being our loyal customer. Enjoy a flat *₹500 OFF* on your next purchase with voucher code *VIP500*.\n\nShow this message in-store or reply here to redeem.\n\n_Reply STOP to unsubscribe._',
+  },
+  {
+    id: 'feedback_review',
+    title: 'Google Review & Feedback Request',
+    tag: 'Feedback',
+    text: '🙏 Hi {{name}},\n\nThank you for choosing us recently! We hope you loved your experience.\n\nCould you spare 30 seconds to rate us? Your feedback helps us serve you better.\n\nReply directly here if you have any questions or feedback!',
+  },
+];
 
 export const BroadcastScreen: React.FC = () => {
   const queryClient = useQueryClient();
@@ -46,12 +85,21 @@ export const BroadcastScreen: React.FC = () => {
   // Search
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Form State
+  // Step 1: Campaign & Target
   const [campaignName, setCampaignName] = useState('');
   const [targetType, setTargetType] = useState<TargetType>('ALL_CONTACTS');
   const [targetStage, setTargetStage] = useState<string>('ALL');
+
+  // Step 2: Template Selection & Message
+  const [templateMode, setTemplateMode] = useState<'AI' | 'PRESET' | 'CUSTOM' | 'META'>('AI');
+  const [aiPrompt, setAiPrompt] = useState('');
+  const [aiTone, setAiTone] = useState<string>('Festive & Exciting');
+  const [isGeneratingAi, setIsGeneratingAi] = useState(false);
+  const [messageText, setMessageText] = useState('');
   const [selectedTemplateName, setSelectedTemplateName] = useState<string>('');
   const [templateParams, setTemplateParams] = useState<Record<string, string>>({});
+
+  // Step 3: Dispatch & Scheduling
   const [dispatchTiming, setDispatchTiming] = useState<'NOW' | 'SCHEDULED'>('NOW');
   const [scheduledDate, setScheduledDate] = useState('');
   const [scheduledTime, setScheduledTime] = useState('');
@@ -103,8 +151,8 @@ export const BroadcastScreen: React.FC = () => {
       queryClient.invalidateQueries({ queryKey: ['broadcasts'] });
       setShowCreateModal(false);
       resetForm();
-      setSuccessMsg('Broadcast campaign created and queued for delivery.');
-      setTimeout(() => setSuccessMsg(null), 3000);
+      setSuccessMsg('Broadcast campaign created and queued for safe delivery.');
+      setTimeout(() => setSuccessMsg(null), 3500);
     },
     onError: (err: any) => {
       setErrorMsg(err.message || 'Failed to create broadcast campaign.');
@@ -130,6 +178,10 @@ export const BroadcastScreen: React.FC = () => {
     setCampaignName('');
     setTargetType('ALL_CONTACTS');
     setTargetStage('ALL');
+    setTemplateMode('AI');
+    setAiPrompt('');
+    setAiTone('Festive & Exciting');
+    setMessageText('');
     setSelectedTemplateName('');
     setTemplateParams({});
     setDispatchTiming('NOW');
@@ -140,31 +192,64 @@ export const BroadcastScreen: React.FC = () => {
     setCsvFileName('');
   };
 
-  // Selected Template Object
-  const currentTemplate = useMemo(() => {
+  // Selected Meta Template Object
+  const currentMetaTemplate = useMemo(() => {
     return templates?.find((t) => t.name === selectedTemplateName) || null;
   }, [templates, selectedTemplateName]);
 
-  // Detected variable count in template body
+  // Detected variable count in Meta template body
   const detectedVariables = useMemo(() => {
-    if (!currentTemplate || !currentTemplate.bodyText) return [];
-    const matches = currentTemplate.bodyText.match(/\{\{(\d+)\}\}/g);
+    if (!currentMetaTemplate || !currentMetaTemplate.bodyText) return [];
+    const matches = currentMetaTemplate.bodyText.match(/\{\{(\d+)\}\}/g);
     if (!matches) return [];
     const nums = Array.from(new Set(matches.map((m) => m.replace(/\D/g, ''))));
     nums.sort((a, b) => Number(a) - Number(b));
     return nums;
-  }, [currentTemplate]);
+  }, [currentMetaTemplate]);
 
-  // Live preview text with replaced parameters
-  const previewBodyText = useMemo(() => {
-    if (!currentTemplate) return '';
-    let text = currentTemplate.bodyText || '';
-    detectedVariables.forEach((num) => {
-      const val = templateParams[num] || `{{${num}}}`;
-      text = text.split(`{{${num}}}`).join(val);
-    });
-    return text;
-  }, [currentTemplate, detectedVariables, templateParams]);
+  // Simulated live preview with sample customer name "Rahul"
+  const simulatedPreviewText = useMemo(() => {
+    if (templateMode === 'META' && currentMetaTemplate) {
+      let text = currentMetaTemplate.bodyText || '';
+      detectedVariables.forEach((num) => {
+        const val = templateParams[num] || `{{${num}}}`;
+        text = text.split(`{{${num}}}`).join(val);
+      });
+      return text.split('{{name}}').join('Rahul');
+    }
+    return (messageText || 'Your message preview will appear here...').split('{{name}}').join('Rahul');
+  }, [templateMode, currentMetaTemplate, detectedVariables, templateParams, messageText]);
+
+  // AI Generation Handler
+  const handleGenerateWithAi = async (customPrompt?: string) => {
+    const promptToUse = customPrompt || aiPrompt;
+    if (!promptToUse.trim()) {
+      setErrorMsg('Please describe what offer or announcement you want to broadcast.');
+      return;
+    }
+
+    setIsGeneratingAi(true);
+    setErrorMsg(null);
+    try {
+      const res = await apiClient<{ success: boolean; templateName: string; messageText: string }>(
+        '/api/ai/generate-template',
+        {
+          method: 'POST',
+          body: JSON.stringify({ prompt: promptToUse.trim(), tone: aiTone }),
+        }
+      );
+      if (res && res.messageText) {
+        setMessageText(res.messageText);
+        setSelectedTemplateName(res.templateName || 'ai_generated');
+        setSuccessMsg('AI generated your WhatsApp message!');
+        setTimeout(() => setSuccessMsg(null), 2500);
+      }
+    } catch (err: any) {
+      setErrorMsg(err.message || 'Failed to generate message with AI.');
+    } finally {
+      setIsGeneratingAi(false);
+    }
+  };
 
   // Handle CSV File Upload
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -225,14 +310,15 @@ export const BroadcastScreen: React.FC = () => {
     return customRecipients.length;
   }, [targetType, targetStage, leads, customRecipients]);
 
-  // Submit Handler
+  // Final Submit Handler
   const handleFinalSubmit = () => {
     if (!campaignName.trim()) {
       setErrorMsg('Please enter a campaign name.');
       return;
     }
-    if (!selectedTemplateName) {
-      setErrorMsg('Please choose an approved WhatsApp template.');
+    const finalMessage = messageText.trim() || simulatedPreviewText.trim();
+    if (!finalMessage && !selectedTemplateName) {
+      setErrorMsg('Please generate, select, or enter your broadcast message.');
       return;
     }
     if (estimatedAudienceCount === 0) {
@@ -254,15 +340,20 @@ export const BroadcastScreen: React.FC = () => {
       scheduledForIso = dt.toISOString();
     }
 
+    const finalTemplateName =
+      templateMode === 'META' && selectedTemplateName
+        ? selectedTemplateName
+        : `custom_${Date.now() % 100000}`;
+
     createMutation.mutate({
       name: campaignName.trim(),
       targetType,
       targetStage: targetType === 'LEADS_BY_STAGE' ? targetStage : undefined,
-      templateName: selectedTemplateName,
-      templateLanguage: currentTemplate?.language || 'en_US',
-      templateId: currentTemplate?.id,
+      templateName: finalTemplateName,
+      templateLanguage: currentMetaTemplate?.language || 'en_US',
+      templateId: templateMode === 'META' ? currentMetaTemplate?.id : undefined,
       templateParams,
-      messagePreview: previewBodyText,
+      messagePreview: finalMessage,
       scheduledFor: scheduledForIso,
       customRecipients: targetType === 'CSV_UPLOAD' || targetType === 'PASTE_NUMBERS' ? customRecipients : undefined,
     });
@@ -301,7 +392,7 @@ export const BroadcastScreen: React.FC = () => {
             Bulk Broadcast & Campaigns
           </h1>
           <p className="text-xs sm:text-sm text-gray-500 mt-1">
-            Send targeted WhatsApp marketing offers, festival discounts, and client updates safely with Meta template compliance.
+            Send targeted WhatsApp marketing offers, festival discounts, and client updates safely with AI prompt templates and Meta compliance.
           </p>
         </div>
 
@@ -394,7 +485,7 @@ export const BroadcastScreen: React.FC = () => {
             </div>
             <h3 className="text-sm font-bold text-gray-900">No broadcast campaigns yet</h3>
             <p className="text-xs text-gray-500 max-w-sm mx-auto mt-1 mb-4">
-              Reach hundreds of clients at once with customized WhatsApp announcements or festival promotions.
+              Reach hundreds of clients at once with AI-crafted promotions, festive discounts, or client announcements.
             </p>
             <button
               type="button"
@@ -415,7 +506,7 @@ export const BroadcastScreen: React.FC = () => {
                 <tr>
                   <th className="py-3 px-4">Campaign Name</th>
                   <th className="py-3 px-4">Audience</th>
-                  <th className="py-3 px-4">Template</th>
+                  <th className="py-3 px-4">Template / Message</th>
                   <th className="py-3 px-4">Progress</th>
                   <th className="py-3 px-4">Status</th>
                   <th className="py-3 px-4">Date</th>
@@ -447,7 +538,7 @@ export const BroadcastScreen: React.FC = () => {
                         </span>
                       </td>
                       <td className="py-3.5 px-4 font-mono text-[11px] text-gray-600">
-                        {c.templateName || '—'}
+                        {c.templateName || 'Custom'}
                       </td>
                       <td className="py-3.5 px-4">
                         <div className="w-32">
@@ -531,13 +622,13 @@ export const BroadcastScreen: React.FC = () => {
       {/* Create Broadcast 3-Step Wizard Modal */}
       {showCreateModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-in fade-in duration-150">
-          <div className="bg-white rounded-2xl shadow-xl max-w-2xl w-full p-6 space-y-5 animate-in zoom-in-95 duration-150 border border-gray-200 max-h-[90vh] overflow-y-auto">
+          <div className="bg-white rounded-2xl shadow-xl max-w-3xl w-full p-6 space-y-5 animate-in zoom-in-95 duration-150 border border-gray-200 max-h-[92vh] overflow-y-auto">
             {/* Modal Header */}
             <div className="flex items-center justify-between pb-3 border-b border-gray-100">
               <div>
                 <h3 className="text-base font-bold text-gray-900">New Broadcast Campaign</h3>
                 <p className="text-xs text-gray-500">
-                  Step {step} of 3: {step === 1 ? 'Campaign & Audience' : step === 2 ? 'Choose Template & Preview' : 'Review & Schedule'}
+                  Step {step} of 3: {step === 1 ? 'Campaign & Audience' : step === 2 ? 'Choose or Create Template' : 'Review & Schedule'}
                 </p>
               </div>
               <button
@@ -561,7 +652,7 @@ export const BroadcastScreen: React.FC = () => {
                     placeholder="e.g. Diwali Festive Offer 2026"
                     value={campaignName}
                     onChange={(e) => setCampaignName(e.target.value)}
-                    className="w-full px-3 py-2 text-xs bg-gray-50 border border-gray-200 rounded-xl focus:outline-hidden focus:ring-2 focus:ring-brand-500 focus:bg-white"
+                    className="w-full px-3 py-2 text-xs bg-gray-50 border border-gray-200 rounded-xl focus:outline-hidden focus:ring-2 focus:ring-brand-500 focus:bg-white font-medium"
                   />
                 </div>
 
@@ -653,7 +744,7 @@ export const BroadcastScreen: React.FC = () => {
                     <select
                       value={targetStage}
                       onChange={(e) => setTargetStage(e.target.value)}
-                      className="w-full px-3 py-2 text-xs bg-white border border-gray-200 rounded-lg focus:outline-hidden focus:ring-2 focus:ring-brand-500"
+                      className="w-full px-3 py-2 text-xs bg-white border border-gray-200 rounded-lg focus:outline-hidden focus:ring-2 focus:ring-brand-500 font-semibold"
                     >
                       <option value="ALL">All CRM Leads</option>
                       <option value="NEW">New Inquiries</option>
@@ -718,82 +809,298 @@ export const BroadcastScreen: React.FC = () => {
             {/* STEP 2: Choose Template & Variables */}
             {step === 2 && (
               <div className="space-y-4">
-                <div>
-                  <label className="block text-xs font-bold text-gray-700 mb-1">
-                    Select Approved WhatsApp Template *
-                  </label>
-                  {(!templates || templates.length === 0) ? (
-                    <div className="p-4 bg-amber-50 border border-amber-200 text-amber-800 rounded-xl text-xs">
-                      No approved WhatsApp templates found. Please create or sync templates in Settings.
-                    </div>
-                  ) : (
-                    <select
-                      value={selectedTemplateName}
-                      onChange={(e) => {
-                        setSelectedTemplateName(e.target.value);
-                        setTemplateParams({});
-                      }}
-                      className="w-full px-3 py-2 text-xs bg-gray-50 border border-gray-200 rounded-xl font-semibold text-gray-800 focus:outline-hidden focus:ring-2 focus:ring-brand-500 focus:bg-white"
-                    >
-                      <option value="">-- Choose a template --</option>
-                      {templates.map((t) => (
-                        <option key={t.id} value={t.name}>
-                          {t.name} ({t.category} - {t.language})
-                        </option>
-                      ))}
-                    </select>
-                  )}
+                {/* 4 Mode Tabs */}
+                <div className="flex items-center gap-1.5 p-1 bg-gray-100 rounded-xl border border-gray-200">
+                  <button
+                    type="button"
+                    onClick={() => setTemplateMode('AI')}
+                    className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-lg text-xs font-bold transition-all ${
+                      templateMode === 'AI'
+                        ? 'bg-white text-brand-700 shadow-xs'
+                        : 'text-gray-600 hover:text-gray-900'
+                    }`}
+                  >
+                    <Sparkles className="w-3.5 h-3.5 text-brand-600" />
+                    <span>Generate with AI</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setTemplateMode('PRESET')}
+                    className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-lg text-xs font-bold transition-all ${
+                      templateMode === 'PRESET'
+                        ? 'bg-white text-purple-700 shadow-xs'
+                        : 'text-gray-600 hover:text-gray-900'
+                    }`}
+                  >
+                    <Layers className="w-3.5 h-3.5 text-purple-600" />
+                    <span>Pre-built Templates</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setTemplateMode('CUSTOM')}
+                    className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-lg text-xs font-bold transition-all ${
+                      templateMode === 'CUSTOM'
+                        ? 'bg-white text-emerald-700 shadow-xs'
+                        : 'text-gray-600 hover:text-gray-900'
+                    }`}
+                  >
+                    <Edit3 className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>Custom Text</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setTemplateMode('META')}
+                    className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-lg text-xs font-bold transition-all ${
+                      templateMode === 'META'
+                        ? 'bg-white text-blue-700 shadow-xs'
+                        : 'text-gray-600 hover:text-gray-900'
+                    }`}
+                  >
+                    <Building2 className="w-3.5 h-3.5 text-blue-600" />
+                    <span>Meta Synced</span>
+                  </button>
                 </div>
 
-                {/* Dynamic Variable Inputs */}
-                {detectedVariables.length > 0 && (
-                  <div className="p-3 bg-gray-50 rounded-xl border border-gray-200 space-y-3">
-                    <span className="text-xs font-bold text-gray-800 block">
-                      Template Variables Mapping
+                {/* TAB 1: AI Prompt Generator */}
+                {templateMode === 'AI' && (
+                  <div className="p-4 bg-linear-to-br from-brand-50/50 via-white to-purple-50/30 rounded-2xl border border-brand-200/80 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Sparkles className="w-4 h-4 text-brand-600" />
+                        <span className="text-xs font-bold text-gray-900">
+                          AI WhatsApp Marketing Copywriter
+                        </span>
+                      </div>
+                      <span className="text-[10px] font-semibold text-brand-700 bg-brand-100 px-2 py-0.5 rounded-full">
+                        Powered by Gemini AI
+                      </span>
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-bold text-gray-700 mb-1">
+                        Describe what you want to broadcast (offer, event, greeting, or announcement):
+                      </label>
+                      <textarea
+                        rows={2}
+                        value={aiPrompt}
+                        onChange={(e) => setAiPrompt(e.target.value)}
+                        placeholder="e.g. 25% discount on all clothing items with promo code DIWALI25, valid till Sunday."
+                        className="w-full px-3 py-2 text-xs bg-white border border-gray-200 rounded-xl focus:outline-hidden focus:ring-2 focus:ring-brand-500"
+                      />
+                    </div>
+
+                    {/* Quick Inspiration Chips */}
+                    <div>
+                      <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1.5">
+                        Quick Ideas (Click to use):
+                      </span>
+                      <div className="flex flex-wrap gap-1.5">
+                        {[
+                          'Festive 20% discount with promo code FESTIVE20',
+                          'Weekend BOGO offer on our entire menu',
+                          'New VIP collection early access for members',
+                          'Friendly appointment & consultation follow-up',
+                        ].map((idea) => (
+                          <button
+                            key={idea}
+                            type="button"
+                            onClick={() => {
+                              setAiPrompt(idea);
+                              handleGenerateWithAi(idea);
+                            }}
+                            className="text-[10px] font-medium text-slate-600 bg-white hover:bg-slate-100 border border-slate-200 px-2 py-1 rounded-lg transition-colors"
+                          >
+                            + {idea}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Tone Selection & Action */}
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-2 border-t border-brand-100">
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-[11px] text-gray-500 font-semibold">Tone:</span>
+                        {['Festive & Exciting', 'Professional', 'Friendly', 'Urgent'].map((t) => (
+                          <button
+                            key={t}
+                            type="button"
+                            onClick={() => setAiTone(t)}
+                            className={`px-2 py-0.5 text-[10px] font-bold rounded-md transition-colors ${
+                              aiTone === t
+                                ? 'bg-brand-600 text-white shadow-2xs'
+                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                            }`}
+                          >
+                            {t}
+                          </button>
+                        ))}
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => handleGenerateWithAi()}
+                        disabled={isGeneratingAi}
+                        className="flex items-center justify-center gap-1.5 px-4 py-1.5 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-xs font-bold shadow-xs transition-colors"
+                      >
+                        {isGeneratingAi ? (
+                          <>
+                            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                            <span>Crafting Copy...</span>
+                          </>
+                        ) : (
+                          <>
+                            <Wand2 className="w-3.5 h-3.5" />
+                            <span>Generate Message</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* TAB 2: Pre-built Templates */}
+                {templateMode === 'PRESET' && (
+                  <div className="space-y-2">
+                    <span className="text-xs font-bold text-gray-700 block">
+                      Choose from 5 Business-Proven Templates:
                     </span>
-                    <p className="text-[11px] text-gray-500">
-                      Use <span className="font-mono text-brand-600">{"{{name}}"}</span> to automatically insert recipient name.
-                    </p>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      {detectedVariables.map((num) => (
-                        <div key={num}>
-                          <label className="block text-[11px] font-bold text-gray-600 mb-1">
-                            Variable {"{{" + num + "}}"}
-                          </label>
-                          <input
-                            type="text"
-                            placeholder={num === '1' ? 'e.g. {{name}}' : 'e.g. 20% OFF'}
-                            value={templateParams[num] || ''}
-                            onChange={(e) =>
-                              setTemplateParams({ ...templateParams, [num]: e.target.value })
-                            }
-                            className="w-full px-3 py-1.5 text-xs bg-white border border-gray-200 rounded-lg focus:outline-hidden focus:ring-2 focus:ring-brand-500"
-                          />
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-48 overflow-y-auto p-1">
+                      {PRESET_TEMPLATES.map((tpl) => (
+                        <div
+                          key={tpl.id}
+                          onClick={() => {
+                            setMessageText(tpl.text);
+                            setSelectedTemplateName(tpl.id);
+                          }}
+                          className={`p-3 rounded-xl border cursor-pointer transition-all ${
+                            selectedTemplateName === tpl.id
+                              ? 'border-purple-500 bg-purple-50/50 ring-1 ring-purple-500'
+                              : 'border-gray-200 hover:border-gray-300 bg-white'
+                          }`}
+                        >
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-bold text-gray-900">{tpl.title}</span>
+                            <span className="text-[10px] font-semibold text-purple-700 bg-purple-100 px-1.5 py-0.5 rounded">
+                              {tpl.tag}
+                            </span>
+                          </div>
+                          <p className="text-[11px] text-gray-500 line-clamp-2 mt-1 whitespace-pre-wrap">
+                            {tpl.text}
+                          </p>
                         </div>
                       ))}
                     </div>
                   </div>
                 )}
 
-                {/* WhatsApp Chat Preview Bubble */}
-                {currentTemplate && (
+                {/* TAB 3: Custom Text */}
+                {templateMode === 'CUSTOM' && (
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-gray-700">
+                        Write Custom Broadcast Message
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setMessageText((prev) => prev + ' {{name}} ')}
+                        className="text-[10px] font-bold text-brand-600 bg-brand-50 hover:bg-brand-100 border border-brand-200 px-2 py-0.5 rounded-md transition-colors"
+                      >
+                        + Insert {"{{name}}"}
+                      </button>
+                    </div>
+                    <textarea
+                      rows={4}
+                      value={messageText}
+                      onChange={(e) => {
+                        setMessageText(e.target.value);
+                        setSelectedTemplateName('custom_message');
+                      }}
+                      placeholder="Type your message here... Use {{name}} to personalize with customer's name."
+                      className="w-full px-3 py-2 text-xs bg-gray-50 border border-gray-200 rounded-xl focus:outline-hidden focus:ring-2 focus:ring-brand-500 focus:bg-white"
+                    />
+                  </div>
+                )}
+
+                {/* TAB 4: Meta Synced Templates */}
+                {templateMode === 'META' && (
+                  <div className="space-y-2">
+                    <label className="block text-xs font-bold text-gray-700">
+                      Approved Meta WhatsApp Templates
+                    </label>
+                    {(!templates || templates.length === 0) ? (
+                      <div className="p-4 bg-amber-50 border border-amber-200 text-amber-900 rounded-xl text-xs space-y-2">
+                        <p className="font-semibold">
+                          No Meta templates synced yet.
+                        </p>
+                        <p className="text-[11px] text-amber-700">
+                          You do not need to wait! You can use <strong>"Generate with AI"</strong> or <strong>"Pre-built Templates"</strong> tabs above to broadcast right away without creating Meta templates first.
+                        </p>
+                      </div>
+                    ) : (
+                      <select
+                        value={selectedTemplateName}
+                        onChange={(e) => {
+                          setSelectedTemplateName(e.target.value);
+                          setTemplateParams({});
+                        }}
+                        className="w-full px-3 py-2 text-xs bg-gray-50 border border-gray-200 rounded-xl font-semibold text-gray-800 focus:outline-hidden focus:ring-2 focus:ring-brand-500 focus:bg-white"
+                      >
+                        <option value="">-- Choose an approved template --</option>
+                        {templates.map((t) => (
+                          <option key={t.id} value={t.name}>
+                            {t.name} ({t.category} - {t.language})
+                          </option>
+                        ))}
+                      </select>
+                    )}
+                  </div>
+                )}
+
+                {/* Live Message Editor & Real-time Phone Chat Preview Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 border-t border-gray-100">
+                  {/* Left: Message Editor */}
+                  <div className="space-y-1.5">
+                    <div className="flex items-center justify-between">
+                      <label className="text-xs font-bold text-gray-700">
+                        Message Content (Editable)
+                      </label>
+                      <span className="text-[10px] text-gray-400">
+                        {messageText.length} characters
+                      </span>
+                    </div>
+                    <textarea
+                      rows={6}
+                      value={messageText}
+                      onChange={(e) => setMessageText(e.target.value)}
+                      placeholder="Click 'Generate with AI' or choose a pre-built template above..."
+                      className="w-full px-3 py-2 text-xs bg-white border border-gray-200 rounded-xl focus:outline-hidden focus:ring-2 focus:ring-brand-500 leading-relaxed font-sans"
+                    />
+                    <p className="text-[10px] text-gray-400">
+                      Tip: Use <span className="font-mono text-brand-600">{"{{name}}"}</span> to automatically greet each customer by their actual name.
+                    </p>
+                  </div>
+
+                  {/* Right: WhatsApp Phone Chat Bubble Preview */}
                   <div>
                     <label className="block text-xs font-bold text-gray-700 mb-1.5">
-                      WhatsApp Message Preview
+                      Live WhatsApp Preview (Sample Recipient: Rahul)
                     </label>
-                    <div className="p-4 bg-slate-900 rounded-2xl max-w-sm mx-auto shadow-inner">
-                      <div className="bg-[#dcf8c6] text-slate-800 rounded-2xl rounded-tr-xs p-3.5 shadow-sm text-xs space-y-2">
-                        <p className="whitespace-pre-wrap leading-relaxed font-sans">
-                          {previewBodyText}
+                    <div className="p-4 bg-slate-900 rounded-2xl shadow-inner min-h-[160px] flex items-center justify-center">
+                      <div className="w-full bg-[#dcf8c6] text-slate-800 rounded-2xl rounded-tr-xs p-3.5 shadow-sm text-xs space-y-2">
+                        <p className="whitespace-pre-wrap leading-relaxed font-sans text-slate-800">
+                          {simulatedPreviewText}
                         </p>
                         <div className="flex items-center justify-end gap-1 text-[9px] text-slate-500 pt-1">
                           <span>12:00 PM</span>
-                          <span>✓✓</span>
+                          <span className="text-blue-500 font-bold">✓✓</span>
                         </div>
                       </div>
                     </div>
                   </div>
-                )}
+                </div>
               </div>
             )}
 
@@ -806,8 +1113,13 @@ export const BroadcastScreen: React.FC = () => {
                     <span className="font-bold text-gray-900">{campaignName}</span>
                   </div>
                   <div className="flex justify-between py-1 border-b border-gray-200">
-                    <span className="text-gray-500 font-medium">Template</span>
-                    <span className="font-bold text-gray-900 font-mono">{selectedTemplateName}</span>
+                    <span className="text-gray-500 font-medium">Template Type</span>
+                    <span className="font-bold text-brand-600">
+                      {templateMode === 'AI' && 'AI-Crafted Message'}
+                      {templateMode === 'PRESET' && 'Pre-built Template'}
+                      {templateMode === 'CUSTOM' && 'Custom Text Message'}
+                      {templateMode === 'META' && `Meta Template: ${selectedTemplateName}`}
+                    </span>
                   </div>
                   <div className="flex justify-between py-1 border-b border-gray-200">
                     <span className="text-gray-500 font-medium">Total Audience</span>
@@ -892,7 +1204,7 @@ export const BroadcastScreen: React.FC = () => {
                 <div className="p-3 bg-emerald-50/70 border border-emerald-200 rounded-xl flex items-center gap-2.5 text-xs text-emerald-900">
                   <ShieldCheck className="w-5 h-5 text-emerald-600 shrink-0" />
                   <span>
-                    <strong>Meta Anti-Ban Throttling Active:</strong> Messages are safely spaced to protect your WhatsApp account from rate limit blocks.
+                    <strong>Meta Anti-Ban Throttling Active:</strong> Messages are safely spaced in the background to protect your WhatsApp account from rate limit blocks.
                   </span>
                 </div>
               </div>
@@ -927,11 +1239,11 @@ export const BroadcastScreen: React.FC = () => {
                       return;
                     }
                     if (step === 1 && estimatedAudienceCount === 0) {
-                      setErrorMsg('Audience has 0 contacts. Please select a valid audience.');
+                      setErrorMsg('Audience has 0 contacts. Please select an audience with contacts.');
                       return;
                     }
-                    if (step === 2 && !selectedTemplateName) {
-                      setErrorMsg('Please select an approved template.');
+                    if (step === 2 && !messageText.trim() && !selectedTemplateName) {
+                      setErrorMsg('Please write, select a pre-built template, or generate one with AI.');
                       return;
                     }
                     setErrorMsg(null);

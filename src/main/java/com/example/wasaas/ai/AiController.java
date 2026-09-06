@@ -118,4 +118,24 @@ public class AiController {
             ));
         }
     }
+
+    public record GenerateTemplateRequest(
+            String prompt,
+            String tone
+    ) {}
+
+    public record GenerateTemplateResponse(
+            boolean success,
+            String templateName,
+            String messageText
+    ) {}
+
+    @PostMapping("/generate-template")
+    public ResponseEntity<GenerateTemplateResponse> generateTemplate(@RequestBody GenerateTemplateRequest req) {
+        UUID tenantId = TenantContext.require();
+        String prompt = req.prompt() != null ? req.prompt().trim() : "Special Discount Promotion";
+        String text = aiAssistantService.generateBroadcastMessage(tenantId, prompt, req.tone());
+        String templateName = "promo_" + (System.currentTimeMillis() % 100000);
+        return ResponseEntity.ok(new GenerateTemplateResponse(true, templateName, text));
+    }
 }
