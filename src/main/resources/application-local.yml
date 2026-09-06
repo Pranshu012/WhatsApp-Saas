@@ -20,3 +20,8 @@ app:
     graph-version: v21.0
   cors:
     allowed-origins: http://localhost:5173,http://localhost:3000
+  oauth2:
+    google:
+      client-id: ${GOOGLE_CLIENT_ID:test-google-client-id.apps.googleusercontent.com}
+      client-secret: ${GOOGLE_CLIENT_SECRET:test-google-secret}
+      mock-enabled: true

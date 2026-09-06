@@ -9,11 +9,19 @@ import {
   UserSession,
 } from '../api/types';
 
+export interface GoogleOAuthLoginParams {
+  credential: string;
+  businessName?: string;
+  email?: string;
+  name?: string;
+}
+
 interface AuthContextType {
   user: UserSession | null;
   loading: boolean;
   isAuthenticated: boolean;
   login: (req: LoginRequest) => Promise<UserSession>;
+  loginWithGoogle: (params: GoogleOAuthLoginParams) => Promise<UserSession>;
   register: (req: RegistrationRequest) => Promise<RegistrationResponse>;
   forgotPassword: (req: ForgotPasswordRequest) => Promise<{ message: string }>;
   resetPassword: (req: ResetPasswordRequest) => Promise<{ message: string }>;
@@ -46,6 +54,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const sessionData = await apiClient<UserSession>('/api/auth/login', {
       method: 'POST',
       body: JSON.stringify(req),
+    });
+    setUser(sessionData);
+    return sessionData;
+  };
+
+  const loginWithGoogle = async (params: GoogleOAuthLoginParams): Promise<UserSession> => {
+    const sessionData = await apiClient<UserSession>('/api/auth/oauth/google', {
+      method: 'POST',
+      body: JSON.stringify(params),
     });
     setUser(sessionData);
     return sessionData;
@@ -101,6 +118,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         loading,
         isAuthenticated: !!user,
         login,
+        loginWithGoogle,
         register,
         forgotPassword,
         resetPassword,

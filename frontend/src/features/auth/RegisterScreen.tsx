@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { MessageSquare, ArrowRight, Lock, Mail, Building, User, Loader2, CheckCircle2, ShieldCheck, Zap } from 'lucide-react';
 import { AlertBanner } from '../../components/AlertBanner';
+import { GoogleSignInButton } from '../../components/GoogleSignInButton';
 
 export const RegisterScreen: React.FC = () => {
   const [businessName, setBusinessName] = useState('');
@@ -81,6 +82,27 @@ export const RegisterScreen: React.FC = () => {
               className="mb-6"
             />
           )}
+
+          {/* 1-Click Google Onboarding */}
+          <div className="mb-6">
+            <GoogleSignInButton
+              text="Sign up with Google (1-Click Onboard)"
+              businessName={businessName.trim() || undefined}
+              onSuccess={() => navigate('/', { replace: true })}
+              onError={(err) => setError(err)}
+            />
+
+            <div className="relative my-6">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-slate-200" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-white px-3 text-slate-400 font-semibold tracking-wider">
+                  or register with business email
+                </span>
+              </div>
+            </div>
+          </div>
 
           <form className="space-y-4" onSubmit={handleSubmit}>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

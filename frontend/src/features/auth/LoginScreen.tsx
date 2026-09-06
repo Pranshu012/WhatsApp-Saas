@@ -3,6 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { MessageSquare, ArrowRight, Lock, Mail, Loader2, Building2 } from 'lucide-react';
 import { AlertBanner } from '../../components/AlertBanner';
+import { GoogleSignInButton } from '../../components/GoogleSignInButton';
 
 export const LoginScreen: React.FC = () => {
   const location = useLocation();
@@ -72,6 +73,26 @@ export const LoginScreen: React.FC = () => {
               className="mb-6"
             />
           )}
+
+          {/* 1-Click Google Sign In */}
+          <div className="mb-6">
+            <GoogleSignInButton
+              text="Sign in with Google"
+              onSuccess={() => navigate(from, { replace: true })}
+              onError={(err) => setError(err)}
+            />
+
+            <div className="relative my-6">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-slate-200" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-white px-3 text-slate-400 font-semibold tracking-wider">
+                  or continue with email
+                </span>
+              </div>
+            </div>
+          </div>
 
           <form className="space-y-5" onSubmit={handleSubmit}>
             {/* Email Address */}

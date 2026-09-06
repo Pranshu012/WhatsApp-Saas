@@ -29,6 +29,7 @@ public class SecurityConfig {
                         .ignoringRequestMatchers(
                                 "/api/auth/register",
                                 "/api/auth/login",
+                                "/api/auth/oauth/**",
                                 "/api/auth/forgot-password",
                                 "/api/auth/reset-password",
                                 "/api/auth/csrf",
@@ -40,6 +41,7 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/api/auth/register",
                                 "/api/auth/login",
+                                "/api/auth/oauth/**",
                                 "/api/auth/forgot-password",
                                 "/api/auth/reset-password",
                                 "/api/auth/csrf",
