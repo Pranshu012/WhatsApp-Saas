@@ -379,3 +379,58 @@ export interface SuspendTenantRequest {
 export interface UpdateTenantAiLimitRequest {
   monthlyLimit: number;
 }
+
+// Bulk Broadcast Campaigns
+export type BroadcastStatus = 'DRAFT' | 'SCHEDULED' | 'RUNNING' | 'COMPLETED' | 'CANCELLED' | 'FAILED';
+export type RecipientStatus = 'PENDING' | 'SENT' | 'FAILED';
+export type TargetType = 'ALL_CONTACTS' | 'LEADS_BY_STAGE' | 'CSV_UPLOAD' | 'PASTE_NUMBERS';
+
+export interface BroadcastCampaignDto {
+  id: string;
+  name: string;
+  targetType: TargetType;
+  targetStage?: string;
+  templateName?: string;
+  templateLanguage: string;
+  messagePreview?: string;
+  status: BroadcastStatus;
+  totalRecipients: number;
+  sentCount: number;
+  failedCount: number;
+  deliveryRatePercent: number;
+  scheduledFor?: string;
+  startedAt?: string;
+  completedAt?: string;
+  createdAt: string;
+}
+
+export interface BroadcastRecipientDto {
+  id: string;
+  phoneE164: string;
+  contactName?: string;
+  status: RecipientStatus;
+  errorMessage?: string;
+  sentAt?: string;
+  createdAt: string;
+}
+
+export interface BroadcastCampaignDetailDto {
+  campaign: BroadcastCampaignDto;
+  recipients: BroadcastRecipientDto[];
+}
+
+export interface CreateBroadcastRequest {
+  name: string;
+  targetType: TargetType;
+  targetStage?: string;
+  templateName: string;
+  templateLanguage?: string;
+  templateId?: string;
+  templateParams?: Record<string, string>;
+  messagePreview?: string;
+  scheduledFor?: string;
+  customRecipients?: {
+    phoneE164: string;
+    name?: string;
+  }[];
+}

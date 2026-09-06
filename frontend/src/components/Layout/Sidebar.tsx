@@ -9,6 +9,7 @@ import {
   MessageSquare,
   Shield,
   Target,
+  Megaphone,
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { useAuth } from '../../context/AuthContext';
@@ -28,6 +29,7 @@ const navItems: NavItem[] = [
   { label: 'Home', href: '/', icon: LayoutDashboard },
   { label: 'Customer Chats', href: '/inbox', icon: MessageCircle },
   { label: 'Leads CRM', href: '/leads', icon: Target },
+  { label: 'Bulk Broadcast', href: '/broadcast', icon: Megaphone },
   { label: 'Bot Auto-Replies', href: '/automation', icon: Zap },
   { label: 'WhatsApp & Settings', href: '/settings', icon: Settings },
 ];

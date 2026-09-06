@@ -18,6 +18,7 @@ import { ScheduledMessagesScreen } from './features/scheduled/ScheduledMessagesS
 import { SettingsScreen } from './features/settings/SettingsScreen';
 import { AdminDashboardScreen } from './features/admin/AdminDashboardScreen';
 import { LeadsScreen } from './features/leads/LeadsScreen';
+import { BroadcastScreen } from './features/broadcast/BroadcastScreen';
 import { MessageSquare } from 'lucide-react';
 
 const queryClient = new QueryClient({
@@ -83,6 +84,7 @@ export const App: React.FC = () => {
               <Route path="/guide" element={<Navigate to="/" replace />} />
               <Route path="/inbox" element={<InboxScreen />} />
               <Route path="/leads" element={<LeadsScreen />} />
+              <Route path="/broadcast" element={<BroadcastScreen />} />
               <Route path="/whatsapp" element={<WhatsAppConnectionScreen />} />
               <Route path="/automation" element={<BotRepliesHub />} />
               <Route path="/faq" element={<Navigate to="/automation" replace />} />
