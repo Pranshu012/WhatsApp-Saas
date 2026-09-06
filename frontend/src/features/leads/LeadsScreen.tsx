@@ -1,3 +1,12 @@
+/**
+ * LeadsScreen: SMB WhatsApp CRM & Pipeline Board.
+ *
+ * Capabilities:
+ * - Visual Kanban pipeline: NEW -> CONTACTED -> QUALIFIED -> PROPOSAL -> WON -> LOST.
+ * - Revenue analytics and potential pipeline value computation in INR (₹).
+ * - Lead modal for editing estimated value, priority tags, and status notes.
+ * - Direct 1-click jump into WhatsApp Customer Chat from any lead card.
+ */
 import React, { useState, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';

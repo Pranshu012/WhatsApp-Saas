@@ -1,3 +1,12 @@
+/**
+ * InboxScreen: Enterprise WhatsApp Customer Chat & Unified CRM Inbox.
+ *
+ * Capabilities:
+ * - Real-time conversational message feed with delivery ticks (Sent, Delivered, Read).
+ * - Meta 24-hour customer care messaging window timer and compliance badge.
+ * - Customer Context Drawer displaying contact info, lead qualification stage, and opt-in/opt-out status.
+ * - Direct opt-in/opt-out manual toggle for customer consent management.
+ */
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate, useSearchParams } from 'react-router-dom';

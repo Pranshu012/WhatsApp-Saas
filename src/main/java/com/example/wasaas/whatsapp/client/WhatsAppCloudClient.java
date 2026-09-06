@@ -22,6 +22,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Low-level HTTP client for the Meta WhatsApp Cloud API (Graph API v21.0).
+ * <p>
+ * Responsible for:
+ * <ul>
+ *   <li>Sending outbound text messages, interactive quick replies, and approved templates.</li>
+ *   <li>Handling Meta Graph API rate limits (HTTP 429) and user opt-in policy errors (HTTP 400).</li>
+ *   <li>Classifying API errors into transient retries vs {@link PermanentJobException} for the job worker.</li>
+ * </ul>
+ */
 @Component
 public class WhatsAppCloudClient {
 

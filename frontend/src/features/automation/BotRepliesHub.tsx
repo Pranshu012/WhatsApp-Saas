@@ -1,3 +1,13 @@
+/**
+ * BotRepliesHub: Unified WhatsApp Automation & AI Assistant Center.
+ *
+ * Capabilities:
+ * - Keyword Automation Rules: exact, contains, and regex pattern auto-responders.
+ * - Knowledge Base (FAQs): Business answers and questions with interactive search.
+ * - Gemini AI Fallback: Automated contextual customer support powered by Google Gemini.
+ * - Unanswered Inquiries Queue: Triage incoming customer questions that didn't match rules.
+ * - Live WhatsApp Chatbot Simulator: Test replies in real time with interactive preview.
+ */
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '../../api/client';

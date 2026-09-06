@@ -26,6 +26,17 @@ import java.time.Instant;
 import java.util.*;
 import java.util.regex.Pattern;
 
+/**
+ * Service orchestrating bulk WhatsApp marketing campaigns.
+ * <p>
+ * Core capabilities:
+ * <ul>
+ *   <li><b>Audience Segmentation:</b> Resolves target recipients by CRM stage, contact books, or uploaded lists.</li>
+ *   <li><b>Mandatory Opt-Out Filtering:</b> Enforces international compliance by excluding any contacts marked as {@code OPTED_OUT}.</li>
+ *   <li><b>Chunked Background Dispatch:</b> Enqueues campaign dispatch jobs into the transactional jobs table for reliable parallel delivery.</li>
+ *   <li><b>Real-Time Analytics:</b> Tracks sent, delivered, read, and failed counts per campaign.</li>
+ * </ul>
+ */
 @Service
 public class BroadcastService {
 

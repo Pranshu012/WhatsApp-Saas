@@ -14,6 +14,15 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.UUID;
 
+/**
+ * Spring {@link BeanPostProcessor} that wraps the application {@link DataSource} with
+ * a tenant-aware proxy.
+ * <p>
+ * Before any SQL statement is executed on a checked-out JDBC connection, this proxy
+ * automatically executes {@code SET LOCAL app.tenant_id = ?} using the tenant ID from
+ * {@link TenantContext}. This enforces PostgreSQL Row-Level Security (RLS) policies
+ * transparently at the database kernel level for total tenant data isolation.
+ */
 @Component
 public class TenantDataSourcePostProcessor implements BeanPostProcessor {
 

@@ -13,6 +13,17 @@ import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 
+/**
+ * Central Spring Security configuration for the multi-tenant SaaS application.
+ * <p>
+ * Key security policies:
+ * <ul>
+ *   <li><b>Stateful HTTP Session:</b> Uses standard HTTP session cookies (SESSION) with HttpOnly and Lax SameSite.</li>
+ *   <li><b>CSRF Defense:</b> Double-submit cookie pattern via {@link CookieCsrfTokenRepository} for mutating requests.</li>
+ *   <li><b>Public Whitelist:</b> Permits pre-authentication endpoints (/login, /register, /oauth/**, /forgot-password) and webhook receivers.</li>
+ *   <li><b>CORS:</b> Whitelists configured frontend origins (e.g. Vite dev server and production domain).</li>
+ * </ul>
+ */
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity

@@ -28,6 +28,18 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.util.UUID;
 
+/**
+ * Asynchronous job handler for processing raw Meta WhatsApp webhook payloads.
+ * <p>
+ * Core responsibilities:
+ * <ul>
+ *   <li><b>Idempotent Ingestion:</b> Deduplicates messages using Meta {@code wamid} against the {@code message_ledger}.</li>
+ *   <li><b>Delivery Tracking:</b> Correlates status updates (SENT, DELIVERED, READ, FAILED) with outbound ledger records.</li>
+ *   <li><b>Compliance Engine:</b> Detects STOP/UNSUBSCRIBE keywords, flips {@code opt_in_status} to OPTED_OUT,
+ *       dispatches instant confirmation, and suppresses bot automated replies.</li>
+ *   <li><b>CRM Integration:</b> Automatically creates or updates leads and tracks last message timestamps.</li>
+ * </ul>
+ */
 @Component
 public class ProcessWebhookEventHandler implements JobHandler {
 

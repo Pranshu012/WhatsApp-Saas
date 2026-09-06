@@ -18,6 +18,13 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * Background polling worker implementing the Transactional Outbox pattern.
+ * <p>
+ * Periodically claims batches of pending or stale-locked jobs from the {@code jobs} table
+ * using optimistic row locking, dispatches them to registered {@link JobHandler} components,
+ * and tracks execution state (SUCCESS, FAILED, PERMANENT_FAILURE) with exponential backoff.
+ */
 @Component
 @Profile("worker")
 @EnableScheduling

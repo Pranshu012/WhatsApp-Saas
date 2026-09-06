@@ -1,3 +1,12 @@
+/**
+ * BroadcastScreen: Bulk WhatsApp Outreach & Campaign Studio.
+ *
+ * Capabilities:
+ * - 3-Step Wizard: Audience selection -> Minimal AI copywriter & editor -> Live phone preview & dispatch.
+ * - Audience resolution via all contacts, CRM lead stages, CSV upload, or direct paste.
+ * - Automatic exclusion of OPTED_OUT recipients with compliance notices.
+ * - Real-time campaign tracking: sent, delivered, read, and failed metrics.
+ */
 import React, { useState, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '../../api/client';

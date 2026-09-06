@@ -16,6 +16,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * Client for Google Gemini Generative AI models.
+ * <p>
+ * Powers automated intelligence for:
+ * <ul>
+ *   <li><b>Context-Aware WhatsApp Auto-Replies:</b> Answers customer queries using tenant business profile & FAQ context.</li>
+ *   <li><b>Lead Intent Extraction:</b> Analyzes customer messages to automatically qualify leads and detect purchase intent.</li>
+ *   <li><b>AI Copywriter Studio:</b> Generates high-converting marketing broadcast copy and call-to-action suggestions.</li>
+ * </ul>
+ */
 @Component
 public class GeminiClient {
 
